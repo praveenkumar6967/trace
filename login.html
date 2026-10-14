@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="TRACE × X — Participant Login. Enter your registered Team ID and Security PIN to access the Cyber Crime Investigation challenge at TJS Engineering College.">
+  <meta name="theme-color" content="#040405">
+  <title>PARTICIPANT LOGIN — TRACE × X | TJS Engineering College</title>
+
+  <!-- Google Fonts: Inter, Montserrat, JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Core Stylesheet -->
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+  <!-- =========================================================================
+       ATMOSPHERIC FORENSIC BACKGROUND
+       ========================================================================= -->
+  <div class="bg-ambient-layer" aria-hidden="true">
+    <div class="ambient-glow-core"></div>
+    <div class="ambient-glow-top"></div>
+    <div class="forensic-grid"></div>
+    <div class="forensic-crosshair crosshair-tl">+ 00.12° N // FORENSIC CORE</div>
+    <div class="forensic-crosshair crosshair-br">SYS.LEVEL // TRACE × X</div>
+  </div>
+
+  <!-- =========================================================================
+       PAGE CONTENT WRAPPER
+       ========================================================================= -->
+  <div class="page-container">
+
+    <!-- ---------------------------------------------------------------------
+         HEADER — TOP SECTION (CONSISTENT WITH HOMEPAGE & REGISTRATION)
+         --------------------------------------------------------------------- -->
+    <header class="site-header">
+      <div class="container-wide">
+        <div class="header-inner">
+          
+          <!-- LEFT SIDE: BRANDING -->
+          <a href="index.html" class="brand-group" style="text-decoration: none; color: inherit;">
+            <div class="brand-logo-wrap">
+              <img src="assets/images/fox-logo.png" alt="FOX Technical Event Logo" class="fox-logo-img">
+            </div>
+
+            <div class="brand-text-column">
+              <div class="brand-title-row">
+                <span class="brand-title-text">TRACE</span>
+                <span class="brand-x-badge" aria-label="X">
+                  <span class="brand-x-symbol">×</span>
+                </span>
+                <span class="brand-title-text">X</span>
+              </div>
+
+              <div class="brand-subtitle">CYBER CRIME INVESTIGATION</div>
+
+              <div class="brand-college-info">
+                <div class="brand-college-line">
+                  <span class="brand-bullet">•</span>
+                  <span>TJS ENGINEERING COLLEGE</span>
+                </div>
+                <div class="brand-college-line">
+                  <span class="brand-bullet">•</span>
+                  <span>A TECH EVENT</span>
+                  <span class="brand-bullet">•</span>
+                  <span>DEPARTMENT OF COMPUTER SCIENCE AND ENGINEERING</span>
+                </div>
+              </div>
+            </div>
+          </a>
+
+          <!-- RIGHT SIDE: FOUR ACTION BUTTONS IN ONE ROW -->
+          <nav class="header-actions" aria-label="Quick Access">
+            <a href="register.html" class="nav-action-btn btn-register-team" id="btn-register-team">
+              REGISTER TEAM
+            </a>
+            <a href="login.html" class="nav-action-btn btn-participant-login active" id="btn-participant-login" aria-current="page">
+              PARTICIPANT LOGIN
+            </a>
+            <a href="rules.html" class="nav-action-btn btn-event-rules" id="btn-event-rules">
+              EVENT RULES
+            </a>
+            <a href="admin-login.html" class="nav-action-btn btn-admin" id="btn-admin">
+              ADMIN
+            </a>
+          </nav>
+
+        </div>
+      </div>
+    </header>
+
+    <!-- ---------------------------------------------------------------------
+         MAIN CONTENT: PARTICIPANT LOGIN PANEL (CENTERED)
+         --------------------------------------------------------------------- -->
+    <main class="login-wrapper" id="main-content">
+      <div class="container-wide" style="display: flex; flex-direction: column; align-items: center;">
+
+        <!-- Subtle Back to Homepage Link -->
+        <div style="width: 100%; max-width: 520px; text-align: left;">
+          <a href="index.html" class="back-home-link">
+            <span>←</span> BACK TO HOMEPAGE
+          </a>
+        </div>
+
+        <!-- Login Card Panel -->
+        <div class="login-card-panel">
+          <!-- Small FOX Logo Header Element -->
+          <img src="assets/images/fox-logo.png" alt="FOX Logo" class="login-fox-logo">
+
+          <div class="login-protocol-tag">PARTICIPANT ACCESS PROTOCOL</div>
+          <h1 class="login-title">PARTICIPANT LOGIN</h1>
+          <p class="login-subtitle">
+            Enter your registered Team ID and Security PIN to access the TRACE × X investigation.
+          </p>
+
+          <!-- Authentication Error Alert -->
+          <div class="login-error-alert" id="login-error-alert" role="alert" aria-live="assertive">
+            <div class="login-error-title">INVALID TEAM ID OR SECURITY PIN</div>
+            <div class="login-error-desc">Please check your credentials and try again.</div>
+          </div>
+
+          <!-- Login Form -->
+          <form id="participant-login-form" class="login-form" novalidate style="margin-top: 1rem;">
+
+            <!-- FIELD 1: TEAM ID -->
+            <div class="form-field-group" id="group-login-teamId">
+              <label for="input-login-team-id" class="field-label">
+                <span>01 // TEAM ID</span>
+                <span class="required-star">*</span>
+              </label>
+              <input 
+                type="text" 
+                id="input-login-team-id" 
+                name="teamId" 
+                class="text-input-field login-input" 
+                placeholder="Enter your issued Team ID" 
+                required 
+                autocomplete="username"
+                spellcheck="false"
+              >
+              <div class="field-helper-text">
+                Your Team ID was generated after successful team registration.
+              </div>
+              <span class="field-error-msg" id="error-login-teamId">Please enter your Team ID.</span>
+            </div>
+
+            <!-- FIELD 2: SECURITY PIN -->
+            <div class="form-field-group" id="group-login-pin">
+              <label for="input-login-pin" class="field-label">
+                <span>02 // SECURITY PIN</span>
+                <span class="required-star">*</span>
+              </label>
+              <div class="pin-input-wrap">
+                <input 
+                  type="password" 
+                  id="input-login-pin" 
+                  name="securityPin" 
+                  class="text-input-field login-input" 
+                  placeholder="Enter your Security PIN" 
+                  required 
+                  autocomplete="current-password"
+                >
+                <button type="button" class="pin-toggle-btn" id="toggle-login-pin" aria-label="Show or hide PIN">
+                  SHOW
+                </button>
+              </div>
+              <div class="field-helper-text">
+                Use the private PIN created during team registration.
+              </div>
+              <span class="field-error-msg" id="error-login-pin">Please enter your Security PIN.</span>
+            </div>
+
+            <!-- PRIMARY SUBMIT BUTTON -->
+            <div style="margin-top: 0.5rem;">
+              <button type="submit" class="btn-login-submit" id="btn-login-submit">
+                <span>[ ENTER INVESTIGATION ]</span>
+                <span aria-hidden="true">→</span>
+              </button>
+            </div>
+
+          </form>
+
+          <!-- Divider -->
+          <div class="login-divider" aria-hidden="true"></div>
+
+          <!-- Register Team Prompt -->
+          <div class="login-register-prompt">
+            <div class="prompt-title">NOT REGISTERED YET?</div>
+            <p class="prompt-desc">
+              Your team must complete registration before entering the investigation.
+            </p>
+            <a href="register.html" class="btn-link-register" id="link-register-team">
+              <span>REGISTER TEAM</span>
+              <span aria-hidden="true">→</span>
+            </a>
+          </div>
+
+        </div>
+
+      </div>
+    </main>
+
+    <!-- ---------------------------------------------------------------------
+         POST-LOGIN FULLSCREEN ACTIVATION OVERLAY
+         --------------------------------------------------------------------- -->
+    <div class="fullscreen-modal-overlay" id="fullscreen-activation-modal" role="dialog" aria-modal="true" aria-labelledby="fs-modal-title">
+      <div class="fullscreen-modal-box">
+        <div class="fs-icon-wrap" aria-hidden="true">⛶</div>
+        <div class="fs-protocol-tag">AUTHENTICATION VERIFIED // ENVIRONMENT SETUP</div>
+        <h2 class="fs-title" id="fs-modal-title">FULLSCREEN ACTIVATION</h2>
+        <p class="fs-description">
+          Participant access granted. The TRACE × X cyber crime investigation environment operates in dedicated fullscreen mode. Please activate fullscreen to continue to the mission environment.
+        </p>
+        <button type="button" class="btn-fullscreen-enter" id="btn-enter-fullscreen">
+          <span>[ ENTER FULLSCREEN &amp; OPEN INVESTIGATION ]</span>
+          <span aria-hidden="true">→</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ---------------------------------------------------------------------
+         MINIMAL SUBTLE FOOTER STRIP
+         --------------------------------------------------------------------- -->
+    <footer class="site-footer-minimal">
+      <div class="container-wide">
+        <div class="footer-inner-minimal">
+          <div>
+            TJS ENGINEERING COLLEGE • DEPARTMENT OF COMPUTER SCIENCE AND ENGINEERING
+          </div>
+          <div class="footer-status-pill">
+            <span class="status-dot" aria-hidden="true"></span>
+            <span>PARTICIPANT ACCESS // SECURE CHANNEL</span>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- Core Application Script -->
+  <script src="assets/js/app.js"></script>
+</body>
+</html>

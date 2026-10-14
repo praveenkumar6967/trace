@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="TRACE × X — Admin Access Terminal. Authorized CSE personnel authentication portal.">
+  <meta name="theme-color" content="#050505">
+  <title>ADMIN ACCESS — TRACE × X | TJS Engineering College</title>
+
+  <!-- Google Fonts: Inter, Montserrat, JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Core Stylesheet -->
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="investigation-workspace">
+
+  <!-- Atmospheric Background -->
+  <div class="bg-ambient-layer" aria-hidden="true">
+    <div class="ambient-glow-core"></div>
+    <div class="ambient-glow-top"></div>
+    <div class="forensic-grid"></div>
+    <div class="forensic-crosshair crosshair-tl">+ ADMIN TERMINAL // AUTH PORTAL</div>
+    <div class="forensic-crosshair crosshair-br">SYS.LEVEL // ACCESS GATEWAY</div>
+  </div>
+
+  <div class="login-page-wrapper">
+
+    <!-- Header Branding -->
+    <header class="site-header">
+      <div class="container-wide">
+        <div class="header-inner">
+          <a href="index.html" class="brand-group" style="text-decoration: none; color: inherit;">
+            <div class="brand-logo-wrap">
+              <img src="assets/images/fox-logo.png" alt="FOX Technical Event Logo" class="fox-logo-img">
+            </div>
+
+            <div class="brand-text-column">
+              <div class="brand-title-row">
+                <span class="brand-title-text">TRACE</span>
+                <span class="brand-x-badge" aria-label="X">
+                  <span class="brand-x-symbol">×</span>
+                </span>
+                <span class="brand-title-text">X</span>
+              </div>
+
+              <div class="brand-subtitle">CYBER CRIME INVESTIGATION</div>
+
+              <div class="brand-college-info">
+                <div class="brand-college-line">
+                  <span class="brand-bullet">•</span>
+                  <span>TJS ENGINEERING COLLEGE</span>
+                </div>
+                <div class="brand-college-line">
+                  <span class="brand-bullet">•</span>
+                  <span>DEPARTMENT OF COMPUTER SCIENCE AND ENGINEERING</span>
+                </div>
+              </div>
+            </div>
+          </a>
+
+          <!-- RIGHT SIDE: FOUR ACTION BUTTONS IN ONE ROW -->
+          <nav class="header-actions" aria-label="Quick Access">
+            <a href="register.html" class="nav-action-btn btn-register-team" id="btn-register-team">
+              REGISTER TEAM
+            </a>
+            <a href="login.html" class="nav-action-btn btn-participant-login" id="btn-participant-login">
+              PARTICIPANT LOGIN
+            </a>
+            <a href="rules.html" class="nav-action-btn btn-event-rules" id="btn-event-rules">
+              EVENT RULES
+            </a>
+            <a href="admin-login.html" class="nav-action-btn btn-admin active" id="btn-admin" aria-current="page">
+              ADMIN
+            </a>
+          </nav>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Admin Login Container -->
+    <main class="login-wrapper">
+      <div class="login-card-panel" style="border-color: rgba(229, 9, 36, 0.65); box-shadow: 0 0 45px rgba(229, 9, 36, 0.25), 0 16px 50px rgba(0, 0, 0, 0.95);">
+        
+        <div class="login-protocol-tag" style="color: var(--color-crimson-bright); font-size: 0.72rem; letter-spacing: 0.2em;">
+          SECURITY CLEARANCE PROTOCOL
+        </div>
+
+        <h1 class="login-title" style="letter-spacing: 0.08em; margin-bottom: 0.35rem;">
+          ADMIN ACCESS
+        </h1>
+
+        <div class="login-subtitle" style="font-family: var(--font-mono); font-size: 0.76rem; letter-spacing: 0.14em; color: var(--color-amber-bright); text-transform: uppercase; margin-bottom: 2rem;">
+          AUTHORIZED PERSONNEL ONLY
+        </div>
+
+        <!-- Error Alert -->
+        <div class="login-error-alert" id="admin-login-error" style="display: none;" role="alert">
+          <div class="login-error-title" id="admin-error-title">ACCESS DENIED</div>
+          <div class="login-error-desc" id="admin-error-desc">Invalid administrator credentials.</div>
+        </div>
+
+        <!-- Admin Login Form -->
+        <form id="admin-login-form" class="login-form" novalidate>
+          
+          <!-- Field: ADMIN ID -->
+          <div class="form-field-group" id="group-admin-id">
+            <label for="admin-id-input" class="form-label">
+              <span class="label-text">ADMIN ID</span>
+              <span class="label-required">*</span>
+            </label>
+            <input 
+              type="text" 
+              id="admin-id-input" 
+              class="form-input login-input" 
+              placeholder="e.g. admin_cse" 
+              required 
+              autocomplete="username"
+              autofocus
+            >
+            <div class="field-helper-text">Department faculty / authorized administrator identifier</div>
+          </div>
+
+          <!-- Field: PASSWORD -->
+          <div class="form-field-group" id="group-admin-pass">
+            <label for="admin-pass-input" class="form-label">
+              <span class="label-text">PASSWORD</span>
+              <span class="label-required">*</span>
+            </label>
+            <div class="pin-input-wrap">
+              <input 
+                type="password" 
+                id="admin-pass-input" 
+                class="form-input login-input" 
+                placeholder="Enter administrator password" 
+                required 
+                autocomplete="current-password"
+              >
+              <button type="button" class="btn-toggle-pin" id="toggle-admin-pass" aria-label="Toggle password visibility">SHOW</button>
+            </div>
+            <div class="field-helper-text">Cryptographically validated against the authoritative CSE registry</div>
+          </div>
+
+          <!-- Submit Button -->
+          <button type="submit" class="btn-login-submit" id="btn-admin-login-submit">
+            <span>[ ACCESS ADMIN PANEL ]</span>
+            <span aria-hidden="true">→</span>
+          </button>
+
+        </form>
+
+        <div class="login-divider"></div>
+
+        <div style="font-family: var(--font-mono); font-size: 0.68rem; color: var(--color-text-muted); line-height: 1.5; text-align: center;">
+          UNAUTHORIZED ACCESS STRICTLY PROHIBITED.<br>
+          All login attempts, IP origins, and system actions are recorded in the security audit trail.
+        </div>
+
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer-minimal">
+      <div class="container-wide">
+        <div class="footer-inner-minimal">
+          <div>
+            TJS ENGINEERING COLLEGE • DEPARTMENT OF COMPUTER SCIENCE AND ENGINEERING
+          </div>
+          <div class="footer-status-pill">
+            <span class="status-dot" aria-hidden="true"></span>
+            <span>ADMINISTRATIVE GATEWAY // ENCRYPTED SESSION</span>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- Admin Application Logic -->
+  <script src="assets/js/admin.js"></script>
+</body>
+</html>

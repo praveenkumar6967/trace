@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="TRACE × X — Case Selection Protocol. Choose a cyber crime investigation case to begin your mission at TJS Engineering College.">
+  <meta name="theme-color" content="#040405">
+  <title>SELECT YOUR CASE — TRACE × X | TJS Engineering College</title>
+
+  <!-- Google Fonts: Inter, Montserrat, JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Core Stylesheet -->
+  <link rel="stylesheet" href="assets/css/style.css">
+
+  <!-- Seamless Unified Client-Side App Routing -->
+  <script>
+    window.location.replace('index.html#cases' + (window.location.search || ''));
+  </script>
+</head>
+<body>
+
+  <!-- =========================================================================
+       ATMOSPHERIC FORENSIC BACKGROUND
+       ========================================================================= -->
+  <div class="bg-ambient-layer" aria-hidden="true">
+    <div class="ambient-glow-core"></div>
+    <div class="ambient-glow-top"></div>
+    <div class="forensic-grid"></div>
+    <div class="forensic-crosshair crosshair-tl">+ 00.12° N // FORENSIC CORE</div>
+    <div class="forensic-crosshair crosshair-br">SYS.LEVEL // TRACE × X</div>
+  </div>
+
+  <!-- =========================================================================
+       PAGE CONTENT WRAPPER
+       ========================================================================= -->
+  <div class="page-container">
+
+    <!-- ---------------------------------------------------------------------
+         HEADER — TOP SECTION (CONSISTENT SHARED HEADER)
+         --------------------------------------------------------------------- -->
+    <header class="site-header">
+      <div class="container-wide">
+        <div class="header-inner">
+          
+          <!-- LEFT SIDE: BRANDING -->
+          <a href="index.html" class="brand-group" style="text-decoration: none; color: inherit;">
+            <div class="brand-logo-wrap">
+              <img src="assets/images/fox-logo.png" alt="FOX Technical Event Logo" class="fox-logo-img">
+            </div>
+
+            <div class="brand-text-column">
+              <div class="brand-title-row">
+                <span class="brand-title-text">TRACE</span>
+                <span class="brand-x-badge" aria-label="X">
+                  <span class="brand-x-symbol">×</span>
+                </span>
+                <span class="brand-title-text">X</span>
+              </div>
+
+              <div class="brand-subtitle">CYBER CRIME INVESTIGATION</div>
+
+              <div class="brand-college-info">
+                <div class="brand-college-line">
+                  <span class="brand-bullet">•</span>
+                  <span>TJS ENGINEERING COLLEGE</span>
+                </div>
+                <div class="brand-college-line">
+                  <span class="brand-bullet">•</span>
+                  <span>A TECH EVENT</span>
+                  <span class="brand-bullet">•</span>
+                  <span>DEPARTMENT OF COMPUTER SCIENCE AND ENGINEERING</span>
+                </div>
+              </div>
+            </div>
+          </a>
+
+          <!-- RIGHT SIDE: FOUR ACTION BUTTONS IN ONE ROW -->
+          <nav class="header-actions" aria-label="Quick Access">
+            <a href="register.html" class="nav-action-btn btn-register-team" id="btn-register-team">
+              REGISTER TEAM
+            </a>
+            <a href="login.html" class="nav-action-btn btn-participant-login" id="btn-participant-login">
+              PARTICIPANT LOGIN
+            </a>
+            <a href="rules.html" class="nav-action-btn btn-event-rules" id="btn-event-rules">
+              EVENT RULES
+            </a>
+            <a href="admin-login.html" class="nav-action-btn btn-admin" id="btn-admin">
+              ADMIN
+            </a>
+          </nav>
+
+        </div>
+      </div>
+    </header>
+
+    <!-- ---------------------------------------------------------------------
+         MAIN CONTENT: CASE SELECTION PROTOCOL
+         --------------------------------------------------------------------- -->
+    <main class="cases-wrapper" id="main-content">
+      <div class="container-wide">
+
+        <!-- Subtle Back to Homepage Link -->
+        <div>
+          <a href="index.html" class="back-home-link">
+            <span>←</span> BACK TO HOMEPAGE
+          </a>
+        </div>
+
+        <!-- Section Introduction -->
+        <div class="cases-intro-block">
+          <div class="cases-protocol-tag">CASE SELECTION PROTOCOL</div>
+          <h1 class="cases-title">SELECT YOUR CASE</h1>
+          <p class="cases-subtitle">
+            Choose a cyber crime investigation case to begin your mission.
+          </p>
+        </div>
+
+        <!-- INVESTIGATION CASES RESPONSIVE GRID -->
+        <div class="cases-grid" role="radiogroup" aria-label="Select Investigation Case" id="cases-grid-container">
+
+          <!-- CASE 01 -->
+          <article class="case-card" role="radio" tabindex="0" aria-checked="false" data-case-id="case-01" data-case-name="CASE 01 — STOLEN SOCIAL MEDIA ACCOUNT">
+            <h2 class="case-name">CASE 01 — STOLEN SOCIAL MEDIA ACCOUNT</h2>
+            <p class="case-description">
+              A student's social media account has been taken over.<br>Find how the attacker gained access.
+            </p>
+          </article>
+
+          <!-- CASE 02 -->
+          <article class="case-card" role="radio" tabindex="0" aria-checked="false" data-case-id="case-02" data-case-name="CASE 02 — PHISHING EMAIL ATTACK">
+            <h2 class="case-name">CASE 02 — PHISHING EMAIL ATTACK</h2>
+            <p class="case-description">
+              A student receives a suspicious email asking for login details.<br>Identify the clues that reveal the phishing attempt.
+            </p>
+          </article>
+
+          <!-- CASE 03 -->
+          <article class="case-card" role="radio" tabindex="0" aria-checked="false" data-case-id="case-03" data-case-name="CASE 03 — HACKED COLLEGE WEBSITE">
+            <h2 class="case-name">CASE 03 — HACKED COLLEGE WEBSITE</h2>
+            <p class="case-description">
+              The college website has been changed without permission.<br>Investigate the evidence to understand how access was gained.
+            </p>
+          </article>
+
+          <!-- CASE 04 -->
+          <article class="case-card" role="radio" tabindex="0" aria-checked="false" data-case-id="case-04" data-case-name="CASE 04 — FAKE ONLINE PAYMENT">
+            <h2 class="case-name">CASE 04 — FAKE ONLINE PAYMENT</h2>
+            <p class="case-description">
+              A student loses money after a suspicious online transaction.<br>Trace the evidence and identify the fraud.
+            </p>
+          </article>
+
+          <!-- CASE 05 -->
+          <article class="case-card" role="radio" tabindex="0" aria-checked="false" data-case-id="case-05" data-case-name="CASE 05 — LEAKED STUDENT DATA">
+            <h2 class="case-name">CASE 05 — LEAKED STUDENT DATA</h2>
+            <p class="case-description">
+              Private student information appears on an unauthorised platform.<br>Investigate how the information may have been exposed.
+            </p>
+          </article>
+
+          <!-- CASE 06 -->
+          <article class="case-card" role="radio" tabindex="0" aria-checked="false" data-case-id="case-06" data-case-name="CASE 06 — PASSWORD THEFT">
+            <h2 class="case-name">CASE 06 — PASSWORD THEFT</h2>
+            <p class="case-description">
+              A user's account has been compromised after a password leak.<br>Find the clues that explain how access was obtained.
+            </p>
+          </article>
+
+          <!-- CASE 07 -->
+          <article class="case-card" role="radio" tabindex="0" aria-checked="false" data-case-id="case-07" data-case-name="CASE 07 — FAKE JOB OFFER SCAM">
+            <h2 class="case-name">CASE 07 — FAKE JOB OFFER SCAM</h2>
+            <p class="case-description">
+              A student receives a job offer requesting personal information and an unexpected payment. Identify the signs of fraud.
+            </p>
+          </article>
+
+          <!-- CASE 08 -->
+          <article class="case-card" role="radio" tabindex="0" aria-checked="false" data-case-id="case-08" data-case-name="CASE 08 — ONLINE IDENTITY THEFT">
+            <h2 class="case-name">CASE 08 — ONLINE IDENTITY THEFT</h2>
+            <p class="case-description">
+              Someone is using another person's identity online.<br>Examine the evidence to determine what happened.
+            </p>
+          </article>
+
+          <!-- CASE 09 -->
+          <article class="case-card" role="radio" tabindex="0" aria-checked="false" data-case-id="case-09" data-case-name="CASE 09 — MALWARE INFECTION">
+            <h2 class="case-name">CASE 09 — MALWARE INFECTION</h2>
+            <p class="case-description">
+              A computer behaves strangely after a suspicious file is opened.<br>Investigate how the file may have infected the system.
+            </p>
+          </article>
+
+          <!-- CASE 10 -->
+          <article class="case-card" role="radio" tabindex="0" aria-checked="false" data-case-id="case-010" data-case-name="CASE 10 — SUSPICIOUS ACCOUNT LOGIN">
+            <h2 class="case-name">CASE 10 — SUSPICIOUS ACCOUNT LOGIN</h2>
+            <p class="case-description">
+              An account shows an unexpected login from an unfamiliar device.<br>Examine the available details to identify suspicious activity.
+            </p>
+          </article>
+
+          <!-- CASE 11 -->
+          <article class="case-card" role="radio" tabindex="0" aria-checked="false" data-case-id="case-11" data-case-name="CASE 11 — CYBERBULLYING INVESTIGATION">
+            <h2 class="case-name">CASE 11 — CYBERBULLYING INVESTIGATION</h2>
+            <p class="case-description">
+              A student receives threatening messages through a social platform.<br>Review the available evidence and identify the incident.
+            </p>
+          </article>
+
+          <!-- CASE 12 -->
+          <article class="case-card" role="radio" tabindex="0" aria-checked="false" data-case-id="case-12" data-case-name="CASE 12 — FAKE WEBSITE SCAM">
+            <h2 class="case-name">CASE 12 — FAKE WEBSITE SCAM</h2>
+            <p class="case-description">
+              A website imitates a trusted service to collect user information.<br>Identify the signs that reveal the fake website.
+            </p>
+          </article>
+
+          <!-- CASE 13 -->
+          <article class="case-card" role="radio" tabindex="0" aria-checked="false" data-case-id="case-13" data-case-name="CASE 13 — STOLEN EMAIL ACCOUNT">
+            <h2 class="case-name">CASE 13 — STOLEN EMAIL ACCOUNT</h2>
+            <p class="case-description">
+              A user can no longer access their email account.<br>Investigate the clues surrounding the account takeover.
+            </p>
+          </article>
+
+          <!-- CASE 14 -->
+          <article class="case-card" role="radio" tabindex="0" aria-checked="false" data-case-id="case-14" data-case-name="CASE 14 — UNAUTHORISED DATA ACCESS">
+            <h2 class="case-name">CASE 14 — UNAUTHORISED DATA ACCESS</h2>
+            <p class="case-description">
+              Confidential files have been accessed without permission.<br>Examine the available records to understand what happened.
+            </p>
+          </article>
+
+          <!-- CASE 15 -->
+          <article class="case-card" role="radio" tabindex="0" aria-checked="false" data-case-id="case-15" data-case-name="CASE 15 — ONLINE SHOPPING FRAUD">
+            <h2 class="case-name">CASE 15 — ONLINE SHOPPING FRAUD</h2>
+            <p class="case-description">
+              A customer pays for a product that never arrives.<br>Analyse the transaction details to identify the possible fraud.
+            </p>
+          </article>
+
+        </div>
+
+        <!-- PRIMARY OPEN CASE ACTION BUTTON -->
+        <div class="cases-action-wrap">
+          <button type="button" class="btn-open-case" id="btn-open-case" disabled>
+            <span>[ OPEN CASE ]</span>
+            <span aria-hidden="true">→</span>
+          </button>
+          <div class="cases-selection-hint" id="case-selection-hint">
+            SELECT A CASE TO BEGIN INVESTIGATION
+          </div>
+        </div>
+
+      </div>
+    </main>
+
+    <!-- ---------------------------------------------------------------------
+         MINIMAL SUBTLE FOOTER STRIP
+         --------------------------------------------------------------------- -->
+    <footer class="site-footer-minimal">
+      <div class="container-wide">
+        <div class="footer-inner-minimal">
+          <div>
+            TJS ENGINEERING COLLEGE • DEPARTMENT OF COMPUTER SCIENCE AND ENGINEERING
+          </div>
+          <div class="footer-status-pill">
+            <span class="status-dot" aria-hidden="true"></span>
+            <span>CASE SELECTION PROTOCOL // ACTIVE</span>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- Core Application Script -->
+  <script src="assets/js/app.js"></script>
+</body>
+</html>

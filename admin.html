@@ -1,0 +1,2804 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="TRACE × X — Admin Control Center. Official event control, live session monitoring, violation tracking, and evaluation results dashboard for TJS Engineering College.">
+  <meta name="theme-color" content="#050505">
+  <title>ADMIN CONTROL CENTER — TRACE × X | TJS Engineering College</title>
+
+  <!-- Google Fonts: Inter, Montserrat, JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Core Stylesheet -->
+  <link rel="stylesheet" href="assets/css/style.css?v=4.0">
+</head>
+<body class="admin-dashboard-body">
+
+  <!-- Atmospheric Background -->
+  <div class="bg-ambient-layer" aria-hidden="true">
+    <div class="ambient-glow-core"></div>
+    <div class="ambient-glow-top"></div>
+    <div class="forensic-grid"></div>
+    <div class="forensic-crosshair crosshair-tl">+ 00.12° N // ADMIN CONTROL</div>
+    <div class="forensic-crosshair crosshair-br">SYS.LEVEL // COMMAND CORE</div>
+  </div>
+
+  <div class="admin-app-layout">
+
+    <!-- =======================================================================
+         TOP DASHBOARD HEADER
+         ======================================================================= -->
+    <header class="admin-top-header">
+      <div class="admin-header-container">
+        
+        <!-- Left: Branding -->
+        <a href="index.html" class="brand-group" style="text-decoration: none; color: inherit;">
+          <div class="brand-logo-wrap" style="width: 38px; height: 38px;">
+            <img src="assets/images/fox-logo.png" alt="FOX Logo" class="fox-logo-img">
+          </div>
+          <div class="brand-text-column">
+            <div class="brand-title-row" style="font-size: 1.15rem;">
+              <span class="brand-title-text">TRACE</span>
+              <span class="brand-x-badge"><span class="brand-x-symbol">×</span></span>
+              <span class="brand-title-text">X</span>
+            </div>
+            <div class="brand-subtitle" style="font-size: 0.65rem;">CYBER CRIME INVESTIGATION</div>
+          </div>
+        </a>
+
+        <!-- Center: Title Badge -->
+        <div class="admin-header-title-box">
+          <span class="admin-super-badge">COMMAND CONSOLE</span>
+          <h1 class="admin-header-title">ADMIN CONTROL CENTER</h1>
+        </div>
+
+        <!-- Right: Admin Status & Logout -->
+        <div class="admin-header-right">
+          <div class="admin-live-badge" id="header-event-status-pill">
+            <span class="hud-pulse-dot" id="header-status-dot" aria-hidden="true"></span>
+            <span id="header-event-status-text">EVENT NOT STARTED</span>
+          </div>
+
+          <div class="admin-user-pill">
+            <span class="user-role-tag">SUPERADMIN</span>
+            <span class="user-name" id="admin-user-name">CSE FACULTY</span>
+          </div>
+
+          <button type="button" class="btn-admin-logout" id="btn-admin-logout" title="Sign out of Admin Session">
+            [ LOGOUT ]
+          </button>
+        </div>
+
+      </div>
+    </header>
+
+    <!-- =======================================================================
+         MAIN WORKSPACE: SIDEBAR + CONTENT PANELS
+         ======================================================================= -->
+    <div class="admin-workspace-grid">
+
+      <!-- -------------------------------------------------------------------
+           LEFT SIDEBAR NAVIGATION
+           ------------------------------------------------------------------- -->
+      <aside class="admin-sidebar" role="navigation" aria-label="Admin Navigation">
+        <div class="sidebar-protocol-tag">NAVIGATION // 11 PROTOCOLS</div>
+
+        <nav class="sidebar-nav-list" id="admin-sidebar-nav">
+          <button type="button" class="sidebar-nav-item active" data-tab="tab-overview">
+            <span class="nav-idx">01</span>
+            <span class="nav-label">OVERVIEW</span>
+          </button>
+
+          <button type="button" class="sidebar-nav-item" data-tab="tab-teams">
+            <span class="nav-idx">02</span>
+            <span class="nav-label">TEAM MANAGEMENT</span>
+          </button>
+
+          <button type="button" class="sidebar-nav-item" data-tab="tab-sessions">
+            <span class="nav-idx">03</span>
+            <span class="nav-label">LIVE SESSIONS</span>
+          </button>
+
+          <button type="button" class="sidebar-nav-item" data-tab="tab-round-control">
+            <span class="nav-idx">04</span>
+            <span class="nav-label">ROUND CONTROL</span>
+          </button>
+
+          <button type="button" class="sidebar-nav-item" data-tab="tab-violations">
+            <span class="nav-idx">05</span>
+            <span class="nav-label">VIOLATION MONITOR</span>
+          </button>
+
+          <button type="button" class="sidebar-nav-item" data-tab="tab-evaluation">
+            <span class="nav-idx">06</span>
+            <span class="nav-label">EVALUATION &amp; RESULTS</span>
+          </button>
+
+          <button type="button" class="sidebar-nav-item" data-tab="tab-surreal" id="nav-surreal">
+            <span class="nav-idx">07</span>
+            <span class="nav-label">SURREAL — FINAL SCORE</span>
+          </button>
+
+          <button type="button" class="sidebar-nav-item" data-tab="tab-final-report" id="nav-final-report">
+            <span class="nav-idx">08</span>
+            <span class="nav-label">FINAL REPORT MANAGEMENT</span>
+          </button>
+
+          <button type="button" class="sidebar-nav-item" data-tab="tab-cases-questions" id="nav-cases-questions">
+            <span class="nav-idx">09</span>
+            <span class="nav-label">CASE &amp; QUESTION MANAGEMENT</span>
+          </button>
+
+          <button type="button" class="sidebar-nav-item" data-tab="tab-backup-export" id="nav-backup-export">
+            <span class="nav-idx">10</span>
+            <span class="nav-label">BACKUP &amp; EXPORT</span>
+          </button>
+
+          <button type="button" class="sidebar-nav-item" data-tab="tab-settings">
+            <span class="nav-idx">11</span>
+            <span class="nav-label">EVENT SETTINGS</span>
+          </button>
+        </nav>
+
+        <!-- Sidebar Telemetry Footnote -->
+        <div class="sidebar-system-footer">
+          <div class="sys-k">DATABASE ENGINE</div>
+          <div class="sys-v" id="sidebar-db-status">SQLITE 3 // AUTHORITATIVE</div>
+          <div class="sys-k" style="margin-top: 6px;">DEPARTMENT</div>
+          <div class="sys-v">TJS CSE EVENT CELL</div>
+        </div>
+      </aside>
+
+      <!-- -------------------------------------------------------------------
+           MAIN DASHBOARD WORKSPACE AREA
+           ------------------------------------------------------------------- -->
+      <main class="admin-main-panel" id="admin-main-panel">
+
+        <!-- =================================================================
+             TAB 1: OVERVIEW DASHBOARD & EVENT CONTROL
+             ================================================================= -->
+        <section class="admin-tab-content active" id="tab-overview">
+          
+          <div class="section-title-row">
+            <div>
+              <div class="tech-sub-tag">SYSTEM OVERVIEW // LIVE TELEMETRY</div>
+              <h2 class="section-main-heading">EVENT CONTROL CENTER</h2>
+            </div>
+            <div class="db-source-tag" id="overview-source-badge">
+              ● LIVE DATABASE DATA
+            </div>
+          </div>
+
+          <!-- Summary Cards (Registered Teams, Active Participants, Completed, Violations) -->
+          <div class="overview-cards-grid">
+            <div class="overview-card">
+              <div class="ov-k">REGISTERED TEAMS</div>
+              <div class="ov-v" id="ov-reg-teams">--</div>
+              <div class="ov-desc">Teams enrolled via Registration Portal</div>
+            </div>
+
+            <div class="overview-card highlight-green">
+              <div class="ov-k">ACTIVE PARTICIPANTS</div>
+              <div class="ov-v" id="ov-active-participants" style="color: #00E676;">--</div>
+              <div class="ov-desc">Currently inside investigation workstation</div>
+            </div>
+
+            <div class="overview-card highlight-red">
+              <div class="ov-k">COMPLETED INVESTIGATIONS</div>
+              <div class="ov-v" id="ov-completed-investigations" style="color: var(--color-crimson-bright);">--</div>
+              <div class="ov-desc">30 questions dossiers submitted &amp; sealed</div>
+            </div>
+
+            <div class="overview-card">
+              <div class="ov-k">ACTIVE VIOLATIONS</div>
+              <div class="ov-v" id="ov-active-violations" style="color: var(--color-amber-bright);">--</div>
+              <div class="ov-desc">Tab/blur/fullscreen incidents logged</div>
+            </div>
+          </div>
+
+          <!-- Dedicated Event Control Panel -->
+          <div class="event-control-box">
+            <div class="ec-header">
+              <div class="ec-title-group">
+                <span class="ec-tag">EXECUTIVE EVENT CONTROL</span>
+                <h3 class="ec-heading">GLOBAL EVENT STATE CONTROLLER</h3>
+              </div>
+              <div class="ec-status-badge">
+                <span class="ec-status-label">CURRENT STATUS:</span>
+                <span class="ec-status-val" id="ec-current-status-display">EVENT NOT STARTED</span>
+              </div>
+            </div>
+
+            <div class="ec-meta-strip">
+              <div class="ec-meta-item">
+                <span class="m-k">CURRENT PHASE:</span>
+                <span class="m-v" id="ec-phase-display">REGISTRATION &amp; STANDBY</span>
+              </div>
+              <div class="ec-meta-item">
+                <span class="m-k">ENROLLED TEAMS:</span>
+                <span class="m-v" id="ec-teams-count-display">-- TEAMS</span>
+              </div>
+              <div class="ec-meta-item">
+                <span class="m-k">AUTHORITY:</span>
+                <span class="m-v" style="color: #00E676;">AUTHORIZED ADMINISTRATOR</span>
+              </div>
+            </div>
+
+            <!-- Controls: START, PAUSE, RESUME, END -->
+            <div class="ec-actions-row">
+              <button type="button" class="btn-ec btn-ec-start" id="btn-ec-start">
+                <span class="btn-icon">▶</span>
+                <span>[ START EVENT ]</span>
+              </button>
+
+              <button type="button" class="btn-ec btn-ec-pause" id="btn-ec-pause" disabled>
+                <span class="btn-icon">⏸</span>
+                <span>[ PAUSE EVENT ]</span>
+              </button>
+
+              <button type="button" class="btn-ec btn-ec-resume" id="btn-ec-resume" disabled>
+                <span class="btn-icon">⏯</span>
+                <span>[ RESUME EVENT ]</span>
+              </button>
+
+              <button type="button" class="btn-ec btn-ec-end" id="btn-ec-end" disabled>
+                <span class="btn-icon">⏹</span>
+                <span>[ END EVENT ]</span>
+              </button>
+
+              <button type="button" class="btn-ec btn-ec-reset" id="btn-ec-reset" style="border-color: rgba(255,255,255,0.25); color: #B0B0B8;">
+                <span class="btn-icon">↺</span>
+                <span>[ RESET EVENT ]</span>
+              </button>
+            </div>
+          </div>
+
+        </section>
+
+        <!-- =================================================================
+             TAB 2: TEAM MANAGEMENT
+             ================================================================= -->
+        <section class="admin-tab-content" id="tab-teams">
+          
+          <div class="section-title-row">
+            <div>
+              <div class="tech-sub-tag">DATABASE REGISTRY // ENROLLED CANDIDATES</div>
+              <h2 class="section-main-heading">TEAM MANAGEMENT</h2>
+            </div>
+            <button type="button" class="btn-refresh" id="btn-refresh-teams">⟳ REFRESH TEAMS</button>
+          </div>
+
+          <!-- Search & Filter Controls -->
+          <div class="table-filter-bar">
+            <div class="search-input-wrap">
+              <span class="search-icon">🔍</span>
+              <input type="text" id="team-search-input" class="admin-search-field" placeholder="Search by Team ID, Team Name, or College...">
+            </div>
+
+            <div class="filter-select-wrap">
+              <label for="team-status-filter" class="filter-label">STATUS:</label>
+              <select id="team-status-filter" class="admin-filter-dropdown">
+                <option value="ALL">ALL STATUSES</option>
+                <option value="Registered">Registered</option>
+                <option value="Logged in">Logged in</option>
+                <option value="Investigating">Investigating</option>
+                <option value="Submitted">Submitted</option>
+                <option value="Terminated">Terminated</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Teams Data Table -->
+          <div class="admin-table-container">
+            <table class="admin-data-table" id="teams-table">
+              <thead>
+                <tr>
+                  <th>TEAM ID</th>
+                  <th>TEAM NAME</th>
+                  <th>COLLEGE NAME</th>
+                  <th>DEPARTMENT</th>
+                  <th>TEAM SIZE</th>
+                  <th>SECURITY PIN</th>
+                  <th>CURRENT STATUS</th>
+                  <th style="text-align: right;">ACTIONS</th>
+                </tr>
+              </thead>
+              <tbody id="teams-table-body">
+                <!-- Dynamically populated from /api/admin/teams -->
+                <tr>
+                  <td colspan="8" style="text-align: center; color: var(--color-text-muted);">Loading registered teams...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+        </section>
+
+        <!-- =================================================================
+             TAB 3: LIVE SESSIONS MONITORING
+             ================================================================= -->
+        <section class="admin-tab-content" id="tab-sessions">
+          
+          <div class="section-title-row">
+            <div>
+              <div class="tech-sub-tag">REAL-TIME WORKSTATION TELEMETRY</div>
+              <h2 class="section-main-heading">LIVE SESSIONS MONITOR</h2>
+            </div>
+            <button type="button" class="btn-refresh" id="btn-refresh-sessions">⟳ REFRESH SESSIONS</button>
+          </div>
+
+          <div class="admin-table-container">
+            <table class="admin-data-table" id="sessions-table">
+              <thead>
+                <tr>
+                  <th>TEAM ID</th>
+                  <th>TEAM NAME</th>
+                  <th>SELECTED CASE</th>
+                  <th>ROUND</th>
+                  <th>QUESTION</th>
+                  <th>TIME REMAINING</th>
+                  <th>CONNECTION</th>
+                  <th>SESSION STATUS</th>
+                </tr>
+              </thead>
+              <tbody id="sessions-table-body">
+                <!-- Dynamically populated from /api/admin/sessions -->
+                <tr>
+                  <td colspan="8" style="text-align: center; color: var(--color-text-muted);">Loading active workstation sessions...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+        </section>
+
+        <!-- =================================================================
+             TAB 4: ROUND CONTROL
+             ================================================================= -->
+        <section class="admin-tab-content" id="tab-round-control">
+          
+          <div class="section-title-row">
+            <div>
+              <div class="tech-sub-tag">INVESTIGATION TIMING &amp; PHASING</div>
+              <h2 class="section-main-heading">ROUND CONTROL &amp; PHASING</h2>
+            </div>
+          </div>
+
+          <!-- 3 Phasing Protocol Cards (R1: 15 Qs / 10m, R2: 15 Qs / 10m, Eval: 5m = 30 Qs Total) -->
+          <div class="round-cards-grid">
+            
+            <div class="round-phase-card active" id="card-phase-r1">
+              <div class="rc-header">
+                <span class="rc-tag">PHASE 01</span>
+                <span class="rc-status-pill active" id="rc-status-pill-1">ACTIVE</span>
+              </div>
+              <h3 class="rc-title">ROUND 1 INVESTIGATION</h3>
+              <div class="rc-stat-row">
+                <div class="rc-stat-item">
+                  <span class="k">QUESTIONS:</span>
+                  <span class="v">15 QUESTIONS</span>
+                </div>
+                <div class="rc-stat-item">
+                  <span class="k">DURATION:</span>
+                  <span class="v">10 MINUTES</span>
+                </div>
+              </div>
+              <p class="rc-desc">Beginner to moderate digital forensic evidence questions. 2-3 tricky forensic reasoning challenges.</p>
+              <button type="button" class="btn-round-action" id="btn-set-round-1">
+                [ SET ACTIVE: ROUND 1 ]
+              </button>
+            </div>
+
+            <div class="round-phase-card" id="card-phase-r2">
+              <div class="rc-header">
+                <span class="rc-tag">PHASE 02</span>
+                <span class="rc-status-pill pending" id="rc-status-pill-2">PENDING</span>
+              </div>
+              <h3 class="rc-title">ROUND 2 INVESTIGATION</h3>
+              <div class="rc-stat-row">
+                <div class="rc-stat-item">
+                  <span class="k">QUESTIONS:</span>
+                  <span class="v">15 QUESTIONS</span>
+                </div>
+                <div class="rc-stat-item">
+                  <span class="k">DURATION:</span>
+                  <span class="v">10 MINUTES</span>
+                </div>
+              </div>
+              <p class="rc-desc">Medium to deep forensic reasoning. Cryptographic hashes, server packet headers, and threat indicator logs.</p>
+              <button type="button" class="btn-round-action" id="btn-set-round-2">
+                [ ADVANCE TO ROUND 2 ]
+              </button>
+            </div>
+
+            <div class="round-phase-card" id="card-phase-eval">
+              <div class="rc-header">
+                <span class="rc-tag">PHASE 03</span>
+                <span class="rc-status-pill pending" id="rc-status-pill-3">QUEUED</span>
+              </div>
+              <h3 class="rc-title">EVALUATION SCREEN</h3>
+              <div class="rc-stat-row">
+                <div class="rc-stat-item">
+                  <span class="k">TOTAL EVALUATED:</span>
+                  <span class="v">30 QUESTIONS</span>
+                </div>
+                <div class="rc-stat-item">
+                  <span class="k">DURATION:</span>
+                  <span class="v">05 MINUTES</span>
+                </div>
+              </div>
+              <p class="rc-desc">4-stage digital forensic automated evaluation pipeline. Participant scores strictly protected and confidential.</p>
+              <button type="button" class="btn-round-action" id="btn-set-round-eval">
+                [ INITIATE 5-MIN EVALUATION ]
+              </button>
+            </div>
+
+          </div>
+
+          <div class="round-summary-note">
+            <strong>COMPLIANCE NOTICE:</strong> The authoritative event timer is validated server-side. Participant countdowns are strictly persistent across tab switches and refreshes. Opening dashboard views will not reset candidate clocks.
+          </div>
+
+        </section>
+
+        <!-- =================================================================
+             TAB 5: VIOLATION MONITOR
+             ================================================================= -->
+        <section class="admin-tab-content" id="tab-violations">
+          
+          <div class="section-title-row">
+            <div>
+              <div class="tech-sub-tag">EVENT INTEGRITY &amp; ANTI-CHEATING LOGS</div>
+              <h2 class="section-main-heading">VIOLATION MONITOR</h2>
+            </div>
+            <button type="button" class="btn-refresh" id="btn-refresh-violations">⟳ REFRESH LOGS</button>
+          </div>
+
+          <!-- Rules Summary Banner -->
+          <div class="violations-rule-banner">
+            <div class="rule-item">
+              <span class="rule-badge">1ST VIOLATION</span>
+              <span>Participant Warning Alert displayed on screen.</span>
+            </div>
+            <div class="rule-item">
+              <span class="rule-badge" style="border-color: #FF2438; color: #FF2438;">2ND VIOLATION</span>
+              <span>Critical Warning: Final alert before automated termination.</span>
+            </div>
+            <div class="rule-item">
+              <span class="rule-badge" style="background: rgba(229, 9, 36, 0.2); border-color: #E50924; color: #FFFFFF;">3RD VIOLATION</span>
+              <span>Immediate round termination and disqualification recorded.</span>
+            </div>
+          </div>
+
+          <!-- Violations Log Table -->
+          <div class="admin-table-container">
+            <table class="admin-data-table" id="violations-table">
+              <thead>
+                <tr>
+                  <th>INCIDENT ID</th>
+                  <th>TEAM ID</th>
+                  <th>TEAM NAME</th>
+                  <th>VIOLATION TYPE</th>
+                  <th>TIMESTAMP (UTC)</th>
+                  <th>COUNT</th>
+                  <th>ACTION TAKEN</th>
+                </tr>
+              </thead>
+              <tbody id="violations-table-body">
+                <!-- Dynamically populated from /api/admin/violations -->
+                <tr>
+                  <td colspan="7" style="text-align: center; color: var(--color-text-muted);">Loading security violation audit trail...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+        </section>
+
+        <!-- =================================================================
+             TAB 6: EVALUATION & RESULTS
+             ================================================================= -->
+        <section class="admin-tab-content" id="tab-evaluation">
+          
+          <div class="section-title-row">
+            <div>
+              <div class="tech-sub-tag">30-QUESTION SCORING, ANSWER REVIEW &amp; DECISION MATRIX</div>
+              <h2 class="section-main-heading">EVALUATION &amp; RESULTS PORTAL</h2>
+            </div>
+            <div class="eval-btn-group">
+              <button type="button" class="btn-action-primary" id="btn-eval-review-results">[ REVIEW RESULTS ]</button>
+              <button type="button" class="btn-action-primary" id="btn-finalize-results">[ FINALIZE RESULTS ]</button>
+              <button type="button" class="btn-action-green" id="btn-release-results">✔ [ PUBLISH RESULTS ]</button>
+              <button type="button" class="btn-action-muted" id="btn-withhold-results">✖ [ WITHHOLD RESULTS ]</button>
+            </div>
+          </div>
+
+          <!-- Publication Status Notice -->
+          <div class="eval-pub-status-bar" id="eval-pub-bar" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+            <div style="display: flex; gap: 1.5rem; align-items: center;">
+              <div>
+                <span class="pub-k">PARTICIPANT VISIBILITY:</span>
+                <span class="pub-v" id="pub-status-text">RESULTS UNDER REVIEW (UNPUBLISHED)</span>
+              </div>
+              <div style="border-left: 1px solid rgba(255,255,255,0.12); padding-left: 1.5rem;">
+                <span class="pub-k">FINALIZATION STATE:</span>
+                <span class="pub-v" id="finalization-status-text" style="color: var(--color-amber-bright);">NOT FINALIZED</span>
+              </div>
+            </div>
+            <div>
+              <span class="pub-k">EVALUATION ENGINE:</span>
+              <span class="pub-v" style="color: #00E676;">AUTHORITATIVE 30-QUESTION MATRIX</span>
+            </div>
+          </div>
+
+          <!-- =================================================================
+               SUBSECTION 1: ANSWER REVIEW
+               ================================================================= -->
+          <div class="eval-subsection" id="section-answer-review" style="margin-top: 1.8rem;">
+            <div class="subsection-header-row" style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.8rem;">
+              <div>
+                <div class="tech-sub-tag" style="color: var(--color-crimson-bright);">EVALUATION &amp; RESULTS → ANSWER REVIEW</div>
+                <h3 style="font-family: var(--font-heading); font-size: 1.15rem; font-weight: 800; color: #FFFFFF; margin: 2px 0 0 0;">
+                  SUBMITTED ANSWERS &amp; EVALUATION AUDIT
+                </h3>
+                <p style="font-size: 0.8rem; color: var(--color-text-secondary); margin: 3px 0 0 0;">
+                  Review participant answers across Round 1 (15 questions) and Round 2 (15 questions) against protected case answer keys.
+                </p>
+              </div>
+
+              <!-- Search Bar -->
+              <div class="eval-search-box" style="display: flex; align-items: center; gap: 0.5rem;">
+                <input type="text" id="answer-review-search-input" class="form-input" placeholder="🔍 Search Team ID, Name, or Case..." style="min-width: 280px; padding: 0.55rem 0.9rem; font-size: 0.82rem;">
+                <button type="button" class="btn-refresh" id="btn-refresh-evaluations" title="Reload Evaluation Records">⟳ REFRESH</button>
+              </div>
+            </div>
+
+            <!-- Searchable Answer Review Table -->
+            <div class="admin-table-container">
+              <table class="admin-data-table" id="answer-review-table">
+                <thead>
+                  <tr>
+                    <th>TEAM ID</th>
+                    <th>TEAM NAME</th>
+                    <th>SELECTED CASE</th>
+                    <th>ROUND 1 STATUS</th>
+                    <th>ROUND 2 STATUS</th>
+                    <th>EVALUATION STATUS</th>
+                    <th>SYSTEM-CALCULATED TOTAL</th>
+                    <th>RESULT PUBLICATION STATUS</th>
+                    <th style="text-align: right;">ACTION</th>
+                  </tr>
+                </thead>
+                <tbody id="answer-review-table-body">
+                  <tr>
+                    <td colspan="9" style="text-align: center; color: var(--color-text-muted);">Loading submitted answer records...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- =================================================================
+               SUBSECTION 2: FINAL WINNER REVIEW
+               ================================================================= -->
+          <div class="eval-subsection" id="section-final-winner-review" style="margin-top: 2.4rem;">
+            <div class="subsection-header-row" style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 1.2rem; flex-wrap: wrap; gap: 0.8rem;">
+              <div>
+                <div class="tech-sub-tag" style="color: var(--color-crimson-bright);">EVALUATION &amp; RESULTS → FINAL WINNER REVIEW</div>
+                <h3 style="font-family: var(--font-heading); font-size: 1.15rem; font-weight: 800; color: #FFFFFF; margin: 2px 0 0 0;">
+                  FINAL WINNER REVIEW &amp; AUTHORIZED DECISIONS
+                </h3>
+                <p style="font-size: 0.8rem; color: var(--color-text-secondary); margin: 3px 0 0 0;">
+                  Authoritative team standing comparison matrix. Review system-calculated winner vs officially declared decision prior to final publication.
+                </p>
+              </div>
+
+              <div>
+                <button type="button" class="btn-action-primary" id="btn-trigger-winner-override" style="font-size: 0.78rem; padding: 0.6rem 1.2rem;">
+                  ⚖ [ REVIEW FINAL DECISION / OVERRIDE ]
+                </button>
+              </div>
+            </div>
+
+            <!-- Dual Winner Highlight Cards: STRICT SEPARATION -->
+            <div class="winner-review-cards-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin-bottom: 1.5rem;">
+              
+              <!-- Card 1: System-Calculated Winner -->
+              <div class="winner-card sys-winner-card" style="background: #08080A; border: 1.5px solid rgba(0, 230, 118, 0.45); border-radius: 6px; padding: 1.2rem 1.4rem; box-shadow: 0 0 25px rgba(0, 230, 118, 0.1);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem;">
+                  <span style="font-family: var(--font-mono); font-size: 0.7rem; font-weight: 800; color: #00E676; letter-spacing: 0.1em;">
+                    1. SYSTEM-CALCULATED WINNER
+                  </span>
+                  <span class="status-pill badge-qualified" style="font-size: 0.66rem;">RANK #1 BY RULES</span>
+                </div>
+                <p style="font-size: 0.74rem; color: var(--color-text-muted); margin: 0 0 0.8rem 0;">
+                  The team ranked highest strictly according to official evaluation rules (30-question score and tiebreaker telemetry).
+                </p>
+                <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); padding: 0.8rem; border-radius: 4px; display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem;">
+                  <div>
+                    <div style="font-family: var(--font-mono); font-size: 0.62rem; color: var(--color-text-muted);">TEAM ID &amp; NAME:</div>
+                    <div style="font-family: var(--font-mono); font-weight: 800; font-size: 0.95rem; color: #FFFFFF;" id="sys-winner-team-name">--</div>
+                    <div style="font-size: 0.72rem; color: #A0A0A0;" id="sys-winner-team-id">--</div>
+                  </div>
+                  <div>
+                    <div style="font-family: var(--font-mono); font-size: 0.62rem; color: var(--color-text-muted);">CALCULATED SCORE:</div>
+                    <div style="font-family: var(--font-mono); font-weight: 900; font-size: 1.15rem; color: #00E676;" id="sys-winner-score">-- / 30</div>
+                    <div style="font-size: 0.72rem; color: #A0A0A0;" id="sys-winner-case">--</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Card 2: Officially Declared Winner -->
+              <div class="winner-card declared-winner-card" style="background: #08080A; border: 1.5px solid var(--color-crimson); border-radius: 6px; padding: 1.2rem 1.4rem; box-shadow: 0 0 25px rgba(229, 9, 36, 0.15);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem;">
+                  <span style="font-family: var(--font-mono); font-size: 0.7rem; font-weight: 800; color: var(--color-crimson-bright); letter-spacing: 0.1em;">
+                    2. OFFICIALLY DECLARED WINNER
+                  </span>
+                  <span class="status-pill" id="declared-winner-badge" style="font-size: 0.66rem; background: rgba(229, 9, 36, 0.2); border: 1px solid var(--color-crimson); color: #FFFFFF;">
+                    SYSTEM DEFAULT
+                  </span>
+                </div>
+                <p style="font-size: 0.74rem; color: var(--color-text-muted); margin: 0 0 0.8rem 0;">
+                  The team approved through the event's authorized final-decision process (faculty committee / judges panel).
+                </p>
+                <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); padding: 0.8rem; border-radius: 4px; display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem;">
+                  <div>
+                    <div style="font-family: var(--font-mono); font-size: 0.62rem; color: var(--color-text-muted);">OFFICIAL CHAMPION:</div>
+                    <div style="font-family: var(--font-mono); font-weight: 800; font-size: 0.95rem; color: #FFFFFF;" id="declared-winner-team-name">--</div>
+                    <div style="font-size: 0.72rem; color: #A0A0A0;" id="declared-winner-team-id">--</div>
+                  </div>
+                  <div>
+                    <div style="font-family: var(--font-mono); font-size: 0.62rem; color: var(--color-text-muted);">DECISION STATUS:</div>
+                    <div style="font-family: var(--font-mono); font-weight: 700; font-size: 0.85rem; color: #FFFFFF;" id="declared-winner-decision-type">SYSTEM DEFAULT</div>
+                    <div style="font-size: 0.7rem; color: var(--color-crimson-bright); max-height: 2.2em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" id="declared-winner-reason-display" title="">No manual override applied</div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Team Comparison Table -->
+            <div class="admin-table-container">
+              <table class="admin-data-table" id="winner-comparison-table">
+                <thead>
+                  <tr>
+                    <th>TEAM ID</th>
+                    <th>TEAM NAME</th>
+                    <th>SELECTED CASE</th>
+                    <th>ROUND 1 RESULT</th>
+                    <th>ROUND 2 RESULT</th>
+                    <th>SYSTEM TOTAL</th>
+                    <th>SYSTEM RANK</th>
+                    <th>VIOLATION REVIEW</th>
+                    <th>CURRENT FINAL STATUS</th>
+                    <th style="text-align: right;">ACTION</th>
+                  </tr>
+                </thead>
+                <tbody id="winner-comparison-table-body">
+                  <tr>
+                    <td colspan="10" style="text-align: center; color: var(--color-text-muted);">Loading team winner comparison data...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+          </div>
+
+        </section>
+
+        <!-- =================================================================
+             TAB 7: SURREAL — FINAL SCORE MANAGEMENT
+             ================================================================= -->
+        <section class="admin-tab-content" id="tab-surreal" role="tabpanel" aria-labelledby="nav-surreal">
+          
+          <div class="section-title-row">
+            <div>
+              <div class="tech-sub-tag">SCORE ADMINISTRATION // AUTHORITATIVE OVERRIDE PROTOCOL</div>
+              <h2 class="section-main-heading">SURREAL — FINAL SCORE MANAGEMENT</h2>
+              <p class="section-subtitle-text" style="color: var(--color-text-secondary); font-size: 0.88rem; margin-top: 4px;">
+                Review, audit, and adjust authoritative participant final scores. Original calculated scores remain permanently preserved.
+              </p>
+            </div>
+            <div class="db-source-tag" id="surreal-source-badge">
+              ● AUTHORITATIVE SCORE REPOSITORY
+            </div>
+          </div>
+
+          <!-- Summary Metric Cards -->
+          <div class="overview-cards-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 1.75rem;">
+            <div class="overview-card">
+              <div class="ov-k">TOTAL PARTICIPANTS</div>
+              <div class="ov-v" id="surreal-stat-total">--</div>
+              <div class="ov-desc">Enrolled teams across symposium</div>
+            </div>
+            <div class="overview-card highlight-green">
+              <div class="ov-k">SCORES RECORDED</div>
+              <div class="ov-v" id="surreal-stat-scored" style="color: #10B981;">--</div>
+              <div class="ov-desc">Evaluated participant dossiers</div>
+            </div>
+            <div class="overview-card highlight-green">
+              <div class="ov-k">EVALUATION PIPELINE</div>
+              <div class="ov-v" id="surreal-stat-adjusted" style="color: #10B981;">SYNCHRONIZED</div>
+              <div class="ov-desc">Authoritative scoring active</div>
+            </div>
+            <div class="overview-card">
+              <div class="ov-k">SCORING CEILING</div>
+              <div class="ov-v">30 <span style="font-size: 1rem; color: var(--color-text-muted);">PTS</span></div>
+              <div class="ov-desc">Round 1 (15) + Round 2 (15)</div>
+            </div>
+          </div>
+
+          <!-- Search & Filter Controls Bar -->
+          <div class="table-filter-bar">
+            <div class="search-input-wrap">
+              <span class="search-icon" aria-hidden="true">🔍</span>
+              <input type="text" class="admin-search-field" id="surreal-search-input" placeholder="Search by Team ID or Team Name..." autocomplete="off">
+            </div>
+
+            <div class="filter-select-wrap">
+              <label for="surreal-status-filter" class="filter-label">STATUS:</label>
+              <select class="admin-filter-dropdown" id="surreal-status-filter">
+                <option value="ALL">ALL STATUSES</option>
+                <option value="QUALIFIED">QUALIFIED</option>
+                <option value="NOT QUALIFIED">NOT QUALIFIED</option>
+                <option value="DISQUALIFIED">DISQUALIFIED</option>
+                <option value="RESULTS UNDER REVIEW">RESULTS UNDER REVIEW</option>
+              </select>
+
+              <button type="button" class="btn-refresh" id="btn-refresh-surreal" title="Refresh participant scores">
+                ↻ REFRESH
+              </button>
+            </div>
+          </div>
+
+          <!-- Searchable Participants Scores Table -->
+          <div class="admin-table-container">
+            <table class="admin-data-table" id="surreal-scores-table">
+              <thead>
+                <tr>
+                  <th>TEAM ID</th>
+                  <th>TEAM NAME</th>
+                  <th>AFFILIATION</th>
+                  <th style="text-align: center;">CALCULATED</th>
+                  <th style="text-align: center; color: var(--color-crimson);">FINAL SCORE</th>
+                  <th style="text-align: center;">MAX</th>
+                  <th style="text-align: center;">STATUS</th>
+                  <th>LAST MODIFIED</th>
+                  <th style="text-align: right;">ACTIONS</th>
+                </tr>
+              </thead>
+              <tbody id="surreal-table-body">
+                <tr>
+                  <td colspan="9" style="text-align: center; padding: 2rem; color: var(--color-text-muted);">
+                    Loading participant scoring dossiers...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+        </section>
+
+        <!-- =================================================================
+             TAB 8: FINAL REPORT MANAGEMENT
+             ================================================================= -->
+        <section class="admin-tab-content" id="tab-final-report">
+          
+          <!-- Top Section Title & Status Row -->
+          <div class="section-title-row">
+            <div>
+              <div class="tech-sub-tag">OFFICIAL EVENT DOCUMENTATION // EXECUTIVE SUMMARY</div>
+              <h2 class="section-main-heading">FINAL EVENT REPORT</h2>
+              <p class="section-subtitle-text" style="color: var(--color-text-secondary); font-size: 0.88rem; margin-top: 4px;">
+                Create, review and publish the official TRACE × X Cyber Crime Investigation event report.
+              </p>
+            </div>
+            
+            <div class="report-meta-box">
+              <div class="report-status-wrap">
+                <span class="meta-label">REPORT STATUS:</span>
+                <span class="report-status-badge status-draft" id="report-status-badge">DRAFT</span>
+              </div>
+              <div class="report-timestamp-line">
+                <span id="report-version-badge" class="report-version-pill">v1.0</span>
+                <span id="report-last-updated-text">LAST SAVED: --</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Action Buttons Bar -->
+          <div class="report-actions-toolbar" id="report-actions-toolbar">
+            <div class="toolbar-left-actions">
+              <button type="button" class="btn-action-primary" id="btn-create-report" style="display: none;">
+                [ CREATE NEW REPORT ]
+              </button>
+              <button type="button" class="btn-action-primary" id="btn-edit-report">
+                [ EDIT REPORT ]
+              </button>
+              <button type="button" class="btn-action-muted" id="btn-preview-report">
+                [ PREVIEW REPORT ]
+              </button>
+              <button type="button" class="btn-action-dark" id="btn-export-pdf">
+                🖨 [ EXPORT PDF ]
+              </button>
+              <button type="button" class="btn-action-green" id="btn-publish-report">
+                ✔ [ PUBLISH REPORT ]
+              </button>
+              <button type="button" class="btn-action-primary" id="btn-new-revision" style="display: none;">
+                + [ CREATE NEW REVISION ]
+              </button>
+            </div>
+
+            <div class="toolbar-right-actions">
+              <button type="button" class="btn-action-dark" id="btn-version-history">
+                📜 [ VIEW VERSION HISTORY ]
+              </button>
+              <button type="button" class="btn-action-primary" id="btn-save-draft">
+                💾 [ SAVE DRAFT ]
+              </button>
+              <button type="button" class="btn-action-muted" id="btn-discard-changes">
+                ✖ [ DISCARD CHANGES ]
+              </button>
+            </div>
+          </div>
+
+          <!-- Unsaved changes warning banner -->
+          <div class="report-alert-banner alert-unsaved" id="report-unsaved-banner" style="display: none;">
+            <span>⚠ YOU HAVE UNSAVED DRAFT MODIFICATIONS. Click <strong>[ SAVE DRAFT ]</strong> to store your changes in SQLite.</span>
+          </div>
+
+          <!-- Published locked banner -->
+          <div class="report-alert-banner alert-published" id="report-published-banner" style="display: none;">
+            <span>🔒 THIS REPORT IS OFFICIALLY PUBLISHED. Ordinary edits are locked to protect historical integrity. To draft revisions, click <strong>[ CREATE NEW REVISION ]</strong>.</span>
+          </div>
+
+          <!-- VIEW A: EMPTY STATE (Shown when no report exists) -->
+          <div class="report-empty-state-card" id="report-empty-state" style="display: none;">
+            <div class="empty-state-icon" aria-hidden="true">📄</div>
+            <h3 class="empty-state-title">NO FINAL EVENT REPORT CREATED</h3>
+            <p class="empty-state-desc">
+              No official event report has been initialized yet. You can create a new authoritative report compiled automatically from live registration rosters, participant numbers, and evaluated investigation results.
+            </p>
+            <button type="button" class="btn-action-primary btn-large-cta" id="btn-empty-create-report">
+              [ CREATE NEW REPORT ]
+            </button>
+          </div>
+
+          <!-- VIEW B: REPORT EDITOR VIEW -->
+          <div class="report-editor-container" id="report-editor-view">
+            <form id="report-editor-form">
+
+              <!-- SECTION A: EVENT DETAILS -->
+              <div class="report-section-card">
+                <div class="section-card-header">
+                  <span class="sec-badge">SECTION A</span>
+                  <h3 class="sec-title">EVENT DETAILS</h3>
+                </div>
+                <div class="form-grid-2col">
+                  <div class="form-field-group">
+                    <label for="rep-event-title" class="field-label">EVENT TITLE</label>
+                    <input type="text" id="rep-event-title" class="form-input" required>
+                  </div>
+                  <div class="form-field-group">
+                    <label for="rep-college-name" class="field-label">COLLEGE NAME</label>
+                    <input type="text" id="rep-college-name" class="form-input" required>
+                  </div>
+                  <div class="form-field-group">
+                    <label for="rep-dept-name" class="field-label">DEPARTMENT NAME</label>
+                    <input type="text" id="rep-dept-name" class="form-input" required>
+                  </div>
+                  <div class="form-field-group">
+                    <label for="rep-event-date" class="field-label">EVENT DATE</label>
+                    <input type="text" id="rep-event-date" class="form-input" required>
+                  </div>
+                  <div class="form-field-group">
+                    <label for="rep-event-venue" class="field-label">EVENT VENUE</label>
+                    <input type="text" id="rep-event-venue" class="form-input" required>
+                  </div>
+                  <div class="form-field-group">
+                    <label for="rep-organizer" class="field-label">EVENT ORGANIZER</label>
+                    <input type="text" id="rep-organizer" class="form-input" required>
+                  </div>
+                  <div class="form-field-group full-width">
+                    <label for="rep-coordinators" class="field-label">EVENT COORDINATORS</label>
+                    <input type="text" id="rep-coordinators" class="form-input" required>
+                  </div>
+                </div>
+              </div>
+
+              <!-- SECTION B: EVENT OVERVIEW (RICH TEXT) -->
+              <div class="report-section-card">
+                <div class="section-card-header">
+                  <span class="sec-badge">SECTION B</span>
+                  <h3 class="sec-title">EVENT OVERVIEW</h3>
+                </div>
+
+                <div class="rich-editor-group">
+                  <label class="field-label">1. INTRODUCTION</label>
+                  <div class="rich-toolbar" data-target="rep-intro-editor">
+                    <button type="button" class="btn-tb" data-cmd="bold" title="Bold"><strong>B</strong></button>
+                    <button type="button" class="btn-tb" data-cmd="italic" title="Italic"><em>I</em></button>
+                    <button type="button" class="btn-tb" data-cmd="formatBlock" data-val="h3">H3</button>
+                    <button type="button" class="btn-tb" data-cmd="formatBlock" data-val="p">P</button>
+                    <button type="button" class="btn-tb" data-cmd="insertUnorderedList" title="Bulleted List">• List</button>
+                    <button type="button" class="btn-tb" data-cmd="insertOrderedList" title="Numbered List">1. List</button>
+                    <button type="button" class="btn-tb" data-cmd="undo" title="Undo">↶ Undo</button>
+                    <button type="button" class="btn-tb" data-cmd="redo" title="Redo">↷ Redo</button>
+                  </div>
+                  <div class="rich-content-editable" id="rep-intro-editor" contenteditable="true"></div>
+                </div>
+
+                <div class="rich-editor-group">
+                  <label class="field-label">2. EVENT OVERVIEW</label>
+                  <div class="rich-toolbar" data-target="rep-overview-editor">
+                    <button type="button" class="btn-tb" data-cmd="bold"><strong>B</strong></button>
+                    <button type="button" class="btn-tb" data-cmd="italic"><em>I</em></button>
+                    <button type="button" class="btn-tb" data-cmd="formatBlock" data-val="h3">H3</button>
+                    <button type="button" class="btn-tb" data-cmd="formatBlock" data-val="p">P</button>
+                    <button type="button" class="btn-tb" data-cmd="insertUnorderedList">• List</button>
+                    <button type="button" class="btn-tb" data-cmd="insertOrderedList">1. List</button>
+                    <button type="button" class="btn-tb" data-cmd="undo">↶</button>
+                    <button type="button" class="btn-tb" data-cmd="redo">↷</button>
+                  </div>
+                  <div class="rich-content-editable" id="rep-overview-editor" contenteditable="true"></div>
+                </div>
+
+                <div class="rich-editor-group">
+                  <label class="field-label">3. OBJECTIVES</label>
+                  <div class="rich-toolbar" data-target="rep-objectives-editor">
+                    <button type="button" class="btn-tb" data-cmd="bold"><strong>B</strong></button>
+                    <button type="button" class="btn-tb" data-cmd="italic"><em>I</em></button>
+                    <button type="button" class="btn-tb" data-cmd="formatBlock" data-val="h3">H3</button>
+                    <button type="button" class="btn-tb" data-cmd="formatBlock" data-val="p">P</button>
+                    <button type="button" class="btn-tb" data-cmd="insertUnorderedList">• List</button>
+                    <button type="button" class="btn-tb" data-cmd="insertOrderedList">1. List</button>
+                    <button type="button" class="btn-tb" data-cmd="undo">↶</button>
+                    <button type="button" class="btn-tb" data-cmd="redo">↷</button>
+                  </div>
+                  <div class="rich-content-editable" id="rep-objectives-editor" contenteditable="true"></div>
+                </div>
+
+                <div class="rich-editor-group">
+                  <label class="field-label">4. PURPOSE OF THE EVENT</label>
+                  <div class="rich-toolbar" data-target="rep-purpose-editor">
+                    <button type="button" class="btn-tb" data-cmd="bold"><strong>B</strong></button>
+                    <button type="button" class="btn-tb" data-cmd="italic"><em>I</em></button>
+                    <button type="button" class="btn-tb" data-cmd="formatBlock" data-val="h3">H3</button>
+                    <button type="button" class="btn-tb" data-cmd="formatBlock" data-val="p">P</button>
+                    <button type="button" class="btn-tb" data-cmd="insertUnorderedList">• List</button>
+                    <button type="button" class="btn-tb" data-cmd="insertOrderedList">1. List</button>
+                    <button type="button" class="btn-tb" data-cmd="undo">↶</button>
+                    <button type="button" class="btn-tb" data-cmd="redo">↷</button>
+                  </div>
+                  <div class="rich-content-editable" id="rep-purpose-editor" contenteditable="true"></div>
+                </div>
+
+                <div class="rich-editor-group">
+                  <label class="field-label">5. EVENT HIGHLIGHTS</label>
+                  <div class="rich-toolbar" data-target="rep-highlights-editor">
+                    <button type="button" class="btn-tb" data-cmd="bold"><strong>B</strong></button>
+                    <button type="button" class="btn-tb" data-cmd="italic"><em>I</em></button>
+                    <button type="button" class="btn-tb" data-cmd="formatBlock" data-val="h3">H3</button>
+                    <button type="button" class="btn-tb" data-cmd="formatBlock" data-val="p">P</button>
+                    <button type="button" class="btn-tb" data-cmd="insertUnorderedList">• List</button>
+                    <button type="button" class="btn-tb" data-cmd="insertOrderedList">1. List</button>
+                    <button type="button" class="btn-tb" data-cmd="undo">↶</button>
+                    <button type="button" class="btn-tb" data-cmd="redo">↷</button>
+                  </div>
+                  <div class="rich-content-editable" id="rep-highlights-editor" contenteditable="true"></div>
+                </div>
+              </div>
+
+              <!-- SECTION C: PARTICIPATION SUMMARY -->
+              <div class="report-section-card">
+                <div class="section-card-header">
+                  <div>
+                    <span class="sec-badge">SECTION C</span>
+                    <h3 class="sec-title">PARTICIPATION SUMMARY</h3>
+                  </div>
+                  <button type="button" class="btn-table-action" id="btn-sync-live-stats">
+                    🔄 [ RE-SYNC FROM DATABASE ]
+                  </button>
+                </div>
+
+                <p class="section-desc-text">
+                  Metrics originate from the SQLite event database. If you manually override a calculated figure, the change will be flagged and recorded in the audit log.
+                </p>
+
+                <div class="stats-comparison-grid">
+                  <!-- Registered Teams -->
+                  <div class="stat-compare-card">
+                    <div class="stat-name">REGISTERED TEAMS</div>
+                    <div class="stat-live-row">
+                      <span class="live-tag">DB LIVE:</span>
+                      <span class="live-val" id="live-stat-reg">--</span>
+                    </div>
+                    <div class="stat-override-row">
+                      <label for="override-stat-reg" class="ov-label">REPORT FIGURE:</label>
+                      <input type="number" id="override-stat-reg" class="form-input stat-input" min="0">
+                    </div>
+                    <div class="override-indicator" id="indicator-stat-reg" style="display: none;">
+                      ⚠ MANUAL OVERRIDE ACTIVE
+                    </div>
+                  </div>
+
+                  <!-- Participating Teams -->
+                  <div class="stat-compare-card">
+                    <div class="stat-name">PARTICIPATING TEAMS</div>
+                    <div class="stat-live-row">
+                      <span class="live-tag">DB LIVE:</span>
+                      <span class="live-val" id="live-stat-part">--</span>
+                    </div>
+                    <div class="stat-override-row">
+                      <label for="override-stat-part" class="ov-label">REPORT FIGURE:</label>
+                      <input type="number" id="override-stat-part" class="form-input stat-input" min="0">
+                    </div>
+                    <div class="override-indicator" id="indicator-stat-part" style="display: none;">
+                      ⚠ MANUAL OVERRIDE ACTIVE
+                    </div>
+                  </div>
+
+                  <!-- Total Participants -->
+                  <div class="stat-compare-card">
+                    <div class="stat-name">NUMBER OF PARTICIPANTS</div>
+                    <div class="stat-live-row">
+                      <span class="live-tag">DB LIVE:</span>
+                      <span class="live-val" id="live-stat-total">--</span>
+                    </div>
+                    <div class="stat-override-row">
+                      <label for="override-stat-total" class="ov-label">REPORT FIGURE:</label>
+                      <input type="number" id="override-stat-total" class="form-input stat-input" min="0">
+                    </div>
+                    <div class="override-indicator" id="indicator-stat-total" style="display: none;">
+                      ⚠ MANUAL OVERRIDE ACTIVE
+                    </div>
+                  </div>
+
+                  <!-- Completed Investigations -->
+                  <div class="stat-compare-card">
+                    <div class="stat-name">COMPLETED INVESTIGATIONS</div>
+                    <div class="stat-live-row">
+                      <span class="live-tag">DB LIVE:</span>
+                      <span class="live-val" id="live-stat-comp">--</span>
+                    </div>
+                    <div class="stat-override-row">
+                      <label for="override-stat-comp" class="ov-label">REPORT FIGURE:</label>
+                      <input type="number" id="override-stat-comp" class="form-input stat-input" min="0">
+                    </div>
+                    <div class="override-indicator" id="indicator-stat-comp" style="display: none;">
+                      ⚠ MANUAL OVERRIDE ACTIVE
+                    </div>
+                  </div>
+
+                  <!-- Disqualified Teams -->
+                  <div class="stat-compare-card">
+                    <div class="stat-name">DISQUALIFIED TEAMS</div>
+                    <div class="stat-live-row">
+                      <span class="live-tag">DB LIVE:</span>
+                      <span class="live-val" id="live-stat-disq">--</span>
+                    </div>
+                    <div class="stat-override-row">
+                      <label for="override-stat-disq" class="ov-label">REPORT FIGURE:</label>
+                      <input type="number" id="override-stat-disq" class="form-input stat-input" min="0">
+                    </div>
+                    <div class="override-indicator" id="indicator-stat-disq" style="display: none;">
+                      ⚠ MANUAL OVERRIDE ACTIVE
+                    </div>
+                  </div>
+                </div>
+
+                <div class="override-reason-box" id="stat-override-reason-wrap" style="display: none; margin-top: 1rem;">
+                  <label for="stat-override-reason" class="field-label">AUDIT REASON FOR METRIC OVERRIDE(S):</label>
+                  <input type="text" id="stat-override-reason" class="form-input" placeholder="e.g. Verified walk-in participant addition approved by CSE HOD...">
+                </div>
+              </div>
+
+              <!-- SECTION D: EVENT STRUCTURE -->
+              <div class="report-section-card">
+                <div class="section-card-header">
+                  <span class="sec-badge">SECTION D</span>
+                  <h3 class="sec-title">EVENT STRUCTURE &amp; ROUND DESCRIPTIONS</h3>
+                </div>
+                <div class="form-grid-1col">
+                  <div class="form-field-group">
+                    <label for="rep-r1-title" class="field-label">ROUND 1 TITLE &amp; CONFIGURATION</label>
+                    <input type="text" id="rep-r1-title" class="form-input" value="ROUND 1: 15 QUESTIONS — 10 MINUTES">
+                    <label for="rep-r1-desc" class="field-label" style="margin-top: 8px;">ROUND 1 REPORT EXPLANATION</label>
+                    <textarea id="rep-r1-desc" class="form-input" rows="3"></textarea>
+                  </div>
+
+                  <div class="form-field-group" style="margin-top: 1rem;">
+                    <label for="rep-r2-title" class="field-label">ROUND 2 TITLE &amp; CONFIGURATION</label>
+                    <input type="text" id="rep-r2-title" class="form-input" value="ROUND 2: 15 QUESTIONS — 10 MINUTES">
+                    <label for="rep-r2-desc" class="field-label" style="margin-top: 8px;">ROUND 2 REPORT EXPLANATION</label>
+                    <textarea id="rep-r2-desc" class="form-input" rows="3"></textarea>
+                  </div>
+
+                  <div class="form-field-group" style="margin-top: 1rem;">
+                    <label for="rep-eval-title" class="field-label">EVALUATION PHASE TITLE &amp; CONFIGURATION</label>
+                    <input type="text" id="rep-eval-title" class="form-input" value="EVALUATION: 5 MINUTES">
+                    <label for="rep-eval-desc" class="field-label" style="margin-top: 8px;">EVALUATION REPORT EXPLANATION</label>
+                    <textarea id="rep-eval-desc" class="form-input" rows="3"></textarea>
+                  </div>
+                </div>
+              </div>
+
+              <!-- SECTION E: RESULTS AND WINNERS -->
+              <div class="report-section-card">
+                <div class="section-card-header">
+                  <div>
+                    <span class="sec-badge">SECTION E</span>
+                    <h3 class="sec-title">OFFICIAL RESULTS &amp; WINNERS</h3>
+                  </div>
+                  <button type="button" class="btn-table-action" id="btn-sync-results">
+                    🔄 [ RE-SYNC FROM EVALUATIONS ]
+                  </button>
+                </div>
+
+                <p class="section-desc-text">
+                  Official evaluation records from the Evaluation &amp; Results matrix. Adjusting report awards requires an authorized audit reason and does NOT silently mutate raw participant scores.
+                </p>
+
+                <div class="admin-table-container">
+                  <table class="admin-data-table" id="report-results-table">
+                    <thead>
+                      <tr>
+                        <th>TEAM ID</th>
+                        <th>TEAM NAME</th>
+                        <th>COLLEGE NAME</th>
+                        <th>SCORE (30 Q)</th>
+                        <th>ACCURACY</th>
+                        <th>FINAL STATUS</th>
+                        <th>WINNER POSITION</th>
+                        <th>SPECIAL RECOGNITION</th>
+                        <th style="text-align: right;">ACTION</th>
+                      </tr>
+                    </thead>
+                    <tbody id="report-results-tbody">
+                      <!-- Populated dynamically -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <!-- SECTION F: EVENT SUMMARY & CONCLUSION -->
+              <div class="report-section-card">
+                <div class="section-card-header">
+                  <span class="sec-badge">SECTION F</span>
+                  <h3 class="sec-title">EVENT SUMMARY &amp; CONCLUSION</h3>
+                </div>
+
+                <div class="rich-editor-group">
+                  <label class="field-label">1. MAJOR EVENT HIGHLIGHTS</label>
+                  <div class="rich-toolbar" data-target="rep-sum-highlights">
+                    <button type="button" class="btn-tb" data-cmd="bold"><strong>B</strong></button>
+                    <button type="button" class="btn-tb" data-cmd="italic"><em>I</em></button>
+                    <button type="button" class="btn-tb" data-cmd="formatBlock" data-val="h3">H3</button>
+                    <button type="button" class="btn-tb" data-cmd="formatBlock" data-val="p">P</button>
+                    <button type="button" class="btn-tb" data-cmd="insertUnorderedList">• List</button>
+                    <button type="button" class="btn-tb" data-cmd="insertOrderedList">1. List</button>
+                  </div>
+                  <div class="rich-content-editable" id="rep-sum-highlights" contenteditable="true"></div>
+                </div>
+
+                <div class="rich-editor-group">
+                  <label class="field-label">2. INVESTIGATION CHALLENGES</label>
+                  <div class="rich-toolbar" data-target="rep-sum-challenges">
+                    <button type="button" class="btn-tb" data-cmd="bold"><strong>B</strong></button>
+                    <button type="button" class="btn-tb" data-cmd="italic"><em>I</em></button>
+                    <button type="button" class="btn-tb" data-cmd="formatBlock" data-val="h3">H3</button>
+                    <button type="button" class="btn-tb" data-cmd="formatBlock" data-val="p">P</button>
+                    <button type="button" class="btn-tb" data-cmd="insertUnorderedList">• List</button>
+                    <button type="button" class="btn-tb" data-cmd="insertOrderedList">1. List</button>
+                  </div>
+                  <div class="rich-content-editable" id="rep-sum-challenges" contenteditable="true"></div>
+                </div>
+
+                <div class="rich-editor-group">
+                  <label class="field-label">3. PARTICIPANT PERFORMANCE SUMMARY</label>
+                  <div class="rich-toolbar" data-target="rep-sum-perf">
+                    <button type="button" class="btn-tb" data-cmd="bold"><strong>B</strong></button>
+                    <button type="button" class="btn-tb" data-cmd="italic"><em>I</em></button>
+                    <button type="button" class="btn-tb" data-cmd="formatBlock" data-val="h3">H3</button>
+                    <button type="button" class="btn-tb" data-cmd="formatBlock" data-val="p">P</button>
+                    <button type="button" class="btn-tb" data-cmd="insertUnorderedList">• List</button>
+                    <button type="button" class="btn-tb" data-cmd="insertOrderedList">1. List</button>
+                  </div>
+                  <div class="rich-content-editable" id="rep-sum-perf" contenteditable="true"></div>
+                </div>
+
+                <div class="rich-editor-group">
+                  <label class="field-label">4. IMPORTANT OBSERVATIONS</label>
+                  <div class="rich-toolbar" data-target="rep-sum-obs">
+                    <button type="button" class="btn-tb" data-cmd="bold"><strong>B</strong></button>
+                    <button type="button" class="btn-tb" data-cmd="italic"><em>I</em></button>
+                    <button type="button" class="btn-tb" data-cmd="formatBlock" data-val="h3">H3</button>
+                    <button type="button" class="btn-tb" data-cmd="formatBlock" data-val="p">P</button>
+                    <button type="button" class="btn-tb" data-cmd="insertUnorderedList">• List</button>
+                    <button type="button" class="btn-tb" data-cmd="insertOrderedList">1. List</button>
+                  </div>
+                  <div class="rich-content-editable" id="rep-sum-obs" contenteditable="true"></div>
+                </div>
+
+                <div class="rich-editor-group">
+                  <label class="field-label">5. LESSONS LEARNED</label>
+                  <div class="rich-toolbar" data-target="rep-sum-lessons">
+                    <button type="button" class="btn-tb" data-cmd="bold"><strong>B</strong></button>
+                    <button type="button" class="btn-tb" data-cmd="italic"><em>I</em></button>
+                    <button type="button" class="btn-tb" data-cmd="formatBlock" data-val="h3">H3</button>
+                    <button type="button" class="btn-tb" data-cmd="formatBlock" data-val="p">P</button>
+                    <button type="button" class="btn-tb" data-cmd="insertUnorderedList">• List</button>
+                    <button type="button" class="btn-tb" data-cmd="insertOrderedList">1. List</button>
+                  </div>
+                  <div class="rich-content-editable" id="rep-sum-lessons" contenteditable="true"></div>
+                </div>
+
+                <div class="rich-editor-group">
+                  <label class="field-label">6. EVENT CONCLUSION</label>
+                  <div class="rich-toolbar" data-target="rep-sum-conclusion">
+                    <button type="button" class="btn-tb" data-cmd="bold"><strong>B</strong></button>
+                    <button type="button" class="btn-tb" data-cmd="italic"><em>I</em></button>
+                    <button type="button" class="btn-tb" data-cmd="formatBlock" data-val="h3">H3</button>
+                    <button type="button" class="btn-tb" data-cmd="formatBlock" data-val="p">P</button>
+                    <button type="button" class="btn-tb" data-cmd="insertUnorderedList">• List</button>
+                    <button type="button" class="btn-tb" data-cmd="insertOrderedList">1. List</button>
+                  </div>
+                  <div class="rich-content-editable" id="rep-sum-conclusion" contenteditable="true"></div>
+                </div>
+
+                <div class="rich-editor-group">
+                  <label class="field-label">7. RECOMMENDATIONS FOR FUTURE EVENTS</label>
+                  <div class="rich-toolbar" data-target="rep-sum-recs">
+                    <button type="button" class="btn-tb" data-cmd="bold"><strong>B</strong></button>
+                    <button type="button" class="btn-tb" data-cmd="italic"><em>I</em></button>
+                    <button type="button" class="btn-tb" data-cmd="formatBlock" data-val="h3">H3</button>
+                    <button type="button" class="btn-tb" data-cmd="formatBlock" data-val="p">P</button>
+                    <button type="button" class="btn-tb" data-cmd="insertUnorderedList">• List</button>
+                    <button type="button" class="btn-tb" data-cmd="insertOrderedList">1. List</button>
+                  </div>
+                  <div class="rich-content-editable" id="rep-sum-recs" contenteditable="true"></div>
+                </div>
+
+                <div class="rich-editor-group">
+                  <label class="field-label">8. ACKNOWLEDGEMENTS</label>
+                  <div class="rich-toolbar" data-target="rep-sum-ack">
+                    <button type="button" class="btn-tb" data-cmd="bold"><strong>B</strong></button>
+                    <button type="button" class="btn-tb" data-cmd="italic"><em>I</em></button>
+                    <button type="button" class="btn-tb" data-cmd="formatBlock" data-val="h3">H3</button>
+                    <button type="button" class="btn-tb" data-cmd="formatBlock" data-val="p">P</button>
+                    <button type="button" class="btn-tb" data-cmd="insertUnorderedList">• List</button>
+                    <button type="button" class="btn-tb" data-cmd="insertOrderedList">1. List</button>
+                  </div>
+                  <div class="rich-content-editable" id="rep-sum-ack" contenteditable="true"></div>
+                </div>
+              </div>
+
+              <!-- SECTION G: ORGANIZER DETAILS -->
+              <div class="report-section-card">
+                <div class="section-card-header">
+                  <span class="sec-badge">SECTION G</span>
+                  <h3 class="sec-title">ORGANIZER &amp; REPORT DETAILS</h3>
+                </div>
+                <div class="form-grid-2col">
+                  <div class="form-field-group">
+                    <label for="rep-prep-by" class="field-label">REPORT PREPARED BY</label>
+                    <input type="text" id="rep-prep-by" class="form-input" required>
+                  </div>
+                  <div class="form-field-group">
+                    <label for="rep-org-name" class="field-label">EVENT ORGANIZER NAME</label>
+                    <input type="text" id="rep-org-name" class="form-input" required>
+                  </div>
+                  <div class="form-field-group">
+                    <label for="rep-coord-names" class="field-label">COORDINATOR NAMES</label>
+                    <input type="text" id="rep-coord-names" class="form-input" required>
+                  </div>
+                  <div class="form-field-group">
+                    <label for="rep-faculty-coord" class="field-label">FACULTY COORDINATOR</label>
+                    <input type="text" id="rep-faculty-coord" class="form-input" required>
+                  </div>
+                  <div class="form-field-group full-width">
+                    <label for="rep-prep-date" class="field-label">REPORT PREPARATION DATE</label>
+                    <input type="date" id="rep-prep-date" class="form-input" required>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Bottom Action Bar -->
+              <div class="editor-bottom-bar">
+                <button type="button" class="btn-action-primary" id="btn-save-draft-bottom">
+                  💾 [ SAVE DRAFT ]
+                </button>
+                <button type="button" class="btn-action-muted" id="btn-discard-bottom">
+                  [ DISCARD CHANGES ]
+                </button>
+                <button type="button" class="btn-action-dark" id="btn-preview-bottom">
+                  👁 [ PREVIEW REPORT ]
+                </button>
+              </div>
+
+            </form>
+          </div>
+
+          <!-- VIEW C: REPORT PREVIEW VIEW -->
+          <div class="report-preview-container" id="report-preview-view" style="display: none;">
+            <!-- Preview Controls Bar -->
+            <div class="preview-controls-bar">
+              <button type="button" class="btn-action-muted" id="btn-return-to-editor">
+                ← [ RETURN TO EDITOR ]
+              </button>
+              <div class="preview-ctrl-right">
+                <span class="preview-status-pill" id="preview-status-badge">DRAFT PREVIEW</span>
+                <button type="button" class="btn-action-primary" id="btn-preview-export-pdf">
+                  🖨 [ EXPORT PDF / PRINT ]
+                </button>
+                <button type="button" class="btn-action-green" id="btn-preview-publish" style="display: none;">
+                  ✔ [ PUBLISH REPORT ]
+                </button>
+              </div>
+            </div>
+
+            <!-- Printable Official College Document Sheet -->
+            <div class="official-report-sheet" id="official-report-sheet">
+              <!-- Watermark (injected if not published) -->
+              <div class="draft-watermark" id="preview-draft-watermark">OFFICIAL DRAFT — NOT YET PUBLISHED</div>
+
+              <!-- Document Header -->
+              <div class="doc-header-block">
+                <div class="doc-header-logo-row">
+                  <div class="doc-logo-box">
+                    <img src="assets/images/fox-logo.png" alt="Event Logo" class="doc-logo-img">
+                  </div>
+                  <div class="doc-header-text">
+                    <div class="doc-college-title" id="prev-college-name">T.J.S. ENGINEERING COLLEGE</div>
+                    <div class="doc-dept-title" id="prev-dept-name">DEPARTMENT OF COMPUTER SCIENCE AND ENGINEERING</div>
+                    <div class="doc-subtitle">TECHNICAL EVENT CELL // ACADEMIC YEAR 2026–2027</div>
+                  </div>
+                </div>
+                <div class="doc-header-divider"></div>
+              </div>
+
+              <!-- Event Banner Title -->
+              <div class="doc-title-block">
+                <div class="doc-super-tag">OFFICIAL POST-EVENT DOCUMENTATION &amp; ASSESSMENT REPORT</div>
+                <h1 class="doc-main-title" id="prev-event-title">TRACE × X — CYBER CRIME INVESTIGATION</h1>
+                <div class="doc-meta-strip">
+                  <span><strong>DATE:</strong> <span id="prev-event-date">--</span></span>
+                  <span>•</span>
+                  <span><strong>VENUE:</strong> <span id="prev-event-venue">--</span></span>
+                  <span>•</span>
+                  <span><strong>ORGANIZER:</strong> <span id="prev-organizer">--</span></span>
+                </div>
+              </div>
+
+              <!-- Document Table of Contents / Status Notice -->
+              <div class="doc-status-banner" id="prev-status-banner">
+                <span id="prev-status-banner-text">STATUS: DRAFT // INTERNAL WORKING DOCUMENT</span>
+              </div>
+
+              <!-- Doc Section 1: Executive Overview -->
+              <div class="doc-section">
+                <h2 class="doc-sec-heading">1. EXECUTIVE OVERVIEW</h2>
+                <div class="doc-sub-block">
+                  <h3 class="doc-sub-heading">1.1 Introduction</h3>
+                  <div class="doc-body-text" id="prev-intro"></div>
+                </div>
+                <div class="doc-sub-block">
+                  <h3 class="doc-sub-heading">1.2 Event Overview</h3>
+                  <div class="doc-body-text" id="prev-overview"></div>
+                </div>
+                <div class="doc-sub-block">
+                  <h3 class="doc-sub-heading">1.3 Objectives &amp; Pedagogical Purpose</h3>
+                  <div class="doc-body-text" id="prev-objectives"></div>
+                  <div class="doc-body-text" id="prev-purpose" style="margin-top: 6px;"></div>
+                </div>
+                <div class="doc-sub-block">
+                  <h3 class="doc-sub-heading">1.4 Key Event Highlights</h3>
+                  <div class="doc-body-text" id="prev-highlights"></div>
+                </div>
+              </div>
+
+              <!-- Doc Section 2: Participation Summary -->
+              <div class="doc-section">
+                <h2 class="doc-sec-heading">2. PARTICIPATION METRICS</h2>
+                <table class="doc-table">
+                  <thead>
+                    <tr>
+                      <th>METRIC PARAMETER</th>
+                      <th>COUNT</th>
+                      <th>DATA SOURCE</th>
+                      <th>VERIFICATION NOTES</th>
+                    </tr>
+                  </thead>
+                  <tbody id="prev-participation-tbody">
+                    <!-- Populated dynamically -->
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- Doc Section 3: Event Structure -->
+              <div class="doc-section">
+                <h2 class="doc-sec-heading">3. INVESTIGATION STRUCTURE &amp; METHODOLOGY</h2>
+                <div class="doc-structure-grid">
+                  <div class="doc-struct-card">
+                    <h4 class="doc-card-title" id="prev-r1-title">ROUND 1: 15 QUESTIONS — 10 MINUTES</h4>
+                    <p class="doc-card-text" id="prev-r1-desc"></p>
+                  </div>
+                  <div class="doc-struct-card">
+                    <h4 class="doc-card-title" id="prev-r2-title">ROUND 2: 15 QUESTIONS — 10 MINUTES</h4>
+                    <p class="doc-card-text" id="prev-r2-desc"></p>
+                  </div>
+                  <div class="doc-struct-card">
+                    <h4 class="doc-card-title" id="prev-eval-title">EVALUATION: 5 MINUTES</h4>
+                    <p class="doc-card-text" id="prev-eval-desc"></p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Doc Section 4: Official Results & Winners -->
+              <div class="doc-section">
+                <h2 class="doc-sec-heading">4. OFFICIAL EVALUATION RESULTS &amp; RECOGNITION</h2>
+                <table class="doc-table">
+                  <thead>
+                    <tr>
+                      <th>TEAM ID</th>
+                      <th>TEAM NAME</th>
+                      <th>INSTITUTION</th>
+                      <th>SCORE (30 Q)</th>
+                      <th>ACCURACY</th>
+                      <th>STATUS</th>
+                      <th>AWARD / POSITION</th>
+                      <th>SPECIAL RECOGNITION</th>
+                    </tr>
+                  </thead>
+                  <tbody id="prev-results-tbody">
+                    <!-- Populated dynamically -->
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- Doc Section 5: Observations & Findings -->
+              <div class="doc-section">
+                <h2 class="doc-sec-heading">5. POST-EVENT ANALYSIS &amp; OBSERVATIONS</h2>
+                <div class="doc-sub-block">
+                  <h3 class="doc-sub-heading">5.1 Participant Performance Assessment</h3>
+                  <div class="doc-body-text" id="prev-sum-perf"></div>
+                </div>
+                <div class="doc-sub-block">
+                  <h3 class="doc-sub-heading">5.2 Technical &amp; Operational Challenges</h3>
+                  <div class="doc-body-text" id="prev-sum-challenges"></div>
+                </div>
+                <div class="doc-sub-block">
+                  <h3 class="doc-sub-heading">5.3 Faculty &amp; Evaluator Observations</h3>
+                  <div class="doc-body-text" id="prev-sum-obs"></div>
+                </div>
+                <div class="doc-sub-block">
+                  <h3 class="doc-sub-heading">5.4 Key Lessons Learned</h3>
+                  <div class="doc-body-text" id="prev-sum-lessons"></div>
+                </div>
+              </div>
+
+              <!-- Doc Section 6: Recommendations & Conclusion -->
+              <div class="doc-section">
+                <h2 class="doc-sec-heading">6. RECOMMENDATIONS &amp; CONCLUSION</h2>
+                <div class="doc-sub-block">
+                  <h3 class="doc-sub-heading">6.1 Recommendations for Future Editions</h3>
+                  <div class="doc-body-text" id="prev-sum-recs"></div>
+                </div>
+                <div class="doc-sub-block">
+                  <h3 class="doc-sub-heading">6.2 Event Conclusion</h3>
+                  <div class="doc-body-text" id="prev-sum-conclusion"></div>
+                </div>
+                <div class="doc-sub-block">
+                  <h3 class="doc-sub-heading">6.3 Acknowledgements</h3>
+                  <div class="doc-body-text" id="prev-sum-ack"></div>
+                </div>
+              </div>
+
+              <!-- Doc Section 7: Signatures & Certification Block -->
+              <div class="doc-signatures-section">
+                <div class="doc-sig-box">
+                  <div class="doc-sig-line"></div>
+                  <div class="doc-sig-title">REPORT PREPARED BY</div>
+                  <div class="doc-sig-name" id="prev-sig-prep">--</div>
+                </div>
+                <div class="doc-sig-box">
+                  <div class="doc-sig-line"></div>
+                  <div class="doc-sig-title">FACULTY COORDINATOR</div>
+                  <div class="doc-sig-name" id="prev-sig-faculty">--</div>
+                </div>
+                <div class="doc-sig-box">
+                  <div class="doc-sig-line"></div>
+                  <div class="doc-sig-title">HEAD OF DEPARTMENT</div>
+                  <div class="doc-sig-name">DEPARTMENT OF CSE</div>
+                </div>
+                <div class="doc-sig-box">
+                  <div class="doc-sig-line"></div>
+                  <div class="doc-sig-title">PRINCIPAL</div>
+                  <div class="doc-sig-name">TJS ENGINEERING COLLEGE</div>
+                </div>
+              </div>
+
+              <div class="doc-footer-meta">
+                <span>OFFICIAL AUTHORITATIVE REPORT // TRACE × X // CSE TECHNICAL EVENT CELL</span>
+                <span id="prev-report-footer-version">PAGE 1 OF OFFICIAL RECORD</span>
+              </div>
+
+            </div>
+          </div>
+
+        </section>
+
+        <!-- =================================================================
+             TAB 8: CASE & QUESTION MANAGEMENT
+             ================================================================= -->
+        <section class="admin-tab-content" id="tab-cases-questions" role="tabpanel" aria-labelledby="nav-cases-questions">
+          
+          <div class="section-title-row">
+            <div>
+              <div class="tech-sub-tag">AUTHORITATIVE INVESTIGATION DOSSIERS // EVIDENCE VAULT &amp; QUESTION BANK</div>
+              <h2 class="section-main-heading">CASE &amp; QUESTION MANAGEMENT</h2>
+            </div>
+            <div class="header-action-group" style="display: flex; gap: 0.8rem; align-items: center;">
+              <button type="button" class="btn-action-muted" id="btn-validate-cases" style="border-color: rgba(229, 9, 36, 0.4); color: var(--color-crimson-bright);">
+                🔍 [ VALIDATE READINESS ]
+              </button>
+              <button type="button" class="btn-action-primary" id="btn-add-new-case">
+                + [ ADD NEW CASE ]
+              </button>
+            </div>
+          </div>
+
+          <!-- Emergency Lock Banner (Displays dynamically when event status is EVENT ACTIVE or PAUSED) -->
+          <div class="cq-lock-alert" id="cq-lock-alert" style="display: none;">
+            <div class="cq-lock-icon">🔒</div>
+            <div class="cq-lock-text">
+              <strong>EVENT ACTIVE — QUESTION SETS &amp; AUTHORITATIVE KEYS ARE LOCKED:</strong>
+              Accidental changes during live investigations are strictly blocked. Any emergency adjustments require explicit administrator confirmation and a recorded audit justification.
+            </div>
+          </div>
+
+          <!-- Main Two-Column Management Grid -->
+          <div class="cq-layout-grid">
+            
+            <!-- Left Column: Case Selector & Navigator -->
+            <div class="cq-cases-nav">
+              <div class="cq-panel-header">
+                <span class="cq-panel-title">INVESTIGATION CASES (<span id="cq-cases-count">15</span>)</span>
+                <span class="cq-panel-badge">AUTHORITATIVE</span>
+              </div>
+
+              <div class="cq-search-box">
+                <input type="text" id="cq-search-cases" class="form-input" placeholder="Search cases by name or ID..." style="width: 100%; font-size: 0.78rem;">
+              </div>
+
+              <!-- Filter tabs: All, Active, Inactive -->
+              <div class="cq-filter-tabs">
+                <button type="button" class="cq-filter-tab active" data-filter="ALL">ALL (15)</button>
+                <button type="button" class="cq-filter-tab" data-filter="ACTIVE">ACTIVE</button>
+                <button type="button" class="cq-filter-tab" data-filter="INACTIVE">INACTIVE</button>
+              </div>
+
+              <!-- Case Cards List Container -->
+              <div class="cq-cases-list" id="cq-cases-list">
+                <!-- Dynamically populated from /api/admin/cases -->
+              </div>
+            </div>
+
+            <!-- Right Column: Dedicated Active Case & Question Workspace -->
+            <div class="cq-editor-workspace">
+              
+              <!-- Case Information & Clues Editor -->
+              <div class="cq-case-card">
+                <div class="cq-card-header">
+                  <div class="cq-case-meta-tag">
+                    <span class="cq-dot" id="cq-case-status-dot"></span>
+                    <span id="cq-active-case-tag">CASE 01 — DOSSIER</span>
+                  </div>
+                  <div class="cq-case-actions">
+                    <button type="button" class="btn-action-muted" id="btn-preview-case-card" style="font-size: 0.72rem; padding: 0.45rem 0.9rem;">
+                      👁 [ PARTICIPANT PREVIEW ]
+                    </button>
+                    <button type="button" class="btn-action-muted" id="btn-delete-case" style="font-size: 0.72rem; padding: 0.45rem 0.9rem; color: #FF2438; border-color: rgba(255, 36, 56, 0.4);">
+                      🗑 [ DELETE CASE ]
+                    </button>
+                  </div>
+                </div>
+
+                <form id="cq-case-meta-form" class="cq-meta-form">
+                  <div class="cq-form-grid-3">
+                    <div>
+                      <label class="cq-label" for="cq-case-id-input">CASE ID (UNIQUE):</label>
+                      <input type="text" id="cq-case-id-input" class="form-input" style="width: 100%; font-family: var(--font-mono); font-weight: 700;" readonly>
+                    </div>
+                    <div>
+                      <label class="cq-label" for="cq-case-status-input">CASE STATUS:</label>
+                      <select id="cq-case-status-input" class="admin-filter-dropdown" style="width: 100%;">
+                        <option value="ACTIVE">ACTIVE (Available for Participant Selection)</option>
+                        <option value="INACTIVE">INACTIVE (Hidden from Participants)</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label class="cq-label" for="cq-case-order-input">DISPLAY ORDER:</label>
+                      <input type="number" id="cq-case-order-input" class="form-input" style="width: 100%;" min="1" max="50" value="1">
+                    </div>
+                  </div>
+
+                  <div style="margin-top: 1rem;">
+                    <label class="cq-label" for="cq-case-name-input">CASE NAME (COLLEGE-STUDENT FRIENDLY):</label>
+                    <input type="text" id="cq-case-name-input" class="form-input" style="width: 100%; font-weight: 700; color: #FFFFFF;" placeholder="e.g. CASE 01 — STOLEN SOCIAL MEDIA ACCOUNT" required>
+                  </div>
+
+                  <div style="margin-top: 1rem;">
+                    <label class="cq-label" for="cq-case-summary-input">
+                      SHORT DESCRIPTION (DISPLAYED ON PARTICIPANT CASE SELECTION CARDS):
+                      <span style="color: var(--color-text-muted); font-weight: 400; margin-left: 6px;">(Keep simple &amp; understandable)</span>
+                    </label>
+                    <textarea id="cq-case-summary-input" class="form-input" rows="2" style="width: 100%; resize: vertical;" placeholder="Brief scenario description for students..." required></textarea>
+                  </div>
+
+                  <!-- Digital Clues & Evidence Viewer / Editor -->
+                  <div class="cq-evidence-section">
+                    <div class="cq-section-subhead">
+                      <span>DIGITAL FORENSIC EVIDENCE &amp; CLUES</span>
+                      <span class="cq-evidence-count-badge" id="cq-evidence-total-badge">8 EVIDENCE ITEMS</span>
+                    </div>
+
+                    <div class="cq-evidence-tabs">
+                      <button type="button" class="cq-ev-tab active" id="btn-ev-tab-r1">ROUND 1 EVIDENCE (<span id="cq-ev-r1-count">4</span>)</button>
+                      <button type="button" class="cq-ev-tab" id="btn-ev-tab-r2">ROUND 2 EVIDENCE (<span id="cq-ev-r2-count">4</span>)</button>
+                    </div>
+
+                    <div class="cq-evidence-list" id="cq-evidence-items-container">
+                      <!-- Dynamically rendered evidence items -->
+                    </div>
+                  </div>
+
+                  <!-- Case Meta Actions Row -->
+                  <div class="cq-form-actions-row">
+                    <button type="submit" class="btn-action-primary" id="btn-save-case-meta">
+                      💾 [ SAVE CASE DOSSIER ]
+                    </button>
+                    <button type="button" class="btn-action-muted" id="btn-cancel-case-meta">
+                      [ CANCEL CHANGES ]
+                    </button>
+                  </div>
+                </form>
+              </div>
+
+              <!-- Questions Management Section -->
+              <div class="cq-questions-panel">
+                
+                <div class="cq-q-header">
+                  <div>
+                    <h3 class="cq-q-heading">AUTHORITATIVE QUESTION BANK</h3>
+                    <div class="cq-q-subheading">
+                      Strict format: Exactly 15 questions per round · Exactly 4 options (A-D) · Exactly 1 correct answer · Private answer keys
+                    </div>
+                  </div>
+
+                  <div class="cq-q-controls">
+                    <button type="button" class="btn-action-muted" id="btn-preview-round" style="font-size: 0.72rem; padding: 0.5rem 0.9rem;">
+                      👁 [ PREVIEW ROUND ]
+                    </button>
+                    <button type="button" class="btn-action-primary" id="btn-add-question" style="font-size: 0.72rem; padding: 0.5rem 0.9rem;">
+                      + [ ADD QUESTION ]
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Round Switcher Tabs -->
+                <div class="cq-round-switch-bar">
+                  <button type="button" class="cq-round-switch active" id="btn-switch-r1" data-round="1">
+                    <span class="cq-rs-title">ROUND 1 — INITIAL RECONNAISSANCE</span>
+                    <span class="cq-rs-meta">15 QUESTIONS · 10 MINUTES · <span id="r1-q-counter">15/15</span></span>
+                  </button>
+                  <button type="button" class="cq-round-switch" id="btn-switch-r2" data-round="2">
+                    <span class="cq-rs-title">ROUND 2 — DEEP FORENSIC ANALYSIS</span>
+                    <span class="cq-rs-meta">15 QUESTIONS · 10 MINUTES · <span id="r2-q-counter">15/15</span></span>
+                  </button>
+                </div>
+
+                <!-- Round Validation Summary Pill -->
+                <div class="cq-round-validation-strip" id="cq-round-validation-strip">
+                  <span class="cq-rv-pill success" id="cq-rv-status-pill">✔ ROUND VALIDATION: 15 OF 15 QUESTIONS CONFIGURED</span>
+                  <span class="cq-rv-meta">Total Marks: <strong id="cq-rv-marks-sum">15</strong> · All answer keys secured in SQLite authoritative storage</span>
+                </div>
+
+                <!-- Questions List Container -->
+                <div class="cq-questions-container" id="cq-questions-container">
+                  <!-- Dynamically populated 15 questions -->
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </section>
+
+        <!-- =================================================================
+             TAB 9: BACKUP & EXPORT
+             ================================================================= -->
+        <section class="admin-tab-content" id="tab-backup-export" role="tabpanel" aria-labelledby="nav-backup-export">
+          
+          <div class="section-title-row">
+            <div>
+              <div class="tech-sub-tag">AUTHORITATIVE DATA EXPORT &amp; DATABASE SNAPSHOT MANAGEMENT</div>
+              <h2 class="section-main-heading">BACKUP &amp; EXPORT</h2>
+            </div>
+            <div class="header-action-group">
+              <span class="telemetry-badge" style="background: rgba(0, 230, 118, 0.1); border-color: #00E676; color: #00E676;">
+                ● SQLITE REPOSITORY SYNCHRONIZED
+              </span>
+            </div>
+          </div>
+
+          <!-- Section A: 4 Quick Export Cards -->
+          <div class="export-cards-grid">
+            
+            <!-- Export Card 1: Registered Teams -->
+            <div class="export-card">
+              <div class="export-card-tag">TEAM REGISTRY</div>
+              <h3 class="export-card-title">REGISTERED TEAMS DOSSIER</h3>
+              <p class="export-card-desc">
+                Export registered teams, college affiliations, departments, team sizes, roster member names, and registration timestamps. Passwords, PINs, and session tokens are strictly excluded.
+              </p>
+              <div class="export-card-meta">
+                <span>FORMAT: CSV (EXCEL UTF-8)</span>
+                <span>SECURITY: CREDENTIALS STRIPPED</span>
+              </div>
+              <div class="export-card-actions">
+                <button type="button" class="btn-action-primary" id="btn-export-teams" style="width: 100%;">
+                  ⬇ [ EXPORT TEAMS CSV ]
+                </button>
+              </div>
+            </div>
+
+            <!-- Export Card 2: Official Results -->
+            <div class="export-card">
+              <div class="export-card-tag">EVALUATION STANDINGS</div>
+              <h3 class="export-card-title">FINAL EVALUATION RESULTS</h3>
+              <p class="export-card-desc">
+                Export authoritative award standings, investigation cases, Round 1 &amp; Round 2 scores, overall scores (out of 30), forensic accuracy rates, and qualification status. Private answer keys are never leaked.
+              </p>
+              <div class="export-card-meta">
+                <span>FORMAT: CSV (EXCEL UTF-8)</span>
+                <span>SECURITY: ANSWER KEYS PROTECTED</span>
+              </div>
+              <div class="export-card-actions">
+                <button type="button" class="btn-action-primary" id="btn-export-results" style="width: 100%;">
+                  ⬇ [ EXPORT RESULTS CSV ]
+                </button>
+              </div>
+            </div>
+
+            <!-- Export Card 3: Security Violations -->
+            <div class="export-card">
+              <div class="export-card-tag">SECURITY AUDIT TELEMETRY</div>
+              <h3 class="export-card-title">VIOLATION INCIDENTS LOG</h3>
+              <p class="export-card-desc">
+                Export real-time security events recorded during investigations: tab switches, window leaves, fullscreen exits, violation counters, and automated disciplinary warnings or terminations.
+              </p>
+              <div class="export-card-meta">
+                <span>FORMAT: CSV (EXCEL UTF-8)</span>
+                <span>DATA: AUTHORITATIVE EVENT LOGS</span>
+              </div>
+              <div class="export-card-actions">
+                <button type="button" class="btn-action-primary" id="btn-export-violations" style="width: 100%;">
+                  ⬇ [ EXPORT VIOLATIONS CSV ]
+                </button>
+              </div>
+            </div>
+
+            <!-- Export Card 4: Final Report Data & PDF -->
+            <div class="export-card">
+              <div class="export-card-tag">EVENT EXECUTIVE REPORT</div>
+              <h3 class="export-card-title">FINAL EVENT REPORT</h3>
+              <p class="export-card-desc">
+                Export complete event documentation data including executive overview, participation statistics, winner rosters, and organizer certifications. Distinguishes drafts from published reports.
+              </p>
+              <div class="export-card-meta">
+                <span>FORMAT: CSV &amp; A4 PDF</span>
+                <span>STATUS: <strong id="bkp-rep-status-badge">DRAFT / PUBLISHED</strong></span>
+              </div>
+              <div class="export-card-actions" style="display: flex; gap: 0.6rem;">
+                <button type="button" class="btn-action-primary" id="btn-export-report-csv" style="flex: 1;">
+                  ⬇ [ EXPORT CSV ]
+                </button>
+                <button type="button" class="btn-action-muted" id="btn-export-report-pdf-link" style="flex: 1;">
+                  🖨 [ REPORT TAB ]
+                </button>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Section B: Database Backup Vault -->
+          <div class="backup-vault-panel">
+            <div class="vault-header">
+              <div>
+                <div class="tech-sub-tag">SQLITE 3 AUTHORITATIVE STORAGE ENGINE</div>
+                <h3 class="vault-title">DATABASE BACKUP VAULT</h3>
+              </div>
+              <div>
+                <button type="button" class="btn-action-primary" id="btn-create-backup-now" style="font-size: 0.84rem; padding: 0.8rem 1.6rem;">
+                  💾 [ CREATE DATABASE BACKUP NOW ]
+                </button>
+              </div>
+            </div>
+
+            <div class="vault-telemetry-grid">
+              <div class="v-tel-item">
+                <span class="k">DATABASE FILE</span>
+                <span class="v">tracex.db</span>
+              </div>
+              <div class="v-tel-item">
+                <span class="k">LIVE FILE SIZE</span>
+                <span class="v" id="bkp-live-size">-- KB</span>
+              </div>
+              <div class="v-tel-item">
+                <span class="k">BACKUP TECHNOLOGY</span>
+                <span class="v">conn.backup() (Non-blocking SQLite API)</span>
+              </div>
+              <div class="v-tel-item">
+                <span class="k">SECURITY ACCESS</span>
+                <span class="v" style="color: #00E676;">RESTRICTED (Admin Auth Required)</span>
+              </div>
+              <div class="v-tel-item" style="grid-column: span 4;">
+                <span class="k">PRESERVED RECORD TABLES</span>
+                <span class="v" style="color: #FFFFFF;">
+                  teams · cases · questions · submissions · violations · audit_logs · event_reports · event_report_versions
+                </span>
+              </div>
+            </div>
+
+            <!-- Backup History Table -->
+            <div class="backup-history-section">
+              <div class="bh-header">
+                <h4 class="bh-title">BACKUP HISTORY &amp; DOWNLOADS</h4>
+                <span class="bh-subtitle">Verified database archives stored on server disk</span>
+              </div>
+
+              <div class="admin-table-container">
+                <table class="admin-data-table">
+                  <thead>
+                    <tr>
+                      <th>BACKUP ID</th>
+                      <th>FILENAME</th>
+                      <th>CREATED AT (UTC)</th>
+                      <th>CREATED BY</th>
+                      <th>FILE SIZE</th>
+                      <th>STATUS</th>
+                      <th style="text-align: right;">ACTIONS</th>
+                    </tr>
+                  </thead>
+                  <tbody id="backup-history-tbody">
+                    <!-- Populated dynamically from /api/admin/backups -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Section C: Administrative Export Audit Log -->
+          <div class="export-audit-panel">
+            <div class="bh-header">
+              <h4 class="bh-title">ADMINISTRATIVE EXPORT HISTORY</h4>
+              <span class="bh-subtitle">Authoritative audit log of all CSV and report export operations</span>
+            </div>
+
+            <div class="admin-table-container">
+              <table class="admin-data-table">
+                <thead>
+                  <tr>
+                    <th>LOG ID</th>
+                    <th>EXPORT TYPE</th>
+                    <th>FORMAT</th>
+                    <th>ADMINISTRATOR</th>
+                    <th>TIMESTAMP (UTC)</th>
+                    <th>RECORDS EXPORTED</th>
+                    <th>STATUS</th>
+                  </tr>
+                </thead>
+                <tbody id="export-history-tbody">
+                  <!-- Populated dynamically from /api/admin/export/history -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </section>
+
+        <!-- =================================================================
+             TAB 10: EVENT SETTINGS
+             ================================================================= -->
+        <section class="admin-tab-content" id="tab-settings">
+          
+          <div class="section-title-row">
+            <div>
+              <div class="tech-sub-tag">GLOBAL EVENT CONFIGURATION &amp; POLICIES</div>
+              <h2 class="section-main-heading">EVENT SETTINGS</h2>
+            </div>
+          </div>
+
+          <form id="event-settings-form" class="settings-form-panel">
+            
+            <div class="settings-grid">
+              
+              <!-- Setting 1: Event Availability -->
+              <div class="setting-item">
+                <div class="setting-meta">
+                  <label class="setting-title" for="set-event-avail">Event Portal Active</label>
+                  <div class="setting-desc">Permits participants to access workstation and take part in the event.</div>
+                </div>
+                <input type="checkbox" id="set-event-avail" class="admin-toggle-switch" checked>
+              </div>
+
+              <!-- Setting 2: Team Registration Availability -->
+              <div class="setting-item">
+                <div class="setting-meta">
+                  <label class="setting-title" for="set-reg-avail">Registration Portal Open</label>
+                  <div class="setting-desc">Allows new teams to register and obtain credentials.</div>
+                </div>
+                <input type="checkbox" id="set-reg-avail" class="admin-toggle-switch" checked>
+              </div>
+
+              <!-- Setting 3: Round 1 Duration -->
+              <div class="setting-item">
+                <div class="setting-meta">
+                  <label class="setting-title" for="set-r1-dur">Round 1 Duration (Minutes)</label>
+                  <div class="setting-desc">Default: 10 minutes for 15 multiple-choice questions.</div>
+                </div>
+                <input type="number" id="set-r1-dur" class="form-input admin-num-input" value="10" min="1" max="60" required>
+              </div>
+
+              <!-- Setting 4: Round 2 Duration -->
+              <div class="setting-item">
+                <div class="setting-meta">
+                  <label class="setting-title" for="set-r2-dur">Round 2 Duration (Minutes)</label>
+                  <div class="setting-desc">Default: 10 minutes for 15 deep forensic questions.</div>
+                </div>
+                <input type="number" id="set-r2-dur" class="form-input admin-num-input" value="10" min="1" max="60" required>
+              </div>
+
+              <!-- Setting 5: Evaluation Duration -->
+              <div class="setting-item">
+                <div class="setting-meta">
+                  <label class="setting-title" for="set-eval-dur">Evaluation Phase Duration (Minutes)</label>
+                  <div class="setting-desc">Default: 5 minutes authoritative processing countdown.</div>
+                </div>
+                <input type="number" id="set-eval-dur" class="form-input admin-num-input" value="5" min="1" max="30" required>
+              </div>
+
+              <!-- Setting 6: Violation Limit -->
+              <div class="setting-item">
+                <div class="setting-meta">
+                  <label class="setting-title" for="set-vio-limit">Maximum Permitted Violations</label>
+                  <div class="setting-desc">Threshold before automatic termination (Default: 3 incidents).</div>
+                </div>
+                <input type="number" id="set-vio-limit" class="form-input admin-num-input" value="3" min="1" max="10" required>
+              </div>
+
+            </div>
+
+            <!-- Settings Actions -->
+            <div class="settings-actions-bar">
+              <button type="submit" class="btn-action-primary" id="btn-save-settings">
+                [ SAVE SETTINGS ]
+              </button>
+              <button type="button" class="btn-action-muted" id="btn-cancel-settings">
+                [ CANCEL ]
+              </button>
+            </div>
+
+          </form>
+
+          <!-- Audit Log Section -->
+          <div class="audit-log-box">
+            <div class="audit-header">
+              <h3 class="audit-title">ADMINISTRATIVE AUDIT LOG</h3>
+              <span style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--color-text-muted);">
+                SECURITY AUDIT TRAIL // RECORDED IN SQLITE
+              </span>
+            </div>
+            <div class="audit-logs-list" id="audit-logs-list">
+              <!-- Dynamically populated from /api/admin/audit-logs -->
+            </div>
+          </div>
+
+        </section>
+
+      </main>
+
+    </div>
+
+  </div>
+
+  <!-- =========================================================================
+       MODAL 1: EVENT ACTION CONFIRMATION DIALOG
+       ========================================================================= -->
+  <div class="admin-modal-overlay" id="confirm-action-modal" role="dialog" aria-modal="true" aria-labelledby="confirm-modal-heading" style="display: none;">
+    <div class="admin-modal-box">
+      <div class="modal-badge-warn">⚠ EVENT ACTION CONFIRMATION</div>
+      <h3 class="modal-heading" id="confirm-modal-heading">CONFIRM ACTION</h3>
+      <p class="modal-desc" id="confirm-modal-desc">Are you sure you want to execute this event action?</p>
+      
+      <div class="modal-actions-row">
+        <button type="button" class="btn-modal-cancel" id="btn-modal-confirm-cancel">[ CANCEL ]</button>
+        <button type="button" class="btn-modal-proceed" id="btn-modal-confirm-proceed">[ CONFIRM EXECUTION ]</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL 2: TEAM DETAILS DRAWER
+       ========================================================================= -->
+  <div class="admin-modal-overlay" id="team-details-modal" role="dialog" aria-modal="true" aria-labelledby="team-modal-heading" style="display: none;">
+    <div class="admin-modal-box" style="max-width: 620px;">
+      <div class="modal-badge-info">CANDIDATE DOSSIER</div>
+      <h3 class="modal-heading" id="team-modal-heading">TEAM DETAILS</h3>
+
+      <div class="team-modal-grid">
+        <div class="t-item"><span class="k">TEAM ID</span><span class="v" id="tm-id">--</span></div>
+        <div class="t-item"><span class="k">TEAM NAME</span><span class="v" id="tm-name">--</span></div>
+        <div class="t-item"><span class="k">COLLEGE</span><span class="v" id="tm-college">--</span></div>
+        <div class="t-item"><span class="k">DEPARTMENT</span><span class="v" id="tm-dept">--</span></div>
+        <div class="t-item"><span class="k">TEAM SIZE</span><span class="v" id="tm-size">--</span></div>
+        <div class="t-item"><span class="k">STATUS</span><span class="v" id="tm-status">--</span></div>
+      </div>
+
+      <div style="margin-top: 1.2rem; text-align: left;">
+        <div style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--color-crimson-bright); font-weight: 700; margin-bottom: 0.4rem;">
+          REGISTERED MEMBERS:
+        </div>
+        <ul id="tm-members-list" style="margin: 0; padding-left: 1.2rem; color: #FFFFFF; font-size: 0.88rem; line-height: 1.6;">
+          <!-- Populated dynamically -->
+        </ul>
+      </div>
+
+      <div class="modal-actions-row" style="margin-top: 1.8rem;">
+        <button type="button" class="btn-modal-cancel" id="btn-close-team-modal" style="width: 100%;">[ CLOSE ]</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL 3: MANUAL RESULT OVERRIDE MODAL
+       ========================================================================= -->
+  <div class="admin-modal-overlay" id="override-result-modal" role="dialog" aria-modal="true" aria-labelledby="override-modal-heading" style="display: none;">
+    <div class="admin-modal-box">
+      <div class="modal-badge-warn">AUDITED DECISION OVERRIDE</div>
+      <h3 class="modal-heading" id="override-modal-heading">OVERRIDE QUALIFICATION</h3>
+      <p class="modal-desc">Manual decision override for <strong id="override-team-id" style="color: #FFFFFF;">TX-2026-TEAM</strong>. A mandatory audit reason is required for event transparency.</p>
+
+      <div style="text-align: left; margin: 1.2rem 0;">
+        <label for="override-select-status" style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--color-text-secondary); display: block; margin-bottom: 4px;">NEW QUALIFICATION STATUS:</label>
+        <select id="override-select-status" class="admin-filter-dropdown" style="width: 100%; margin-bottom: 1rem;">
+          <option value="QUALIFIED">QUALIFIED</option>
+          <option value="NOT QUALIFIED">NOT QUALIFIED</option>
+          <option value="DISQUALIFIED">DISQUALIFIED</option>
+        </select>
+
+        <label for="override-reason-input" style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--color-text-secondary); display: block; margin-bottom: 4px;">MANDATORY AUDIT REASON:</label>
+        <textarea id="override-reason-input" class="form-input" rows="3" placeholder="Enter reason for decision override (e.g. Verified tie-breaker log / Faculty panel approval)..." required style="width: 100%; resize: vertical;"></textarea>
+      </div>
+
+      <div class="modal-actions-row">
+        <button type="button" class="btn-modal-cancel" id="btn-cancel-override">[ CANCEL ]</button>
+        <button type="button" class="btn-modal-proceed" id="btn-submit-override">[ COMMIT OVERRIDE ]</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL 4: PUBLISH FINAL REPORT CONFIRMATION MODAL
+       ========================================================================= -->
+  <div class="admin-modal-overlay" id="publish-confirm-modal" role="dialog" aria-modal="true" aria-labelledby="publish-modal-heading" style="display: none;">
+    <div class="admin-modal-box">
+      <div class="modal-badge-warn">OFFICIAL RELEASE CONFIRMATION</div>
+      <h3 class="modal-heading" id="publish-modal-heading">PUBLISH FINAL REPORT?</h3>
+      <p class="modal-desc">
+        Confirm that the report has been thoroughly reviewed and is ready for official release. Once published, this report becomes the authoritative event record for T.J.S. Engineering College and ordinary editing will be locked.
+      </p>
+
+      <div class="modal-actions-row">
+        <button type="button" class="btn-modal-cancel" id="btn-cancel-publish">[ CANCEL ]</button>
+        <button type="button" class="btn-modal-proceed" id="btn-confirm-publish" style="background: #00E676; color: #000000; border-color: #00E676;">
+          ✔ [ CONFIRM PUBLICATION ]
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL 5: REPORT VERSION HISTORY & RESTORE MODAL
+       ========================================================================= -->
+  <div class="admin-modal-overlay" id="version-history-modal" role="dialog" aria-modal="true" aria-labelledby="ver-modal-heading" style="display: none;">
+    <div class="admin-modal-box" style="max-width: 820px;">
+      <div class="modal-badge-info">REPORT VERSION CONTROL</div>
+      <h3 class="modal-heading" id="ver-modal-heading">VERSION HISTORY &amp; SNAPSHOTS</h3>
+      <p class="modal-desc">Immutable history of all draft saves, status changes, and published snapshots in SQLite.</p>
+
+      <div class="admin-table-container" style="max-height: 340px; overflow-y: auto; margin: 1.2rem 0;">
+        <table class="admin-data-table">
+          <thead>
+            <tr>
+              <th>VERSION</th>
+              <th>STATUS</th>
+              <th>SAVED BY</th>
+              <th>TIMESTAMP (UTC)</th>
+              <th>CHANGE SUMMARY</th>
+              <th style="text-align: right;">ACTION</th>
+            </tr>
+          </thead>
+          <tbody id="version-history-tbody">
+            <!-- Populated dynamically -->
+          </tbody>
+        </table>
+      </div>
+
+      <div class="modal-actions-row">
+        <button type="button" class="btn-modal-cancel" id="btn-close-version-modal" style="width: 100%;">[ CLOSE ]</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL 6: REPORT RESULT / AWARD CORRECTION MODAL
+       ========================================================================= -->
+  <div class="admin-modal-overlay" id="result-correction-modal" role="dialog" aria-modal="true" aria-labelledby="corr-modal-heading" style="display: none;">
+    <div class="admin-modal-box">
+      <div class="modal-badge-warn">AUDITED REPORT ADJUSTMENT</div>
+      <h3 class="modal-heading" id="corr-modal-heading">EDIT WINNER / AWARD DESIGNATION</h3>
+      <p class="modal-desc">Adjusting report award designation for <strong id="corr-team-id" style="color: #FFFFFF;">TX-2026-TEAM</strong>.</p>
+
+      <div style="text-align: left; margin: 1.2rem 0;">
+        <label for="corr-winner-pos" style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--color-text-secondary); display: block; margin-bottom: 4px;">WINNER POSITION / RANK:</label>
+        <input type="text" id="corr-winner-pos" class="form-input" style="width: 100%; margin-bottom: 1rem;">
+
+        <label for="corr-recognition" style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--color-text-secondary); display: block; margin-bottom: 4px;">SPECIAL RECOGNITION TITLE:</label>
+        <input type="text" id="corr-recognition" class="form-input" style="width: 100%; margin-bottom: 1rem;">
+
+        <label for="corr-reason" style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--color-text-secondary); display: block; margin-bottom: 4px;">MANDATORY AUDIT REASON:</label>
+        <textarea id="corr-reason" class="form-input" rows="2" placeholder="Reason for award adjustment (e.g. Tie-breaker forensic accuracy verified by faculty committee)..." required style="width: 100%; resize: vertical;"></textarea>
+      </div>
+
+      <div class="modal-actions-row">
+        <button type="button" class="btn-modal-cancel" id="btn-cancel-correction">[ CANCEL ]</button>
+        <button type="button" class="btn-modal-proceed" id="btn-commit-correction">[ COMMIT CORRECTION ]</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL 7: DISCARD UNSAVED CHANGES MODAL
+       ========================================================================= -->
+  <div class="admin-modal-overlay" id="discard-confirm-modal" role="dialog" aria-modal="true" aria-labelledby="disc-modal-heading" style="display: none;">
+    <div class="admin-modal-box">
+      <div class="modal-badge-warn">DISCARD CONFIRMATION</div>
+      <h3 class="modal-heading" id="disc-modal-heading">DISCARD UNSAVED EDITS?</h3>
+      <p class="modal-desc">Are you sure you want to discard your unsaved draft modifications? Any text or setting edits made since the last draft save will be lost.</p>
+
+      <div class="modal-actions-row">
+        <button type="button" class="btn-modal-cancel" id="btn-cancel-discard">[ KEEP EDITING ]</button>
+        <button type="button" class="btn-modal-proceed" id="btn-confirm-discard" style="background: #E50924; color: #FFFFFF; border-color: #FF2438;">
+          ✖ [ DISCARD EDITS ]
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL 8: QUESTION EDITOR MODAL
+       ========================================================================= -->
+  <div class="admin-modal-overlay" id="question-editor-modal" role="dialog" aria-modal="true" aria-labelledby="q-modal-heading" style="display: none;">
+    <div class="admin-modal-box" style="max-width: 820px;">
+      <div class="modal-badge-info" id="q-modal-badge">QUESTION BANK EDITOR</div>
+      <h3 class="modal-heading" id="q-modal-heading">EDIT QUESTION</h3>
+      <p class="modal-desc" id="q-modal-subdesc">Configure question text, four options, authoritative answer key, and forensic weightage.</p>
+
+      <form id="question-editor-form" style="text-align: left; margin: 1.2rem 0;">
+        <input type="hidden" id="q-edit-id">
+        <input type="hidden" id="q-edit-case-id">
+        <input type="hidden" id="q-edit-round">
+
+        <div class="cq-form-grid-3" style="margin-bottom: 1rem;">
+          <div>
+            <label class="cq-label" for="q-edit-order-num">QUESTION ORDER (#1–15):</label>
+            <input type="number" id="q-edit-order-num" class="form-input" min="1" max="15" value="1" required style="width: 100%;">
+          </div>
+          <div>
+            <label class="cq-label" for="q-edit-marks">INTERNAL MARKS / WEIGHT:</label>
+            <input type="number" id="q-edit-marks" class="form-input" min="1" max="10" value="1" required style="width: 100%;">
+          </div>
+          <div>
+            <label class="cq-label" for="q-edit-correct-ans">AUTHORITATIVE ANSWER KEY:</label>
+            <select id="q-edit-correct-ans" class="admin-filter-dropdown" style="width: 100%; font-weight: 700; color: #00E676;">
+              <option value="A">OPTION A (Authoritative Correct)</option>
+              <option value="B">OPTION B (Authoritative Correct)</option>
+              <option value="C">OPTION C (Authoritative Correct)</option>
+              <option value="D">OPTION D (Authoritative Correct)</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 1rem;">
+          <label class="cq-label" for="q-edit-text">QUESTION TEXT:</label>
+          <textarea id="q-edit-text" class="form-input" rows="3" placeholder="Enter cyber forensic question text..." required style="width: 100%; resize: vertical;"></textarea>
+        </div>
+
+        <!-- 4 Options Grid -->
+        <div style="margin-bottom: 1rem;">
+          <div class="cq-label" style="margin-bottom: 6px;">FOUR ANSWER OPTIONS (ALL 4 REQUIRED):</div>
+          
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem;">
+            <div class="q-opt-input-box">
+              <span class="q-opt-prefix">A</span>
+              <input type="text" id="q-edit-opt-a" class="form-input" placeholder="Option A text..." required style="width: 100%;">
+            </div>
+
+            <div class="q-opt-input-box">
+              <span class="q-opt-prefix">B</span>
+              <input type="text" id="q-edit-opt-b" class="form-input" placeholder="Option B text..." required style="width: 100%;">
+            </div>
+
+            <div class="q-opt-input-box">
+              <span class="q-opt-prefix">C</span>
+              <input type="text" id="q-edit-opt-c" class="form-input" placeholder="Option C text..." required style="width: 100%;">
+            </div>
+
+            <div class="q-opt-input-box">
+              <span class="q-opt-prefix">D</span>
+              <input type="text" id="q-edit-opt-d" class="form-input" placeholder="Option D text..." required style="width: 100%;">
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 1rem;">
+          <label class="cq-label" for="q-edit-evidence-ref">ASSOCIATED EVIDENCE REFERENCE / INVESTIGATION CLUE:</label>
+          <input type="text" id="q-edit-evidence-ref" class="form-input" placeholder="e.g. Email Header Log / Wireshark .pcap Trace" style="width: 100%;">
+        </div>
+
+        <!-- Duplicate Warning Box (Hidden unless triggered) -->
+        <div id="q-duplicate-alert-box" style="display: none; background: rgba(229, 9, 36, 0.15); border: 1px solid var(--color-crimson); padding: 0.8rem; border-radius: 4px; margin-bottom: 1rem;">
+          <span style="color: #FF2438; font-weight: 700; font-family: var(--font-mono); font-size: 0.76rem;">⚠ DUPLICATE QUESTION TEXT FLAGGED:</span>
+          <p id="q-dup-alert-desc" style="font-size: 0.78rem; color: #FFFFFF; margin: 4px 0 0 0;"></p>
+          <label style="display: flex; align-items: center; gap: 6px; font-size: 0.75rem; color: #C4C4C4; margin-top: 6px; cursor: pointer;">
+            <input type="checkbox" id="q-dup-override-check">
+            Save anyway (Override duplicate text warning)
+          </label>
+        </div>
+
+        <div class="modal-actions-row">
+          <button type="button" class="btn-modal-cancel" id="btn-cancel-question-editor">[ CANCEL ]</button>
+          <button type="submit" class="btn-modal-proceed" id="btn-save-question-submit">💾 [ COMMIT QUESTION ]</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL 9: EMERGENCY QUESTION / CASE EDIT CONFIRMATION MODAL
+       ========================================================================= -->
+  <div class="admin-modal-overlay" id="emergency-edit-modal" role="dialog" aria-modal="true" aria-labelledby="emerg-modal-heading" style="display: none;">
+    <div class="admin-modal-box" style="border-color: #FF2438; box-shadow: 0 0 40px rgba(229, 9, 36, 0.5);">
+      <div class="modal-badge-warn" style="background: rgba(229, 9, 36, 0.2); color: #FF2438; border-color: #FF2438;">
+        ⚠ EVENT ACTIVE // MANDATORY AUDIT
+      </div>
+      <h3 class="modal-heading" id="emerg-modal-heading">CONFIRM EMERGENCY MODIFICATION</h3>
+      <p class="modal-desc">
+        The investigation event is currently <strong style="color: #FF2438;">ACTIVE / IN PROGRESS</strong>. Question sets, evidence files, and answer keys are locked by default to protect candidate integrity.
+      </p>
+      <p class="modal-desc" style="font-size: 0.78rem; color: #C4C4C4; margin-top: -6px;">
+        To prevent accidental modifications, you must provide an authoritative justification. The administrator ID, previous value, new value, and timestamp will be permanently written to the SQLite security audit log.
+      </p>
+
+      <div style="text-align: left; margin: 1.2rem 0;">
+        <label for="emergency-reason-input" style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--color-crimson-bright); display: block; margin-bottom: 4px; font-weight: 700;">
+          MANDATORY AUDIT REASON FOR EMERGENCY EDIT:
+        </label>
+        <textarea id="emergency-reason-input" class="form-input" rows="3" placeholder="Enter reason (e.g. Corrected typo in Option C approved by Technical Committee)..." required style="width: 100%; resize: vertical; border-color: rgba(229, 9, 36, 0.6);"></textarea>
+
+        <label style="display: flex; align-items: center; gap: 8px; font-family: var(--font-mono); font-size: 0.74rem; color: #FFFFFF; margin-top: 10px; cursor: pointer;">
+          <input type="checkbox" id="emergency-confirm-checkbox">
+          I confirm that this emergency modification has been authorized by the Faculty Technical Committee.
+        </label>
+      </div>
+
+      <div class="modal-actions-row">
+        <button type="button" class="btn-modal-cancel" id="btn-cancel-emergency">[ ABORT CHANGE ]</button>
+        <button type="button" class="btn-modal-proceed" id="btn-commit-emergency" style="background: #E50924; color: #FFFFFF; border-color: #FF2438;" disabled>
+          ⚠ [ COMMIT EMERGENCY MODIFICATION ]
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL 10: PARTICIPANT CASE CARD PREVIEW MODAL
+       ========================================================================= -->
+  <div class="admin-modal-overlay" id="participant-card-preview-modal" role="dialog" aria-modal="true" aria-labelledby="prev-card-heading" style="display: none;">
+    <div class="admin-modal-box" style="max-width: 620px;">
+      <div class="modal-badge-info">STUDENT VIEW SIMULATION</div>
+      <h3 class="modal-heading" id="prev-card-heading">PARTICIPANT CASE SELECTION PREVIEW</h3>
+      <p class="modal-desc">
+        This is exactly how candidates view this case during case selection. Note: Difficulty ratings, question counts, internal marks, and answer keys are strictly excluded.
+      </p>
+
+      <!-- Simulated Participant Card -->
+      <div class="simulated-participant-card">
+        <div class="sim-card-badge">CASE SELECTION DOSSIER</div>
+        <h4 class="sim-card-title" id="sim-prev-case-name">CASE 01 — STOLEN SOCIAL MEDIA ACCOUNT</h4>
+        <p class="sim-card-desc" id="sim-prev-case-desc">A student's social media account has been taken over. Find how the attacker gained access.</p>
+        <div class="sim-card-action">
+          <button type="button" class="sim-card-btn" disabled>[ SELECT THIS CASE ]</button>
+        </div>
+      </div>
+
+      <div class="sim-privacy-guarantee">
+        ✔ PRIVACY VERIFIED: No difficulty level · No internal marks · No question counts · No answer keys
+      </div>
+
+      <div class="modal-actions-row" style="margin-top: 1.4rem;">
+        <button type="button" class="btn-modal-cancel" id="btn-close-card-preview" style="width: 100%;">[ CLOSE PREVIEW ]</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL 11: CASE & QUESTION READINESS VALIDATION AUDIT MODAL
+       ========================================================================= -->
+  <div class="admin-modal-overlay" id="cases-validation-modal" role="dialog" aria-modal="true" aria-labelledby="val-modal-heading" style="display: none;">
+    <div class="admin-modal-box" style="max-width: 860px;">
+      <div class="modal-badge-info">PRE-EVENT READINESS AUDIT</div>
+      <h3 class="modal-heading" id="val-modal-heading">CASE &amp; QUESTION BANK READINESS AUDIT</h3>
+      <p class="modal-desc">Verification report checking all 15 cases, 15 Round 1 questions, 15 Round 2 questions (450 total), answer key integrity, and duplicate detection.</p>
+
+      <div class="val-summary-banner" id="val-summary-banner">
+        <!-- Dynamically rendered summary status -->
+      </div>
+
+      <div class="admin-table-container" style="max-height: 340px; overflow-y: auto; margin: 1.2rem 0;">
+        <table class="admin-data-table">
+          <thead>
+            <tr>
+              <th>CASE ID</th>
+              <th>CASE NAME</th>
+              <th>ROUND 1 (REQ: 15)</th>
+              <th>ROUND 2 (REQ: 15)</th>
+              <th>READINESS STATUS</th>
+              <th>ISSUES</th>
+            </tr>
+          </thead>
+          <tbody id="val-cases-tbody">
+            <!-- Dynamically populated -->
+          </tbody>
+        </table>
+      </div>
+
+      <div class="modal-actions-row">
+        <button type="button" class="btn-modal-cancel" id="btn-close-val-modal" style="width: 100%;">[ CLOSE AUDIT REPORT ]</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL 12: ROUND PREVIEW MODAL
+       ========================================================================= -->
+  <div class="admin-modal-overlay" id="round-preview-modal" role="dialog" aria-modal="true" aria-labelledby="rprev-modal-heading" style="display: none;">
+    <div class="admin-modal-box" style="max-width: 860px;">
+      <div class="modal-badge-info">INVESTIGATION ROUND SIMULATION</div>
+      <h3 class="modal-heading" id="rprev-modal-heading">PREVIEW ROUND</h3>
+      <p class="modal-desc">Sequential candidate-facing preview of all 15 questions in this round.</p>
+
+      <div class="rprev-questions-scroll" id="rprev-questions-scroll" style="max-height: 440px; overflow-y: auto; margin: 1.2rem 0; padding-right: 8px;">
+        <!-- Dynamically populated with all 15 questions -->
+      </div>
+
+      <div class="modal-actions-row">
+        <button type="button" class="btn-modal-cancel" id="btn-close-round-preview" style="width: 100%;">[ CLOSE ROUND PREVIEW ]</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL 13: DATABASE BACKUP DETAILS MODAL
+       ========================================================================= -->
+  <div class="admin-modal-overlay" id="backup-details-modal" role="dialog" aria-modal="true" aria-labelledby="bkp-modal-heading" style="display: none;">
+    <div class="admin-modal-box" style="max-width: 620px;">
+      <div class="modal-badge-info">BACKUP METADATA &amp; INTEGRITY</div>
+      <h3 class="modal-heading" id="bkp-modal-heading">BACKUP ARCHIVE DETAILS</h3>
+      <p class="modal-desc">Verified SQLite physical archive snapshot metadata.</p>
+
+      <div class="team-modal-grid" style="margin: 1.2rem 0;">
+        <div class="t-item"><span class="k">BACKUP ID</span><span class="v" id="bdt-id">--</span></div>
+        <div class="t-item"><span class="k">FILENAME</span><span class="v" id="bdt-filename">--</span></div>
+        <div class="t-item"><span class="k">CREATED AT</span><span class="v" id="bdt-created-at">--</span></div>
+        <div class="t-item"><span class="k">CREATED BY</span><span class="v" id="bdt-created-by">--</span></div>
+        <div class="t-item"><span class="k">FILE SIZE</span><span class="v" id="bdt-filesize">--</span></div>
+        <div class="t-item"><span class="k">STATUS</span><span class="v" id="bdt-status" style="color: #00E676;">--</span></div>
+      </div>
+
+      <div class="backup-table-stats-box">
+        <div style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--color-crimson-bright); font-weight: 700; margin-bottom: 0.5rem;">
+          DATABASE SNAPSHOT INTEGRITY:
+        </div>
+        <div class="bdt-stats-grid" id="bdt-stats-grid">
+          <!-- Populated dynamically with row counts -->
+        </div>
+      </div>
+
+      <div class="modal-actions-row" style="margin-top: 1.4rem;">
+        <button type="button" class="btn-modal-cancel" id="btn-close-bkp-details" style="width: 100%;">[ CLOSE ]</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL 14: DETAILED ANSWER REVIEW MODAL (ROUNDS 1 & 2)
+       ========================================================================= -->
+  <div class="admin-modal-overlay" id="detailed-answer-review-modal" role="dialog" aria-modal="true" aria-labelledby="dar-modal-heading" style="display: none;">
+    <div class="admin-modal-box" style="max-width: 980px; max-height: 90vh; display: flex; flex-direction: column; padding: 1.8rem; text-align: left;">
+      
+      <!-- Top Modal Header -->
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 0.8rem;">
+        <div>
+          <div class="modal-badge-info" style="margin-bottom: 0.4rem;">SUBMISSION DOSSIER // AUTHORITATIVE AUDIT</div>
+          <h3 class="modal-heading" id="dar-modal-heading" style="margin: 0; font-size: 1.25rem;">DETAILED ANSWER &amp; EVALUATION REVIEW</h3>
+        </div>
+        <button type="button" class="btn-modal-cancel" id="btn-close-dar-modal-x" style="padding: 0.3rem 0.8rem; font-size: 1.1rem; line-height: 1;">&times;</button>
+      </div>
+
+      <!-- Team Meta Strip -->
+      <div class="dar-meta-strip" style="background: #08080A; border: 1px solid rgba(255,255,255,0.08); border-radius: 4px; padding: 0.8rem 1rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.8rem; margin-bottom: 1rem;">
+        <div>
+          <span style="font-family: var(--font-mono); font-size: 0.62rem; color: var(--color-text-muted); display: block;">TEAM IDENTIFIER</span>
+          <strong style="font-family: var(--font-mono); font-size: 0.88rem; color: #FFFFFF;" id="dar-team-id">--</strong>
+        </div>
+        <div>
+          <span style="font-family: var(--font-mono); font-size: 0.62rem; color: var(--color-text-muted); display: block;">TEAM NAME</span>
+          <strong style="font-family: var(--font-mono); font-size: 0.88rem; color: #FFFFFF;" id="dar-team-name">--</strong>
+        </div>
+        <div style="grid-column: span 2;">
+          <span style="font-family: var(--font-mono); font-size: 0.62rem; color: var(--color-text-muted); display: block;">SELECTED CASE DOSSIER</span>
+          <strong style="font-family: var(--font-mono); font-size: 0.82rem; color: var(--color-crimson-bright);" id="dar-case-name">--</strong>
+        </div>
+        <div>
+          <span style="font-family: var(--font-mono); font-size: 0.62rem; color: var(--color-text-muted); display: block;">SYSTEM TOTAL SCORE</span>
+          <strong style="font-family: var(--font-mono); font-size: 1.05rem; color: #00E676;" id="dar-overall-score">-- / 30</strong>
+        </div>
+        <div>
+          <span style="font-family: var(--font-mono); font-size: 0.62rem; color: var(--color-text-muted); display: block;">EVALUATION AUDIT</span>
+          <span class="status-pill badge-registered" id="dar-corrections-badge" style="font-size: 0.68rem;">AUTOMATED</span>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs: Round 1 vs Round 2 -->
+      <div class="dar-tabs-bar" style="display: flex; gap: 0.5rem; border-bottom: 1.5px solid rgba(229, 9, 36, 0.4); margin-bottom: 1rem;">
+        <button type="button" class="btn-action-primary dar-round-tab active" id="btn-dar-tab-r1" data-round="1" style="font-size: 0.82rem; padding: 0.6rem 1.4rem;">
+          ROUND 1 — ANSWER REVIEW (15 QUESTIONS)
+        </button>
+        <button type="button" class="btn-action-dark dar-round-tab" id="btn-dar-tab-r2" data-round="2" style="font-size: 0.82rem; padding: 0.6rem 1.4rem;">
+          ROUND 2 — ANSWER REVIEW (15 QUESTIONS)
+        </button>
+      </div>
+
+      <!-- Round Summary Telemetry Bar -->
+      <div id="dar-round-summary" style="background: rgba(229, 9, 36, 0.08); border: 1px solid rgba(229, 9, 36, 0.25); border-radius: 4px; padding: 0.7rem 1rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.8rem; margin-bottom: 1rem; font-family: var(--font-mono); font-size: 0.74rem;">
+        <div><span>TOTAL QUESTIONS:</span> <strong style="color: #FFFFFF;">15</strong></div>
+        <div><span>SUBMITTED:</span> <strong style="color: #FFFFFF;" id="dar-sum-submitted">--</strong></div>
+        <div><span>CORRECT:</span> <strong style="color: #00E676;" id="dar-sum-correct">--</strong></div>
+        <div><span>INCORRECT:</span> <strong style="color: #FF2438;" id="dar-sum-incorrect">--</strong></div>
+        <div><span>UNANSWERED:</span> <strong style="color: #A0A0A0;" id="dar-sum-unanswered">--</strong></div>
+        <div style="border-left: 1px solid rgba(255,255,255,0.15); padding-left: 0.8rem;">
+          <span>ROUND RESULT:</span> <strong style="color: #00E676; font-size: 0.92rem;" id="dar-sum-score">-- / 15</strong>
+        </div>
+      </div>
+
+      <!-- Scrollable Questions Container (All 15 Questions) -->
+      <div class="dar-questions-scroll" id="dar-questions-container" style="flex: 1; overflow-y: auto; padding-right: 0.6rem; display: flex; flex-direction: column; gap: 1rem;">
+        <!-- Dynamically injected questions -->
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="modal-actions-row" style="margin-top: 1.2rem; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 0.8rem;">
+        <button type="button" class="btn-modal-cancel" id="btn-close-dar-modal" style="width: 100%;">[ CLOSE ANSWER REVIEW ]</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL 15: EVALUATION MARK CORRECTION MODAL
+       ========================================================================= -->
+  <div class="admin-modal-overlay" id="mark-correction-modal" role="dialog" aria-modal="true" aria-labelledby="mc-modal-heading" style="display: none;">
+    <div class="admin-modal-box" style="max-width: 640px; text-align: left;">
+      <div class="modal-badge-warn">MANDATORY AUDIT // EVALUATION CORRECTION</div>
+      <h3 class="modal-heading" id="mc-modal-heading" style="margin: 0.4rem 0 0.8rem 0;">ADJUST QUESTION EVALUATION MARK</h3>
+      <p class="modal-desc" style="font-size: 0.8rem; margin-bottom: 1rem;">
+        Correct a specific question mark when a verified scoring error or committee-approved alternative is identified. The original automatically calculated score is preserved and full details are recorded in the security audit log.
+      </p>
+
+      <div style="background: #08080A; border: 1px solid rgba(255,255,255,0.08); padding: 0.8rem 1rem; border-radius: 4px; margin-bottom: 1rem; font-family: var(--font-mono); font-size: 0.74rem; display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+        <div><span>TEAM ID:</span> <strong style="color: #FFFFFF;" id="mc-team-id">--</strong></div>
+        <div><span>ROUND &amp; QUESTION:</span> <strong style="color: #FFFFFF;" id="mc-q-num">--</strong></div>
+        <div style="grid-column: span 2;"><span>QUESTION ID:</span> <span style="color: var(--color-crimson-bright);" id="mc-q-id">--</span></div>
+        <div style="grid-column: span 2; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 0.4rem;">
+          <span>SUBMITTED ANSWER:</span> <strong style="color: #FFFFFF;" id="mc-sub-ans">--</strong>
+        </div>
+        <div style="grid-column: span 2;">
+          <span>OFFICIAL ANSWER KEY:</span> <strong style="color: #00E676;" id="mc-key-ans">--</strong>
+        </div>
+        <div style="grid-column: span 2;">
+          <span>CURRENT MARK AWARDED:</span> <strong style="color: var(--color-amber-bright);" id="mc-current-mark">--</strong>
+        </div>
+      </div>
+
+      <div style="margin-bottom: 1rem;">
+        <label for="mc-new-mark" style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--color-crimson-bright); font-weight: 700; display: block; margin-bottom: 4px;">
+          ADJUSTED MARK AWARDED:
+        </label>
+        <select id="mc-new-mark" class="admin-filter-dropdown" style="width: 100%;">
+          <option value="1">1 MARK (AWARD POINT / MARK AS CORRECT)</option>
+          <option value="0">0 MARKS (DEDUCT POINT / MARK AS INCORRECT)</option>
+        </select>
+      </div>
+
+      <div style="margin-bottom: 1rem;">
+        <label for="mc-reason-input" style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--color-crimson-bright); font-weight: 700; display: block; margin-bottom: 4px;">
+          MANDATORY DOCUMENTED JUSTIFICATION:
+        </label>
+        <textarea id="mc-reason-input" class="form-input" rows="3" placeholder="Provide documented reason (e.g. Faculty panel verified ambiguous clue interpretation / corrected scoring discrepancy)..." required style="width: 100%; resize: vertical;"></textarea>
+      </div>
+
+      <div style="margin-bottom: 1.2rem;">
+        <label style="display: flex; align-items: center; gap: 8px; font-family: var(--font-mono); font-size: 0.74rem; color: #FFFFFF; cursor: pointer;">
+          <input type="checkbox" id="mc-confirm-checkbox">
+          I confirm that this mark adjustment is justified, authorized, and ready to be audited.
+        </label>
+      </div>
+
+      <div class="modal-actions-row">
+        <button type="button" class="btn-modal-cancel" id="btn-cancel-mark-correction">[ CANCEL ]</button>
+        <button type="button" class="btn-modal-proceed" id="btn-commit-mark-correction" disabled style="background: #E50924; border-color: #FF2438;">
+          💾 [ COMMIT CORRECTION &amp; RECALCULATE ]
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL 16: AUTHORIZED FINAL-DECISION WINNER OVERRIDE MODAL
+       ========================================================================= -->
+  <div class="admin-modal-overlay" id="winner-override-modal" role="dialog" aria-modal="true" aria-labelledby="wo-modal-heading" style="display: none;">
+    <div class="admin-modal-box" style="max-width: 680px; text-align: left;">
+      <div class="modal-badge-warn">OFFICIAL EVENT GOVERNANCE // JUDGES DECISION</div>
+      <h3 class="modal-heading" id="wo-modal-heading" style="margin: 0.4rem 0 0.8rem 0;">AUTHORIZED FINAL-DECISION OVERRIDE</h3>
+      <p class="modal-desc" style="font-size: 0.8rem; margin-bottom: 1rem;">
+        Record an officially approved winner or final decision when documented rules, judging procedures, or verified corrections justify it. The system-calculated scores and rankings remain completely preserved.
+      </p>
+
+      <!-- Status Comparison -->
+      <div style="background: #08080A; border: 1px solid rgba(255,255,255,0.08); padding: 0.8rem 1rem; border-radius: 4px; margin-bottom: 1.2rem; font-family: var(--font-mono); font-size: 0.74rem;">
+        <div style="margin-bottom: 0.4rem;">
+          <span style="color: #00E676; font-weight: 700;">SYSTEM-CALCULATED WINNER (RANK 1):</span>
+          <div style="color: #FFFFFF; font-size: 0.84rem; margin-top: 2px;" id="wo-sys-winner-display">TX-2026-TEAM — TEAM NAME (Score: --/30)</div>
+        </div>
+        <div style="border-top: 1px solid rgba(255,255,255,0.06); padding-top: 0.4rem;">
+          <span style="color: var(--color-crimson-bright); font-weight: 700;">CURRENT DECLARED WINNER:</span>
+          <div style="color: #FFFFFF; font-size: 0.84rem; margin-top: 2px;" id="wo-decl-winner-display">SYSTEM DEFAULT</div>
+        </div>
+      </div>
+
+      <div style="margin-bottom: 1rem;">
+        <label for="wo-winner-select" style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--color-crimson-bright); font-weight: 700; display: block; margin-bottom: 4px;">
+          SELECT OFFICIALLY APPROVED WINNER:
+        </label>
+        <select id="wo-winner-select" class="admin-filter-dropdown" style="width: 100%;">
+          <option value="">-- Select Winner Team --</option>
+        </select>
+      </div>
+
+      <div style="margin-bottom: 1rem;">
+        <label for="wo-reason-input" style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--color-crimson-bright); font-weight: 700; display: block; margin-bottom: 4px;">
+          MANDATORY WRITTEN JUSTIFICATION:
+        </label>
+        <textarea id="wo-reason-input" class="form-input" rows="3" placeholder="State official event rationale (e.g. Faculty jury evaluated live forensic defence presentation / verified tiebreaker criteria)..." required style="width: 100%; resize: vertical;"></textarea>
+      </div>
+
+      <div style="margin-bottom: 1.2rem;">
+        <label style="display: flex; align-items: center; gap: 8px; font-family: var(--font-mono); font-size: 0.74rem; color: #FFFFFF; cursor: pointer;">
+          <input type="checkbox" id="wo-confirm-checkbox">
+          I confirm this final-decision override is authorized by the Judges Panel / Technical Committee.
+        </label>
+      </div>
+
+      <div class="modal-actions-row">
+        <button type="button" class="btn-modal-cancel" id="btn-cancel-winner-override">[ CANCEL ]</button>
+        <button type="button" class="btn-modal-proceed" id="btn-commit-winner-override" disabled style="background: #E50924; border-color: #FF2438;">
+          ⚖ [ COMMIT WINNER OVERRIDE ]
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL 17: FINALIZE RESULTS VALIDATION MODAL
+       ========================================================================= -->
+  <div class="admin-modal-overlay" id="finalize-results-modal" role="dialog" aria-modal="true" aria-labelledby="fin-modal-heading" style="display: none;">
+    <div class="admin-modal-box" style="max-width: 680px; text-align: left;">
+      <div class="modal-badge-info">PRE-FINALIZATION INTEGRITY CHECK</div>
+      <h3 class="modal-heading" id="fin-modal-heading" style="margin: 0.4rem 0 0.8rem 0;">FINALIZE EVALUATION RESULTS</h3>
+      <p class="modal-desc" style="font-size: 0.8rem; margin-bottom: 1rem;">
+        All 7 event criteria must be validated before sealing evaluation results. Once finalized, ordinary editing will be locked.
+      </p>
+
+      <!-- 7 Checkpoints Checklist -->
+      <div style="background: #08080A; border: 1px solid rgba(255,255,255,0.08); padding: 0.9rem 1.1rem; border-radius: 4px; margin-bottom: 1.2rem; font-family: var(--font-mono); font-size: 0.72rem; line-height: 1.6;">
+        <div style="color: #00E676;">✔ 1. All eligible teams completed or reached valid terminal session state.</div>
+        <div style="color: #00E676;">✔ 2. Both Round 1 and Round 2 have valid submission records.</div>
+        <div style="color: #00E676;">✔ 3. Evaluation completed successfully across all 30 questions.</div>
+        <div style="color: #00E676;">✔ 4. Result calculations and weightages mathematically verified.</div>
+        <div style="color: #00E676;">✔ 5. All manual corrections contain documented justifications.</div>
+        <div style="color: #00E676;">✔ 6. Any final-decision override contains an authoritative reason.</div>
+        <div style="color: #00E676;">✔ 7. No unresolved evaluation or database checksum errors remain.</div>
+      </div>
+
+      <!-- Final Review Summary -->
+      <div style="background: rgba(229, 9, 36, 0.08); border: 1px solid rgba(229, 9, 36, 0.25); padding: 0.8rem 1rem; border-radius: 4px; margin-bottom: 1.2rem; font-family: var(--font-mono); font-size: 0.74rem;">
+        <div style="margin-bottom: 0.3rem;">EVALUATED TEAMS COUNT: <strong style="color: #FFFFFF;" id="fin-teams-count">--</strong></div>
+        <div style="margin-bottom: 0.3rem;">SYSTEM-CALCULATED WINNER: <strong style="color: #00E676;" id="fin-sys-winner">--</strong></div>
+        <div>OFFICIALLY DECLARED WINNER: <strong style="color: var(--color-crimson-bright);" id="fin-decl-winner">--</strong></div>
+      </div>
+
+      <div style="margin-bottom: 1.2rem;">
+        <label style="display: flex; align-items: center; gap: 8px; font-family: var(--font-mono); font-size: 0.74rem; color: #FFFFFF; cursor: pointer;">
+          <input type="checkbox" id="fin-confirm-checkbox">
+          I confirm that answer reviews, corrections, and winner evaluations are complete and ready to be locked.
+        </label>
+      </div>
+
+      <div class="modal-actions-row">
+        <button type="button" class="btn-modal-cancel" id="btn-cancel-finalize">[ CANCEL ]</button>
+        <button type="button" class="btn-modal-proceed" id="btn-commit-finalize" disabled style="background: #E50924; border-color: #FF2438;">
+          🔒 [ CONFIRM &amp; FINALIZE RESULTS ]
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL 18: PUBLISH RESULTS CONFIRMATION MODAL
+       ========================================================================= -->
+  <div class="admin-modal-overlay" id="publish-results-modal" role="dialog" aria-modal="true" aria-labelledby="pub-modal-heading" style="display: none;">
+    <div class="admin-modal-box" style="max-width: 600px; text-align: left;">
+      <div class="modal-badge-warn">CANDIDATE PORTAL RELEASE // IRREVERSIBLE ACTION</div>
+      <h3 class="modal-heading" id="pub-modal-heading" style="margin: 0.4rem 0 0.8rem 0;">PUBLISH FINAL RESULTS?</h3>
+      <p class="modal-desc" style="font-size: 0.82rem; margin-bottom: 1rem;">
+        Confirm that answer reviews, evaluation corrections and final decisions have been checked.
+      </p>
+
+      <div style="background: #08080A; border: 1px solid rgba(255,255,255,0.08); padding: 0.8rem 1rem; border-radius: 4px; margin-bottom: 1.2rem; font-family: var(--font-mono); font-size: 0.74rem;">
+        <div style="margin-bottom: 0.3rem;">FINALIZATION STATUS: <strong style="color: #00E676;" id="pub-fin-status">VERIFIED FINALIZED</strong></div>
+        <div>OFFICIAL EVENT CHAMPION: <strong style="color: #FFFFFF;" id="pub-winner-name">--</strong></div>
+      </div>
+
+      <p style="font-size: 0.75rem; color: var(--color-text-muted); margin-bottom: 1.2rem;">
+        Upon publication, authenticated candidates will immediately be able to view their official qualification outcome on results.html. Score privacy rules remain active.
+      </p>
+
+      <div style="margin-bottom: 1.2rem;">
+        <label style="display: flex; align-items: center; gap: 8px; font-family: var(--font-mono); font-size: 0.74rem; color: #FFFFFF; cursor: pointer;">
+          <input type="checkbox" id="pub-confirm-checkbox">
+          I confirm that all checks have passed and results are approved for immediate publication.
+        </label>
+      </div>
+
+      <div class="modal-actions-row">
+        <button type="button" class="btn-modal-cancel" id="btn-cancel-publish">[ CANCEL ]</button>
+        <button type="button" class="btn-modal-proceed" id="btn-commit-publish" disabled style="background: #00E676; color: #000000; border-color: #00E676;">
+          ✔ [ CONFIRM PUBLICATION ]
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SURREAL: Edit Score Modal -->
+  <div class="admin-modal-overlay" id="surreal-edit-modal" role="dialog" aria-modal="true" aria-labelledby="surreal-modal-heading" style="display: none;">
+    <div class="admin-modal-box" style="max-width: 580px; text-align: left;">
+      <div class="modal-badge-warn">SURREAL // SCORE ADJUSTMENT</div>
+      <h3 class="modal-heading" id="surreal-modal-heading" style="margin-bottom: 0.5rem;">EDIT FINAL SCORE</h3>
+      <p class="modal-desc" style="margin-bottom: 1.25rem;">
+        Modify the authoritative final score for this participant.
+      </p>
+
+      <!-- Read-only Team & Score Context Box -->
+      <div style="background: var(--color-surface-secondary); border: 1px solid var(--color-border); border-radius: 6px; padding: 1rem 1.25rem; margin-bottom: 1.25rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+          <span style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--color-text-muted);">TEAM ID:</span>
+          <span style="font-family: var(--font-mono); font-weight: 700; color: #FFFFFF;" id="surreal-modal-team-id">--</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+          <span style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--color-text-muted);">TEAM NAME:</span>
+          <span style="font-weight: 600; color: #FFFFFF;" id="surreal-modal-team-name">--</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center;" id="surreal-modal-curr-score-row">
+          <span style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--color-text-muted);">CURRENT FINAL SCORE:</span>
+          <span style="font-family: var(--font-mono); font-weight: 700; color: #FFFFFF;" id="surreal-modal-curr-score">-- / 30</span>
+        </div>
+      </div>
+
+      <!-- Form Inputs -->
+      <div style="display: flex; flex-direction: column; gap: 1rem; margin-bottom: 1.5rem;">
+        <div>
+          <label for="surreal-input-score" style="display: block; font-family: var(--font-mono); font-size: 0.72rem; font-weight: 700; color: var(--color-text-secondary); margin-bottom: 0.4rem;">
+            NEW FINAL SCORE (0 - 30)*
+          </label>
+          <input type="number" id="surreal-input-score" min="0" max="30" step="1" class="admin-search-field" style="background: var(--color-surface-secondary); border: 1px solid var(--color-border); border-radius: 4px; padding: 0.65rem 0.85rem; width: 100%; box-sizing: border-box; font-family: var(--font-mono); font-size: 1rem; font-weight: 700; color: #FFFFFF;" placeholder="Enter whole integer score (0 - 30)">
+        </div>
+
+        <div>
+          <label for="surreal-input-reason" style="display: block; font-family: var(--font-mono); font-size: 0.72rem; font-weight: 700; color: var(--color-text-secondary); margin-bottom: 0.4rem;">
+            REASON FOR MODIFICATION (REQUIRED)*
+          </label>
+          <textarea id="surreal-input-reason" rows="3" class="admin-search-field" style="background: var(--color-surface-secondary); border: 1px solid var(--color-border); border-radius: 4px; padding: 0.65rem 0.85rem; width: 100%; box-sizing: border-box; font-family: var(--font-body); font-size: 0.85rem; color: #FFFFFF; resize: vertical;" placeholder="Document the justification for adjusting this participant's final score..."></textarea>
+        </div>
+
+        <!-- Inline Error Display -->
+        <div id="surreal-edit-error" style="display: none; background: rgba(239, 68, 68, 0.12); border: 1px solid #EF4444; border-radius: 4px; padding: 0.65rem 0.85rem; color: #EF4444; font-size: 0.82rem; font-family: var(--font-mono);"></div>
+      </div>
+
+      <!-- Modal Actions (Default) -->
+      <div class="modal-actions-row" id="surreal-modal-default-actions">
+        <button type="button" class="btn-modal-cancel" id="btn-surreal-cancel">CANCEL</button>
+        <button type="button" class="btn-modal-proceed" id="btn-surreal-save">SAVE CHANGES</button>
+      </div>
+
+      <!-- In-Modal Confirmation State -->
+      <div id="surreal-modal-confirm-actions" style="display: none; background: rgba(229, 9, 36, 0.12); border: 1px solid var(--color-crimson); border-radius: 6px; padding: 1.25rem; text-align: center; margin-top: 1rem;">
+        <div style="font-family: var(--font-mono); font-size: 0.88rem; font-weight: 700; color: #FFFFFF; margin-bottom: 0.4rem;">
+          CONFIRM FINAL SCORE UPDATE TO <span id="surreal-confirm-preview-score" style="color: var(--color-crimson); font-size: 1.15rem;"></span> / 30?
+        </div>
+        <div style="font-size: 0.78rem; color: var(--color-text-secondary); margin-bottom: 1.25rem;">
+          This action will immediately update the final score and log an authoritative audit record.
+        </div>
+        <div style="display: flex; justify-content: center; gap: 12px;">
+          <button type="button" class="btn-modal-cancel" id="btn-surreal-confirm-back" style="min-width: 110px;">BACK</button>
+          <button type="button" class="btn-modal-proceed" id="btn-surreal-confirm-proceed" style="background: var(--color-crimson); border-color: var(--color-crimson); min-width: 170px; font-weight: 800;">CONFIRM &amp; SAVE</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SURREAL: Score Audit History Modal -->
+  <div class="admin-modal-overlay" id="surreal-history-modal" role="dialog" aria-modal="true" aria-labelledby="surreal-hist-heading" style="display: none;">
+    <div class="admin-modal-box" style="max-width: 680px; text-align: left;">
+      <div class="modal-badge-info">SURREAL // AUDIT TRAIL</div>
+      <h3 class="modal-heading" id="surreal-hist-heading" style="margin-bottom: 0.5rem;">SCORE ADJUSTMENT HISTORY</h3>
+      <p class="modal-desc" id="surreal-hist-subtitle" style="margin-bottom: 1.25rem;">
+        Complete historical audit trail of all score modifications for this participant.
+      </p>
+
+      <!-- History List Container -->
+      <div id="surreal-history-container" style="max-height: 380px; overflow-y: auto; display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1.5rem;">
+        <div style="text-align: center; padding: 2rem; color: var(--color-text-muted);">Loading audit history...</div>
+      </div>
+
+      <!-- Close Action -->
+      <div style="display: flex; justify-content: flex-end;">
+        <button type="button" class="btn-modal-cancel" id="btn-surreal-close-history" style="min-width: 140px;">CLOSE</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="admin-toast-container" id="admin-toast-container" aria-live="polite"></div>
+
+  <!-- Admin Application Logic -->
+  <script src="assets/js/admin.js?v=4.0"></script>
+</body>
+</html>

@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="TRACE × X — Team Registration. Register your team for the Cyber Crime Investigation challenge at TJS Engineering College.">
+  <meta name="theme-color" content="#040405">
+  <title>TEAM REGISTRATION — TRACE × X | TJS Engineering College</title>
+
+  <!-- Google Fonts: Inter, Montserrat, JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Core Stylesheet -->
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+  <!-- =========================================================================
+       ATMOSPHERIC FORENSIC BACKGROUND
+       ========================================================================= -->
+  <div class="bg-ambient-layer" aria-hidden="true">
+    <div class="ambient-glow-core"></div>
+    <div class="ambient-glow-top"></div>
+    <div class="forensic-grid"></div>
+    <div class="forensic-crosshair crosshair-tl">+ 00.12° N // FORENSIC CORE</div>
+    <div class="forensic-crosshair crosshair-br">SYS.LEVEL // TRACE × X</div>
+  </div>
+
+  <!-- =========================================================================
+       PAGE CONTENT WRAPPER
+       ========================================================================= -->
+  <div class="page-container">
+
+    <!-- ---------------------------------------------------------------------
+         HEADER — TOP SECTION (CONSISTENT WITH HOMEPAGE)
+         --------------------------------------------------------------------- -->
+    <header class="site-header">
+      <div class="container-wide">
+        <div class="header-inner">
+          
+          <!-- LEFT SIDE: BRANDING -->
+          <a href="index.html" class="brand-group" style="text-decoration: none; color: inherit;">
+            <div class="brand-logo-wrap">
+              <img src="assets/images/fox-logo.png" alt="FOX Technical Event Logo" class="fox-logo-img">
+            </div>
+
+            <div class="brand-text-column">
+              <div class="brand-title-row">
+                <span class="brand-title-text">TRACE</span>
+                <span class="brand-x-badge" aria-label="X">
+                  <span class="brand-x-symbol">×</span>
+                </span>
+                <span class="brand-title-text">X</span>
+              </div>
+
+              <div class="brand-subtitle">CYBER CRIME INVESTIGATION</div>
+
+              <div class="brand-college-info">
+                <div class="brand-college-line">
+                  <span class="brand-bullet">•</span>
+                  <span>TJS ENGINEERING COLLEGE</span>
+                </div>
+                <div class="brand-college-line">
+                  <span class="brand-bullet">•</span>
+                  <span>A TECH EVENT</span>
+                  <span class="brand-bullet">•</span>
+                  <span>DEPARTMENT OF COMPUTER SCIENCE AND ENGINEERING</span>
+                </div>
+              </div>
+            </div>
+          </a>
+
+          <!-- RIGHT SIDE: FOUR ACTION BUTTONS IN ONE ROW -->
+          <nav class="header-actions" aria-label="Quick Access">
+            <a href="register.html" class="nav-action-btn btn-register-team active" id="btn-register-team" aria-current="page">
+              REGISTER TEAM
+            </a>
+            <a href="login.html" class="nav-action-btn btn-participant-login" id="btn-participant-login">
+              PARTICIPANT LOGIN
+            </a>
+            <a href="rules.html" class="nav-action-btn btn-event-rules" id="btn-event-rules">
+              EVENT RULES
+            </a>
+            <a href="admin-login.html" class="nav-action-btn btn-admin" id="btn-admin">
+              ADMIN
+            </a>
+          </nav>
+
+        </div>
+      </div>
+    </header>
+
+    <!-- ---------------------------------------------------------------------
+         MAIN CONTENT: TEAM REGISTRATION TERMINAL
+         --------------------------------------------------------------------- -->
+    <main class="registration-wrapper" id="main-content">
+      <div class="container-wide">
+
+        <!-- Subtle Back to Homepage Link -->
+        <div>
+          <a href="index.html" class="back-home-link">
+            <span>←</span> BACK TO HOMEPAGE
+          </a>
+        </div>
+
+        <!-- Section Introduction -->
+        <div class="registration-intro-block">
+          <div class="protocol-tag">REGISTRATION PROTOCOL // ACCESS LEVEL 01</div>
+          <h1 class="registration-title">TEAM REGISTRATION</h1>
+          <p class="registration-desc">
+            Register your team for TRACE × X. A unique Team ID will be issued by the system after successful registration.
+          </p>
+        </div>
+
+        <!-- REGISTRATION FORM PANEL -->
+        <div class="registration-form-panel" id="registration-form-container">
+          <form id="team-registration-form" novalidate>
+
+            <!-- SECTION 01: TEAM DETAILS -->
+            <section class="reg-section" aria-labelledby="section-01-title">
+              <h2 class="reg-section-title" id="section-01-title">01 // TEAM DETAILS</h2>
+              
+              <div class="form-grid-3">
+                <!-- Field 1: Team Name -->
+                <div class="form-field-group" id="group-teamName">
+                  <label for="input-team-name" class="field-label">
+                    <span>TEAM NAME</span>
+                    <span class="required-star">*</span>
+                  </label>
+                  <input 
+                    type="text" 
+                    id="input-team-name" 
+                    name="teamName" 
+                    class="text-input-field" 
+                    placeholder="Enter your team name" 
+                    required 
+                    autocomplete="off"
+                  >
+                  <span class="field-error-msg" id="error-teamName">Please enter a valid team name.</span>
+                </div>
+
+                <!-- Field 2: College Name -->
+                <div class="form-field-group" id="group-collegeName">
+                  <label for="input-college-name" class="field-label">
+                    <span>COLLEGE NAME</span>
+                    <span class="required-star">*</span>
+                  </label>
+                  <input 
+                    type="text" 
+                    id="input-college-name" 
+                    name="collegeName" 
+                    class="text-input-field" 
+                    placeholder="Enter your college name" 
+                    required 
+                    autocomplete="organization"
+                  >
+                  <span class="field-error-msg" id="error-collegeName">Please enter your college name.</span>
+                </div>
+
+                <!-- Field 3: Department -->
+                <div class="form-field-group" id="group-department">
+                  <label for="input-department" class="field-label">
+                    <span>DEPARTMENT</span>
+                    <span class="required-star">*</span>
+                  </label>
+                  <input 
+                    type="text" 
+                    id="input-department" 
+                    name="department" 
+                    class="text-input-field" 
+                    placeholder="Enter your department" 
+                    required 
+                    autocomplete="off"
+                  >
+                  <span class="field-error-msg" id="error-department">Please enter your department.</span>
+                </div>
+              </div>
+            </section>
+
+            <!-- SECTION 02: TEAM SIZE -->
+            <section class="reg-section" aria-labelledby="section-02-title">
+              <h2 class="reg-section-title" id="section-02-title">02 // TEAM SIZE</h2>
+
+              <div class="team-size-selector" role="radiogroup" aria-label="Select Team Size" id="team-size-group">
+                <!-- Option 1: SOLO -->
+                <div 
+                  class="size-card-option selected" 
+                  role="radio" 
+                  tabindex="0" 
+                  aria-checked="true" 
+                  data-size="1"
+                  id="size-opt-1"
+                >
+                  <div class="size-indicator-badge"></div>
+                  <div class="size-title">SOLO</div>
+                  <div class="size-desc">1 MEMBER</div>
+                </div>
+
+                <!-- Option 2: DUO -->
+                <div 
+                  class="size-card-option" 
+                  role="radio" 
+                  tabindex="0" 
+                  aria-checked="false" 
+                  data-size="2"
+                  id="size-opt-2"
+                >
+                  <div class="size-indicator-badge"></div>
+                  <div class="size-title">DUO</div>
+                  <div class="size-desc">2 MEMBERS</div>
+                </div>
+
+                <!-- Option 3: TRIO -->
+                <div 
+                  class="size-card-option" 
+                  role="radio" 
+                  tabindex="0" 
+                  aria-checked="false" 
+                  data-size="3"
+                  id="size-opt-3"
+                >
+                  <div class="size-indicator-badge"></div>
+                  <div class="size-title">TRIO</div>
+                  <div class="size-desc">3 MEMBERS</div>
+                </div>
+
+                <!-- Option 4: SQUAD -->
+                <div 
+                  class="size-card-option" 
+                  role="radio" 
+                  tabindex="0" 
+                  aria-checked="false" 
+                  data-size="4"
+                  id="size-opt-4"
+                >
+                  <div class="size-indicator-badge"></div>
+                  <div class="size-title">SQUAD</div>
+                  <div class="size-desc">4 MEMBERS</div>
+                </div>
+              </div>
+              <span class="field-error-msg" id="error-teamSize" style="margin-top: 8px;">Please select a team size.</span>
+            </section>
+
+            <!-- SECTION 03: TEAM MEMBERS (DYNAMICALLY GENERATED) -->
+            <section class="reg-section" aria-labelledby="section-03-title">
+              <h2 class="reg-section-title" id="section-03-title">03 // TEAM MEMBERS</h2>
+
+              <div class="members-grid-container" id="members-container">
+                <!-- Injected via JavaScript based on selected team size -->
+              </div>
+            </section>
+
+            <!-- SECTION 04: SECURITY PIN -->
+            <section class="reg-section" aria-labelledby="section-04-title">
+              <h2 class="reg-section-title" id="section-04-title">04 // SECURITY PIN</h2>
+
+              <div class="pin-info-panel">
+                <div class="pin-info-title">CREATE YOUR TEAM SECURITY PIN</div>
+                <div class="pin-info-text">
+                  Create a private PIN that your team will use for Participant Login.
+                </div>
+              </div>
+
+              <div class="form-grid-2">
+                <!-- Field 1: Security PIN -->
+                <div class="form-field-group" id="group-securityPin">
+                  <label for="input-security-pin" class="field-label">
+                    <span>SECURITY PIN</span>
+                    <span class="required-star">*</span>
+                  </label>
+                  <div class="pin-input-wrap">
+                    <input 
+                      type="password" 
+                      id="input-security-pin" 
+                      name="securityPin" 
+                      class="text-input-field" 
+                      placeholder="Create your PIN" 
+                      required 
+                      autocomplete="new-password"
+                    >
+                    <button type="button" class="pin-toggle-btn" id="toggle-pin-1" aria-label="Show or hide PIN">
+                      SHOW
+                    </button>
+                  </div>
+                  <span class="field-error-msg" id="error-securityPin">Please create a security PIN (at least 4 characters).</span>
+                </div>
+
+                <!-- Field 2: Confirm Security PIN -->
+                <div class="form-field-group" id="group-confirmPin">
+                  <label for="input-confirm-pin" class="field-label">
+                    <span>CONFIRM SECURITY PIN</span>
+                    <span class="required-star">*</span>
+                  </label>
+                  <div class="pin-input-wrap">
+                    <input 
+                      type="password" 
+                      id="input-confirm-pin" 
+                      name="confirmPin" 
+                      class="text-input-field" 
+                      placeholder="Confirm your PIN" 
+                      required 
+                      autocomplete="new-password"
+                    >
+                    <button type="button" class="pin-toggle-btn" id="toggle-pin-2" aria-label="Show or hide confirm PIN">
+                      SHOW
+                    </button>
+                  </div>
+                  <span class="field-error-msg" id="error-confirmPin">Security PINs do not match.</span>
+                </div>
+              </div>
+            </section>
+
+            <!-- SECTION 05: INVESTIGATION INTEGRITY AGREEMENT -->
+            <section class="reg-section" aria-labelledby="section-05-title">
+              <h2 class="reg-section-title" id="section-05-title">05 // INVESTIGATION INTEGRITY &amp; EVENT AGREEMENT</h2>
+
+              <div class="agreement-panel" id="group-agreement">
+                <div class="agreement-header">
+                  <span style="color: var(--color-crimson-bright);">⚡</span>
+                  <span>INVESTIGATION INTEGRITY &amp; EVENT AGREEMENT</span>
+                </div>
+                <p class="agreement-text">
+                  We confirm that our team will follow the event rules, use only authorized resources, and remain within the investigation environment throughout the challenge. We understand that violations may result in disqualification.
+                </p>
+
+                <label class="agreement-checkbox-label" for="input-agreement">
+                  <input type="checkbox" id="input-agreement" name="agreement" class="agreement-checkbox-input" required>
+                  <span>I ACCEPT THE INVESTIGATION RULES AND ETHICAL CHALLENGE DIRECTIVES</span>
+                </label>
+
+                <span class="field-error-msg" id="error-agreement" style="margin-top: 10px;">
+                  You must accept the investigation integrity agreement to proceed with registration.
+                </span>
+              </div>
+            </section>
+
+            <!-- SECTION 06: VERIFICATION -->
+            <section class="reg-section" aria-labelledby="section-06-title">
+              <h2 class="reg-section-title" id="section-06-title">06 // VERIFICATION</h2>
+
+              <div class="verification-placeholder-box">
+                <div class="verification-heading">SECURITY CLEARANCE // VERIFICATION MODULE</div>
+                <div class="verification-sub">Verification setup will be added later.</div>
+              </div>
+            </section>
+
+            <!-- SUBMIT BUTTON -->
+            <div class="reg-submit-wrap">
+              <button type="submit" class="btn-submit-registration" id="btn-submit-reg">
+                <span>[ REGISTER TEAM ]</span>
+                <span aria-hidden="true">→</span>
+              </button>
+              <div class="form-global-error" id="form-global-error">
+                Please complete all required fields correctly before registering.
+              </div>
+            </div>
+
+          </form>
+        </div>
+
+        <!-- ===================================================================
+             REGISTRATION SUCCESS SCREEN (DEDICATED POST-REGISTRATION VIEW)
+             =================================================================== -->
+        <div class="registration-success-panel" id="registration-success-container" aria-live="polite">
+          <div class="success-badge">REGISTRATION CONFIRMED</div>
+          <h2 class="success-title">TEAM REGISTERED SUCCESSFULLY</h2>
+          <p class="success-subtitle">
+            Your team is registered for the TRACE × X investigation.
+          </p>
+
+          <!-- Credential Card -->
+          <div class="credential-dossier-card">
+            <div class="credential-row">
+              <span class="credential-label">OFFICIAL TEAM ID</span>
+              <span class="credential-value-display" id="display-team-id">TX-2026-XXXX</span>
+            </div>
+            <div class="credential-row">
+              <span class="credential-label">SECURITY PIN</span>
+              <span class="credential-pin-masked">[ HIDDEN ]</span>
+            </div>
+            <div class="credential-row">
+              <span class="credential-label">REGISTERED TEAM NAME</span>
+              <span style="font-family: var(--font-heading); font-weight: 700; color: #FFFFFF;" id="display-team-name">—</span>
+            </div>
+          </div>
+
+          <!-- Warning Box -->
+          <div class="credentials-warning-box">
+            <div class="warning-box-title">⚠ SAVE YOUR CREDENTIALS</div>
+            <p class="warning-box-text">
+              Your Team ID and Security PIN will be required for Participant Login. Please copy or note your Team ID immediately.
+            </p>
+          </div>
+
+          <!-- Actions -->
+          <div class="success-action-group">
+            <button type="button" class="btn-copy-id" id="btn-copy-team-id">
+              [ COPY TEAM ID ]
+            </button>
+            <a href="login.html" class="btn-continue-login" id="btn-continue-login">
+              <span>[ CONTINUE TO PARTICIPANT LOGIN ]</span>
+              <span aria-hidden="true">→</span>
+            </a>
+          </div>
+
+          <div class="integration-notice">
+            [ READY FOR BACKEND INTEGRATION // DEMO CREDENTIAL RECORDED LOCALLY ]
+          </div>
+        </div>
+
+      </div>
+    </main>
+
+    <!-- ---------------------------------------------------------------------
+         MINIMAL SUBTLE FOOTER STRIP
+         --------------------------------------------------------------------- -->
+    <footer class="site-footer-minimal">
+      <div class="container-wide">
+        <div class="footer-inner-minimal">
+          <div>
+            TJS ENGINEERING COLLEGE • DEPARTMENT OF COMPUTER SCIENCE AND ENGINEERING
+          </div>
+          <div class="footer-status-pill">
+            <span class="status-dot" aria-hidden="true"></span>
+            <span>REGISTRATION PROTOCOL // ACCESS: ACTIVE</span>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- Core Application Script -->
+  <script src="assets/js/app.js"></script>
+</body>
+</html>

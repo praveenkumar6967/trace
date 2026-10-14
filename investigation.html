@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="TRACE × X — Round 1 Cyber Crime Investigation Workstation. Digital evidence forensics and questionnaire environment at TJS Engineering College.">
+  <meta name="theme-color" content="#050505">
+  <title>ROUND 1 INVESTIGATION WORKSTATION — TRACE × X | TJS Engineering College</title>
+
+  <!-- Google Fonts: Inter, Montserrat, JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Core Stylesheet -->
+  <link rel="stylesheet" href="assets/css/style.css">
+
+  <!-- Seamless Unified Client-Side App Routing -->
+  <script>
+    window.location.replace('index.html#investigation' + (window.location.search || ''));
+  </script>
+</head>
+<body class="investigation-workspace">
+
+  <!-- =========================================================================
+       ATMOSPHERIC FORENSIC BACKGROUND
+       ========================================================================= -->
+  <div class="bg-ambient-layer" aria-hidden="true">
+    <div class="ambient-glow-core"></div>
+    <div class="ambient-glow-top"></div>
+    <div class="forensic-grid"></div>
+    <div class="forensic-crosshair crosshair-tl">+ 00.12° N // FORENSIC CORE</div>
+    <div class="forensic-crosshair crosshair-br">SYS.LEVEL // TRACE × X WORKSTATION</div>
+  </div>
+
+  <!-- =========================================================================
+       WORKSTATION MAIN WRAPPER
+       ========================================================================= -->
+  <div class="investigation-wrapper">
+
+    <!-- ---------------------------------------------------------------------
+         SITE HEADER (SHARED BRANDING)
+         --------------------------------------------------------------------- -->
+    <header class="site-header">
+      <div class="container-wide">
+        <div class="header-inner">
+          
+          <!-- LEFT SIDE: BRANDING -->
+          <a href="index.html" class="brand-group" style="text-decoration: none; color: inherit;">
+            <div class="brand-logo-wrap">
+              <img src="assets/images/fox-logo.png" alt="FOX Technical Event Logo" class="fox-logo-img">
+            </div>
+
+            <div class="brand-text-column">
+              <div class="brand-title-row">
+                <span class="brand-title-text">TRACE</span>
+                <span class="brand-x-badge" aria-label="X">
+                  <span class="brand-x-symbol">×</span>
+                </span>
+                <span class="brand-title-text">X</span>
+              </div>
+
+              <div class="brand-subtitle">CYBER CRIME INVESTIGATION</div>
+
+              <div class="brand-college-info">
+                <div class="brand-college-line">
+                  <span class="brand-bullet">•</span>
+                  <span>TJS ENGINEERING COLLEGE</span>
+                </div>
+                <div class="brand-college-line">
+                  <span class="brand-bullet">•</span>
+                  <span>A TECH EVENT</span>
+                  <span class="brand-bullet">•</span>
+                  <span>DEPARTMENT OF COMPUTER SCIENCE AND ENGINEERING</span>
+                </div>
+              </div>
+            </div>
+          </a>
+
+          <!-- RIGHT SIDE: HUD QUICK TELEMETRY -->
+          <div class="header-actions">
+            <div class="hud-status-badge" title="Active Security Monitoring">
+              <span class="hud-pulse-dot" aria-hidden="true"></span>
+              <span>LIVE INVESTIGATION</span>
+            </div>
+            <a href="cases.html" class="nav-action-btn" id="btn-switch-case" style="font-size: 0.72rem; padding: 0.5rem 1rem;">
+              CASES
+            </a>
+          </div>
+
+        </div>
+      </div>
+    </header>
+
+    <!-- ---------------------------------------------------------------------
+         INVESTIGATION HUD / TELEMETRY STATUS BAR
+         --------------------------------------------------------------------- -->
+    <div class="investigation-hud-bar" role="region" aria-label="Investigation Status Bar">
+      <div class="container-wide">
+        <div class="hud-container">
+          
+          <!-- Selected Case Indicator -->
+          <div class="hud-case-identity">
+            <span class="hud-case-pill" id="hud-case-tag">CASE ACTIVE</span>
+            <h1 class="hud-case-title" id="hud-case-title">CASE 01 — STOLEN SOCIAL MEDIA ACCOUNT</h1>
+          </div>
+
+          <!-- Live Session & Network Telemetry -->
+          <div class="hud-telemetry">
+            <div class="hud-status-badge">
+              <span class="hud-pulse-dot" aria-hidden="true"></span>
+              <span>INVESTIGATION ACTIVE // SECURE SESSION // LIVE</span>
+            </div>
+
+            <div class="hud-conn-badge" id="hud-connection-status">
+              <span class="conn-dot" aria-hidden="true"></span>
+              <span id="conn-status-text">CONNECTION: SECURE</span>
+            </div>
+          </div>
+
+          <!-- Round 1 Countdown Timer -->
+          <div class="hud-timer-card" id="hud-timer-card" role="timer" aria-live="polite">
+            <div class="hud-timer-meta">
+              <span class="hud-timer-round">ROUND 1</span>
+              <span class="hud-timer-status">TIME REMAINING</span>
+            </div>
+            <div class="hud-timer-digits" id="round1-timer-display">10:00</div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ---------------------------------------------------------------------
+         THREE-PART WORKSTATION MAIN AREA
+         --------------------------------------------------------------------- -->
+    <main class="workstation-main" id="main-content">
+      <div class="container-wide">
+        <div class="workstation-grid">
+
+          <!-- =================================================================
+               LEFT PANEL: DIGITAL EVIDENCE
+               ================================================================= -->
+          <aside class="evidence-panel" aria-label="Digital Evidence Dossier">
+            <div class="panel-header-row">
+              <h2 class="panel-heading">
+                <span class="panel-heading-icon" aria-hidden="true">◈</span>
+                <span>DIGITAL EVIDENCE</span>
+              </h2>
+              <span class="panel-counter-badge" id="evidence-counter-badge">4 ARTIFACTS</span>
+            </div>
+
+            <!-- Case Summary Overview -->
+            <div class="evidence-dossier-overview" id="evidence-summary-container">
+              <div class="overview-label">CASE SUMMARY BRIEFING</div>
+              <p class="overview-text" id="evidence-case-summary">
+                Loading case briefing...
+              </p>
+            </div>
+
+            <!-- Scrollable Evidence Artifacts -->
+            <div class="evidence-records-scroll" id="evidence-records-list">
+              <!-- Dynamically populated from TRACE_INVESTIGATION_CASES -->
+            </div>
+          </aside>
+
+          <!-- =================================================================
+               CENTER PANEL: QUESTION & ANSWER WORKSPACE
+               ================================================================= -->
+          <section class="question-panel" aria-label="Investigation Question Area">
+            
+            <!-- Question Header Row -->
+            <div class="question-header-row">
+              <div class="question-counter-indicator" id="question-counter-display">
+                QUESTION 01 / 15
+              </div>
+              <div class="question-status-indicator" id="question-answered-status">
+                SELECT ONE ANSWER
+              </div>
+            </div>
+
+            <!-- Slim Progress Bar -->
+            <div class="question-progress-bar" role="progressbar" aria-valuenow="7" aria-valuemin="0" aria-valuemax="100">
+              <div class="question-progress-fill" id="question-progress-fill" style="width: 6.67%;"></div>
+            </div>
+
+            <!-- Question Statement Box -->
+            <div class="question-statement-box">
+              <div class="question-label-prefix" id="question-prefix-label">QUESTION 01</div>
+              <h3 class="question-statement-text" id="question-text">
+                Loading question data...
+              </h3>
+            </div>
+
+            <!-- Options Stack (4 Cards) -->
+            <div class="options-stack" id="options-stack" role="radiogroup" aria-label="Question Options">
+              <!-- Dynamically populated 4 options -->
+            </div>
+
+            <!-- Question Navigation Bar -->
+            <div class="question-navigation-row">
+              <!-- Previous Button -->
+              <button type="button" class="btn-nav-prev" id="btn-prev-question" disabled>
+                <span aria-hidden="true">←</span>
+                <span>PREVIOUS</span>
+              </button>
+
+              <!-- Quick Indicators 1 to 10 -->
+              <div class="question-indicators-strip" id="question-indicators-strip" aria-label="Question Navigator">
+                <!-- 1 to 10 bullets dynamically generated -->
+              </div>
+
+              <!-- Next / Submit Button -->
+              <div id="next-action-wrapper">
+                <button type="button" class="btn-nav-next" id="btn-next-question">
+                  <span>NEXT QUESTION</span>
+                  <span aria-hidden="true">→</span>
+                </button>
+              </div>
+            </div>
+
+          </section>
+
+        </div>
+      </div>
+    </main>
+
+    <!-- ---------------------------------------------------------------------
+         SUBTLE FOOTER
+         --------------------------------------------------------------------- -->
+    <footer class="site-footer-minimal">
+      <div class="container-wide">
+        <div class="footer-inner-minimal">
+          <div>
+            TJS ENGINEERING COLLEGE • DEPARTMENT OF COMPUTER SCIENCE AND ENGINEERING
+          </div>
+          <div class="footer-status-pill">
+            <span class="status-dot" aria-hidden="true"></span>
+            <span>ROUND 1 WORKSTATION // ENCRYPTED SESSION</span>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- =========================================================================
+       MODAL 1: TAB / WINDOW SWITCH VIOLATION OVERLAY
+       ========================================================================= -->
+  <div class="violation-overlay" id="violation-overlay" role="alertdialog" aria-modal="true" aria-labelledby="violation-title">
+    <div class="violation-modal-box">
+      <div class="violation-alert-badge" aria-hidden="true">
+        <span>⚠</span>
+        <span>SECURITY PROTOCOL ALERT</span>
+      </div>
+
+      <h2 class="violation-heading" id="violation-title">
+        INVESTIGATION VIOLATION
+      </h2>
+
+      <p class="violation-subtext">
+        TAB / WINDOW SWITCH DETECTED<br>
+        You have left the active investigation environment.
+      </p>
+
+      <div class="violation-count-card">
+        <div class="violation-count-digits" id="violation-counter-display">
+          VIOLATION 01 / 03
+        </div>
+        <div class="violation-policy-note" id="violation-warning-note">
+          Warning 1 of 3: Return immediately to maintain event integrity.
+        </div>
+      </div>
+
+      <button type="button" class="btn-violation-return" id="btn-violation-return">
+        [ RETURN TO INVESTIGATION ]
+      </button>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL 2: CONFIRMATION BEFORE FINAL SUBMISSION
+       ========================================================================= -->
+  <div class="confirm-modal-overlay" id="confirm-submit-modal" role="dialog" aria-modal="true" aria-labelledby="confirm-modal-title">
+    <div class="confirm-modal-box">
+      <h2 class="confirm-title" id="confirm-modal-title">
+        CONFIRM ROUND 1 SUBMISSION
+      </h2>
+
+      <p class="confirm-desc">
+        Are you sure you wish to submit your Round 1 investigation dossier? Once submitted, all answers are permanently locked and cannot be altered.
+      </p>
+
+      <div class="confirm-answered-stat" id="confirm-stat-display">
+        ANSWERED: 15 OF 15 QUESTIONS
+      </div>
+
+      <div class="confirm-actions-row">
+        <button type="button" class="btn-confirm-cancel" id="btn-cancel-submit">
+          [ CANCEL &amp; REVIEW ]
+        </button>
+        <button type="button" class="btn-confirm-proceed" id="btn-proceed-submit">
+          [ CONFIRM FINAL SUBMISSION ]
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL 3: ROUND 1 COMPLETION SCREEN
+       ========================================================================= -->
+  <div class="completion-screen-overlay" id="completion-screen" role="region" aria-label="Investigation Round 1 Completion Summary">
+    <div class="completion-card">
+      <div class="completion-badge">
+        <span>✓</span>
+        <span>ROUND 1 COMPLETED</span>
+      </div>
+
+      <h2 class="completion-title">
+        ROUND 1 COMPLETE
+      </h2>
+
+      <div class="completion-success-tag">
+        INVESTIGATION SUCCESSFULLY SUBMITTED
+      </div>
+
+      <p class="completion-subtitle">
+        Your answers have been recorded.<br>
+        Your next investigation phase is ready.
+      </p>
+
+      <!-- Compact Status Panel -->
+      <div class="completion-compact-status">
+        <div class="status-row">
+          <span class="status-label">QUESTIONS SUBMITTED:</span>
+          <span class="status-value" id="comp-answers-count">15 / 15</span>
+        </div>
+        <div class="status-row">
+          <span class="status-label">INVESTIGATION STATUS:</span>
+          <span class="status-value status-highlight">ROUND 1 COMPLETE</span>
+        </div>
+      </div>
+
+      <div class="completion-meta-grid">
+        <div class="completion-meta-item">
+          <div class="meta-k">CASE INVESTIGATED</div>
+          <div class="meta-v" id="comp-case-title">CASE 01 — STOLEN SOCIAL MEDIA ACCOUNT</div>
+        </div>
+
+        <div class="completion-meta-item">
+          <div class="meta-k">TEAM IDENTIFIER</div>
+          <div class="meta-v" id="comp-team-id">TX-2026-TEAM</div>
+        </div>
+
+        <div class="completion-meta-item">
+          <div class="meta-k">SUBMISSION TIMESTAMP</div>
+          <div class="meta-v" id="comp-timestamp">--:--:-- UTC</div>
+        </div>
+
+        <div class="completion-meta-item">
+          <div class="meta-k">NEXT PROTOCOL</div>
+          <div class="meta-v" style="color: var(--color-crimson-bright);">ROUND 2 READY (15 QUESTIONS)</div>
+        </div>
+      </div>
+
+      <!-- Prominent Active Button -->
+      <div class="completion-actions">
+        <button type="button" class="btn-enter-round2" id="btn-enter-round2">
+          <span>[ ENTER ROUND 2 ]</span>
+          <span aria-hidden="true">→</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL 4: EVALUATION PHASE SCREEN (FINAL ROUND 2 SUBMISSION)
+       ========================================================================= -->
+  <div class="evaluation-screen-overlay" id="evaluation-screen" role="region" aria-label="Investigation Final Evaluation Summary">
+    <div class="evaluation-card">
+      <div class="eval-badge">
+        <span>✓</span>
+        <span>ROUND 2 COMPLETE // INVESTIGATION SEALED</span>
+      </div>
+
+      <h2 class="eval-title">
+        INVESTIGATION COMPLETE
+      </h2>
+
+      <div class="eval-phase-tag">
+        EVALUATION PHASE ACTIVE
+      </div>
+
+      <p class="eval-subtitle">
+        All digital evidence dossiers from Round 1 and Round 2 (30 questions total) have been cryptographically sealed and submitted to the evaluation panel.
+      </p>
+
+      <div class="eval-timer-box">
+        <div class="eval-timer-meta">
+          <span class="eval-timer-label">EVALUATION PERIOD</span>
+          <span class="eval-timer-sub">COUNTDOWN</span>
+        </div>
+        <div class="eval-timer-display" id="eval-timer-display">05:00</div>
+      </div>
+
+      <div class="eval-summary-grid">
+        <div class="eval-grid-item">
+          <span class="grid-k">CASE INVESTIGATED</span>
+          <span class="grid-v" id="eval-case-title">CASE 01 — STOLEN SOCIAL MEDIA ACCOUNT</span>
+        </div>
+
+        <div class="eval-grid-item">
+          <span class="grid-k">TEAM IDENTIFIER</span>
+          <span class="grid-v" id="eval-team-id">TX-2026-TEAM</span>
+        </div>
+
+        <div class="eval-grid-item">
+          <span class="grid-k">ROUND 1 DOSSIER</span>
+          <span class="grid-v" id="eval-r1-count">15 / 15 QUESTIONS RECORDED</span>
+        </div>
+
+        <div class="eval-grid-item">
+          <span class="grid-k">ROUND 2 DOSSIER</span>
+          <span class="grid-v" id="eval-r2-count">15 / 15 QUESTIONS RECORDED</span>
+        </div>
+      </div>
+
+      <div class="eval-notice-box">
+        STATUS: LOCKED FOR OFFICIAL CSE DEPARTMENT EVALUATION.<br>
+        Official verification in progress. Scores and rankings will be computed authoritatively by the panel.
+      </div>
+
+      <div class="eval-actions">
+        <a href="index.html" class="btn-eval-home" id="btn-eval-home">
+          <span>[ RETURN TO MISSION HUB ]</span>
+          <span aria-hidden="true">→</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Investigation Dataset -->
+  <script src="assets/js/investigation-data.js"></script>
+
+  <!-- Core Application Logic -->
+  <script src="assets/js/app.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,143 @@
+{
+  "total": 34,
+  "passed": 34,
+  "failed": 0,
+  "results": {
+    "TEST A.1 - Registration 4 Team Sizes": {
+      "passed": true,
+      "msg": "Successfully handled all 4 sizes (Solo, Duo, Trio, Squad): 4/4"
+    },
+    "TEST A.2 - Secure Credential Hashing": {
+      "passed": true,
+      "msg": "PIN stored as 64-char PBKDF2-HMAC-SHA256 with 32-char salt, pin_masked='\u2022\u2022\u2022\u2022\u2022\u2022'"
+    },
+    "TEST A.3 - Duplicate Team ID Prevention": {
+      "passed": true,
+      "msg": "Duplicate ID was rejected with status 400: Team ID already exists. Please regenerate or retry."
+    },
+    "TEST B.1 - Valid Participant Login": {
+      "passed": true,
+      "msg": "Login returned 200 with team object for TX-2026-T100"
+    },
+    "TEST B.2 - Invalid Participant Credentials Rejected": {
+      "passed": true,
+      "msg": "Rejected invalid credentials with 401: Invalid Team ID or Security PIN. Access denied."
+    },
+    "TEST B.3 - Non-Existent Team Rejected": {
+      "passed": true,
+      "msg": "Rejected non-existent team with 401"
+    },
+    "TEST B.4 - Admin API Authorization Guard": {
+      "passed": true,
+      "msg": "Protected admin route /api/admin/overview returned 401 Unauthorized without token"
+    },
+    "TEST B.5 - Admin Login & Session Generation": {
+      "passed": true,
+      "msg": "Admin login succeeded with 8-hour token: 06876848afeb..."
+    },
+    "TEST C.1 - Seamless Single-Document View Architecture": {
+      "passed": true,
+      "msg": "index.html contains #view-homepage, #view-case-selection, #view-investigation enabling fullscreen-preserving NavigationManager"
+    },
+    "TEST C.2 - Fullscreen State Verification": {
+      "passed": true,
+      "msg": "app.js verifies document.fullscreenElement before requesting fullscreen to prevent duplicate prompts"
+    },
+    "TEST D.1 - Exactly 15 Distinct Cases": {
+      "passed": true,
+      "msg": "Found 15 active cases in database"
+    },
+    "TEST D.2 - Case Selection Privacy Guard": {
+      "passed": true,
+      "msg": "Case API returns ONLY case ID, name, and summary. No difficulty/marks/ranks exposed."
+    },
+    "TEST D.3 - Case UI Card Presentation": {
+      "passed": true,
+      "msg": "cases.html UI cards strictly contain case title + 2-line summary; no difficulty tags"
+    },
+    "TEST E.1 - Authoritative 450 Question Records": {
+      "passed": true,
+      "msg": "Database contains 450 authoritative questions across 15 cases (expected 450)"
+    },
+    "TEST E.2 - Exactly 15 Questions Per Round Per Case": {
+      "passed": true,
+      "msg": "All 30 case-round combinations contain exactly 15 questions each (15 cases x 2 rounds)"
+    },
+    "TEST E.3 - Participant Question API Answer Key Privacy": {
+      "passed": true,
+      "msg": "Fetched 15 public questions with 0 leaked answer keys"
+    },
+    "TEST E.4 - Client Static Data Answer Key Security": {
+      "passed": true,
+      "msg": "Client-side investigation-data.js has all answer keys stripped; verified secure"
+    },
+    "TEST F.1 - Round Timer API Status": {
+      "passed": true,
+      "msg": "Timer endpoint returned status 200 with remainingSeconds=600"
+    },
+    "TEST F.2 - Admin Authoritative Event Start": {
+      "passed": true,
+      "msg": "Admin started event with status EVENT ACTIVE"
+    },
+    "TEST F.3 - Synchronized Official Round 1 Countdown": {
+      "passed": true,
+      "msg": "Remaining seconds: 597s (EndTime: 1791974367977)"
+    },
+    "TEST F.4 - Early Submission Locks Answers & Retains Timer": {
+      "passed": true,
+      "msg": "Early submission saved; remaining wait time: 595s"
+    },
+    "TEST G.1 - First Violation Recorded": {
+      "passed": true,
+      "msg": "First violation logged successfully"
+    },
+    "TEST G.2 - Second Violation Recorded": {
+      "passed": true,
+      "msg": "Second violation logged successfully"
+    },
+    "TEST G.3 - Third Violation Automated Disqualification": {
+      "passed": true,
+      "msg": "Third violation auto-disqualified team and terminated session"
+    },
+    "TEST G.4 - Disqualification Record in Submissions": {
+      "passed": true,
+      "msg": "Status in DB: DISQUALIFIED, Violations: 3"
+    },
+    "TEST H.1 - Backend Auto-Evaluation Engine": {
+      "passed": true,
+      "msg": "Round 1: 3/15, Round 2: 4/15, Total: 7/30, Acc: 23.3%"
+    },
+    "TEST H.2 - Candidate Privacy Before Publication": {
+      "passed": true,
+      "msg": "Participant endpoint returns: status='RESULTS UNDER REVIEW', isPublished=False (zero marks leaked)"
+    },
+    "TEST H.3 - Admin Manual Result Override with Reason": {
+      "passed": true,
+      "msg": "Admin successfully finalized status to QUALIFIED with mandatory reason"
+    },
+    "TEST H.4 - Admin Results Publication Action": {
+      "passed": true,
+      "msg": "Results published by admin"
+    },
+    "TEST H.5 - Candidate Status Visible After Publication": {
+      "passed": true,
+      "msg": "Candidate sees only authorized final status: 'QUALIFIED' (score omitted for confidentiality)"
+    },
+    "TEST I.1 - Admin Report Draft Save": {
+      "passed": true,
+      "msg": "Report saved; new version: v1"
+    },
+    "TEST I.2 - Registered Teams CSV Export": {
+      "passed": true,
+      "msg": "Exported registered teams CSV with passwords/secrets excluded"
+    },
+    "TEST I.3 - Official Results Matrix CSV Export": {
+      "passed": true,
+      "msg": "Exported official results matrix CSV"
+    },
+    "TEST I.4 - Database Backup Generation": {
+      "passed": true,
+      "msg": "Database backup created: tracex_backup_20261014_102957.db"
+    }
+  }
+}

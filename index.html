@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="TRACE × X — Cyber Crime Investigation Technical Event conducted by the Department of Computer Science & Engineering, TJS Engineering College. The case is open.">
+  <meta name="theme-color" content="#040405">
+  <title>TRACE × X — Cyber Crime Investigation | TJS Engineering College</title>
+
+  <!-- Google Fonts: Inter (Body), Montserrat (Cinematic Headings), JetBrains Mono (Technical Details) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Core Stylesheet -->
+  <link rel="stylesheet" href="assets/css/style.css?v=poster">
+
+  <!-- Session Check to Avoid Intro Flash During Internal Navigation -->
+  <script>
+    if (sessionStorage.getItem('traceX_intro_completed') === 'true' && !window.location.search.includes('intro=1') && !window.location.search.includes('t=')) {
+      document.documentElement.classList.add('intro-bypassed');
+    } else {
+      document.documentElement.classList.add('intro-active');
+    }
+  </script>
+</head>
+<body>
+
+  <!-- =========================================================================
+  <!-- =========================================================================
+       FINAL INTRO IMPLEMENTATION — EXACT 6-STEP STORYBOARD (10.0 SECONDS TOTAL)
+       STEP 1 (0.0–0.8s): BLACK SCREEN (Completely black screen)
+       STEP 2 (0.8–2.0s): DUAL SLASH (Two sharp crimson-red metallic slashes collide at center)
+       STEP 3 (2.0–3.7s): EXACT SCREEN-CRACK EFFECT (Full-viewport glass cracks & central X)
+       STEP 4 (3.7–5.2s): FULLSCREEN DIGITAL DISPLAY REVEAL (Complete viewport display, edge lighting)
+       STEP 5 (5.2–9.0s): FULLSCREEN WELCOME TITLE ("WELCOME TO TRACE × X" across full screen)
+       STEP 6 (9.0–10.0s): FINAL HOLD & HOMEPAGE TRANSITION (Auto transition at exactly 10.0s)
+       ========================================================================= -->
+  <div id="cinematic-intro-overlay" class="cinematic-intro-overlay" role="dialog" aria-modal="true" aria-label="TRACE × X Cinematic Intro">
+    <div class="intro-stage-container" id="intro-stage-container">
+      
+      <!-- STEP 2: DUAL METALLIC SLASHES -->
+      <div class="intro-slashes-container" aria-hidden="true">
+        <div class="intro-slash slash-left" id="slash-left">
+          <div class="slash-blade"></div>
+          <div class="slash-flare"></div>
+        </div>
+        <div class="intro-slash slash-right" id="slash-right">
+          <div class="slash-blade"></div>
+          <div class="slash-flare"></div>
+        </div>
+      </div>
+
+      <!-- STEP 3: EXACT FULL-VIEWPORT SCREEN-CRACK EFFECT & IMPACT -->
+      <div class="intro-impact-container" id="intro-impact-container" aria-hidden="true">
+        <div class="impact-flash" id="impact-flash"></div>
+        <div class="impact-star-flare" id="impact-star-flare"></div>
+        <div class="impact-x-energy" id="impact-x-energy">
+          <div class="impact-x-arm arm-diag-left"></div>
+          <div class="impact-x-arm arm-diag-right"></div>
+        </div>
+        <svg class="impact-crack-svg" id="impact-crack-svg" viewBox="0 0 1920 1080" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Central Impact Point (Center at 960, 540) -->
+          <circle cx="960" cy="540" r="6" fill="#FFFFFF" class="crack-core" />
+          <circle cx="960" cy="540" r="14" fill="none" stroke="#FF2438" stroke-width="2" class="crack-core-ring" />
+          
+          <!-- Primary Strong Diagonal Fracture Rays to Viewport Corners -->
+          <path class="crack-ray crack-ray-tl" d="M960 540 L810 450 L680 390 L520 280 L350 180 L180 80 L0 0" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" />
+          <path class="crack-ray crack-ray-tr" d="M960 540 L1110 450 L1240 390 L1400 280 L1570 180 L1740 80 L1920 0" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" />
+          <path class="crack-ray crack-ray-br" d="M960 540 L1120 630 L1260 700 L1420 810 L1590 910 L1760 1000 L1920 1080" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" />
+          <path class="crack-ray crack-ray-bl" d="M960 540 L800 630 L660 700 L500 810 L330 910 L160 1000 L0 1080" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" />
+          
+          <!-- Cardinal & Secondary Rays Spreading Across Viewport -->
+          <path class="crack-ray crack-ray-t" d="M960 540 L940 410 L970 290 L950 150 L960 0" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" />
+          <path class="crack-ray crack-ray-b" d="M960 540 L975 670 L950 790 L965 930 L960 1080" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" />
+          <path class="crack-ray crack-ray-l" d="M960 540 L790 530 L620 550 L420 535 L210 545 L0 540" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" />
+          <path class="crack-ray crack-ray-r" d="M960 540 L1130 530 L1300 550 L1500 535 L1710 545 L1920 540" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" />
+          
+          <!-- Smaller Branching Fractures Between Main Cracks -->
+          <path class="crack-ray crack-branch-1" d="M960 540 L860 360 L780 230 L710 90" stroke="#FFFFFF" stroke-width="1.4" stroke-linecap="round" />
+          <path class="crack-ray crack-branch-2" d="M960 540 L1060 360 L1140 230 L1210 90" stroke="#FFFFFF" stroke-width="1.4" stroke-linecap="round" />
+          <path class="crack-ray crack-branch-3" d="M960 540 L1070 720 L1160 850 L1230 990" stroke="#FFFFFF" stroke-width="1.4" stroke-linecap="round" />
+          <path class="crack-ray crack-branch-4" d="M960 540 L850 720 L760 850 L690 990" stroke="#FFFFFF" stroke-width="1.4" stroke-linecap="round" />
+
+          <!-- Lateral Crimson-Red Fracture Highlights -->
+          <path class="crack-sub crack-sub-1" d="M810 450 L760 480 L710 495 L650 510" stroke="#FF2438" stroke-width="1.3" stroke-linecap="round" />
+          <path class="crack-sub crack-sub-2" d="M1110 450 L1160 480 L1210 495 L1270 510" stroke="#FF2438" stroke-width="1.3" stroke-linecap="round" />
+          <path class="crack-sub crack-sub-3" d="M1120 630 L1080 680 L1030 710 L990 750" stroke="#FF2438" stroke-width="1.3" stroke-linecap="round" />
+          <path class="crack-sub crack-sub-4" d="M800 630 L840 680 L890 710 L930 750" stroke="#FF2438" stroke-width="1.3" stroke-linecap="round" />
+          <path class="crack-sub crack-sub-5" d="M520 280 L480 320 L440 350" stroke="#FF2438" stroke-width="1.3" stroke-linecap="round" />
+          <path class="crack-sub crack-sub-6" d="M1400 280 L1440 320 L1480 350" stroke="#FF2438" stroke-width="1.3" stroke-linecap="round" />
+          
+          <!-- Realistic Shattered Glass Shard Facets (Subtle Transparent Refraction) -->
+          <polygon points="960,540 1030,480 1000,570" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.35)" stroke-width="0.9" class="crack-shard" />
+          <polygon points="960,540 890,470 930,440" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.35)" stroke-width="0.9" class="crack-shard" />
+          <polygon points="960,540 880,590 920,620" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.35)" stroke-width="0.9" class="crack-shard" />
+          <polygon points="960,540 1040,610 990,630" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.35)" stroke-width="0.9" class="crack-shard" />
+          <polygon points="960,540 980,440 1050,470" fill="rgba(229,9,36,0.07)" stroke="rgba(255,36,56,0.35)" stroke-width="0.9" class="crack-shard" />
+          <polygon points="960,540 940,640 870,610" fill="rgba(229,9,36,0.07)" stroke="rgba(255,36,56,0.35)" stroke-width="0.9" class="crack-shard" />
+        </svg>
+      </div>
+
+      <!-- STEP 4 & 5: FULLSCREEN DIGITAL DISPLAY & FULLSCREEN WELCOME TITLE -->
+      <div class="intro-fullscreen-display" id="intro-fullscreen-display">
+        <!-- Full-Viewport Restrained Crimson Edge Lighting & Subtle Digital Sheen -->
+        <div class="display-edge-lighting" aria-hidden="true"></div>
+        <div class="display-scanline-sheen" aria-hidden="true"></div>
+        <div class="display-ambient-core" aria-hidden="true"></div>
+
+        <!-- STEP 5: FULLSCREEN WELCOME TITLE (CENTERED DIRECTLY ON VIEWPORT) -->
+        <div class="display-title-container" id="display-title-container">
+          <div class="intro-welcome-group" id="intro-welcome-group">
+            <div class="intro-welcome-sub">WELCOME TO</div>
+            <h1 class="intro-welcome-heading" id="intro-welcome-heading">
+              TRACE <span class="accent-title-sep">×</span> <span class="accent-crimson-letter">X</span>
+            </h1>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       ATMOSPHERIC FORENSIC BACKGROUND (CSS BASED)
+       ========================================================================= -->
+  <div class="bg-ambient-layer" aria-hidden="true">
+    <div class="ambient-glow-core"></div>
+    <div class="ambient-glow-top"></div>
+    <div class="forensic-grid"></div>
+    <div class="forensic-crosshair crosshair-tl">+ 00.12° N // FORENSIC CORE</div>
+    <div class="forensic-crosshair crosshair-br">SYS.LEVEL // TRACE × X</div>
+  </div>
+
+  <!-- =========================================================================
+       PAGE CONTENT WRAPPER
+       ========================================================================= -->
+  <div class="page-container">
+
+    <!-- ---------------------------------------------------------------------
+         HEADER — TOP SECTION
+         --------------------------------------------------------------------- -->
+    <header class="site-header" id="site-header">
+      <div class="container-wide">
+        <div class="header-inner">
+          
+          <!-- LEFT SIDE: BRANDING -->
+          <a href="index.html" class="brand-group" style="text-decoration: none; color: inherit;">
+            <div class="brand-logo-wrap">
+              <img src="assets/images/fox-logo.png" alt="FOX Technical Event Logo" class="fox-logo-img">
+            </div>
+
+            <div class="brand-text-column">
+              <!-- Event Title -->
+              <div class="brand-title-row">
+                <span class="brand-title-text">TRACE</span>
+                <span class="brand-x-badge" aria-label="X">
+                  <span class="brand-x-symbol">×</span>
+                </span>
+                <span class="brand-title-text">X</span>
+              </div>
+
+              <!-- Subtitle -->
+              <div class="brand-subtitle">CYBER CRIME INVESTIGATION</div>
+
+              <!-- Institutional Details -->
+              <div class="brand-college-info">
+                <div class="brand-college-line">
+                  <span class="brand-bullet">•</span>
+                  <span>TJS ENGINEERING COLLEGE</span>
+                </div>
+                <div class="brand-college-line">
+                  <span class="brand-bullet">•</span>
+                  <span>A TECH EVENT</span>
+                  <span class="brand-bullet">•</span>
+                  <span>DEPARTMENT OF COMPUTER SCIENCE AND ENGINEERING</span>
+                </div>
+              </div>
+            </div>
+          </a>
+
+          <!-- RIGHT SIDE: FOUR ACTION BUTTONS IN ONE ROW -->
+          <nav class="header-actions" aria-label="Quick Access">
+            <a href="register.html" class="nav-action-btn btn-register-team" id="btn-register-team">
+              REGISTER TEAM
+            </a>
+            <a href="login.html" class="nav-action-btn btn-participant-login" id="btn-participant-login">
+              PARTICIPANT LOGIN
+            </a>
+            <a href="rules.html" class="nav-action-btn btn-event-rules" id="btn-event-rules">
+              EVENT RULES
+            </a>
+            <a href="admin-login.html" class="nav-action-btn btn-admin" id="btn-admin">
+              ADMIN
+            </a>
+          </nav>
+
+        </div>
+      </div>
+    </header>
+
+    <!-- =========================================================================
+         VIEW 1: HOMEPAGE VIEW (HERO SECTION + FOOTER)
+         ========================================================================= -->
+    <div class="trace-view trace-view-active" id="view-homepage">
+      <!-- ---------------------------------------------------------------------
+           MAIN HERO SECTION (CENTERED & BALANCED)
+           --------------------------------------------------------------------- -->
+      <main class="hero-wrapper" id="main-content">
+      <div class="container-wide">
+        <div class="hero-layout-grid">
+
+          <section class="hero-content" aria-labelledby="main-heading">
+
+            <!-- MAIN HEADING: THE CASE IS OPEN -->
+            <h1 class="hero-main-heading" id="main-heading">
+              <span class="heading-white">THE CASE IS</span>
+              <span class="heading-open">OPEN</span>
+            </h1>
+
+            <!-- SUBHEADING -->
+            <div class="hero-subheading">
+              <span>TRACE THE <span class="highlight-crimson">CLUES.</span></span>
+              <span class="subheading-divider" aria-hidden="true">//</span>
+              <span>UNCOVER THE <span class="highlight-crimson">TRUTH.</span></span>
+            </div>
+
+            <!-- DESCRIPTION -->
+            <p class="hero-description">
+              A live cyber crime investigation challenge where every clue,
+              every trace and every decision matters.
+            </p>
+
+            <!-- PRIMARY ACTION BUTTON -->
+            <div class="hero-action-group">
+              <a href="cases.html" class="btn-enter-investigation" id="btn-enter-investigation">
+                <span class="btn-bracket">[</span>
+                <span>ENTER THE INVESTIGATION</span>
+                <span class="btn-bracket">]</span>
+                <span class="btn-arrow" aria-hidden="true">→</span>
+              </a>
+            </div>
+
+          </section>
+
+          <!-- RIGHT-SIDE DIGITAL FORENSICS VISUAL (DECORATIVE) -->
+          <aside class="hero-forensics-visual" aria-hidden="true" role="presentation">
+            <div class="forensic-hud-frame">
+              <!-- Corner brackets -->
+              <span class="hud-bracket hud-bracket-tl"></span>
+              <span class="hud-bracket hud-bracket-tr"></span>
+              <span class="hud-bracket hud-bracket-bl"></span>
+              <span class="hud-bracket hud-bracket-br"></span>
+
+              <!-- Corner HUD details -->
+              <span class="hud-meta-label hud-meta-tl">+ 00.12° N // FORENSIC</span>
+              <span class="hud-meta-label hud-meta-tr">SYS.LEVEL 07</span>
+              <span class="hud-meta-label hud-meta-bl">BIOMETRIC SCAN</span>
+              <span class="hud-meta-label hud-meta-br">X-TRACE // 0x4F</span>
+
+              <!-- Moving Laser Scanning Beam -->
+              <div class="forensic-scanner-beam"></div>
+
+              <!-- Vector HUD & Fingerprint Graphic -->
+              <svg class="forensic-hud-svg" viewBox="0 0 420 430" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- Circular Target Reticles -->
+                <circle class="reticle-outer" cx="210" cy="215" r="185" />
+                <circle class="reticle-mid" cx="210" cy="215" r="150" />
+                <circle class="reticle-inner" cx="210" cy="215" r="115" />
+
+                <!-- Reticle Axes -->
+                <line class="reticle-axis" x1="210" y1="20" x2="210" y2="60" />
+                <line class="reticle-axis" x1="210" y1="370" x2="210" y2="410" />
+                <line class="reticle-axis" x1="15" y1="215" x2="55" y2="215" />
+                <line class="reticle-axis" x1="365" y1="215" x2="405" y2="215" />
+
+                <!-- Coordinate text markers -->
+                <text x="210" y="16" class="hud-axis-text">000° // NOR</text>
+                <text x="408" y="218" class="hud-axis-text">090°</text>
+                <text x="210" y="424" class="hud-axis-text">180° // SOU</text>
+                <text x="12" y="218" class="hud-axis-text">270°</text>
+
+                <!-- Center Crosshair Accent -->
+                <circle cx="210" cy="215" r="3" fill="rgba(229,9,36,0.3)" />
+
+                <!-- Intricate Biometric Fingerprint Ridges -->
+                <g class="fp-ridges-group">
+                  <path class="fp-ridge fp-core" d="M 205 224 C 200 210 216 208 217 222 C 216 232 207 238 203 248" />
+                  <path class="fp-ridge" d="M 199 228 C 192 204 224 202 225 224 C 224 242 209 250 202 262" />
+                  <path class="fp-ridge fp-white" d="M 193 232 C 184 196 232 194 233 228 C 232 250 212 262 201 274" />
+                  <path class="fp-ridge" d="M 187 236 C 176 188 240 186 241 230 C 240 258 217 274 200 286" />
+                  <path class="fp-ridge" d="M 173.9 249.6 C 168.9 188.6 194.0 161.2 210.0 167.0 C 226.0 161.2 251.1 188.6 245.7 251.0" />
+                  <path class="fp-ridge" d="M 167.2 258.3 C 161.4 183.1 191.1 150.0 212.7 157.0 C 228.9 150.0 258.6 183.1 252.3 259.9" />
+                  <path class="fp-ridge" d="M 160.6 264.4 C 153.8 177.6 186.2 138.8 205.2 147.0" />
+                  <path class="fp-ridge fp-white" d="M 214.0 147.0 C 233.8 138.8 266.2 177.6 258.9 266.4" />
+                  <path class="fp-ridge fp-white" d="M 153.9 273.0 C 146.3 172.1 183.3 127.6 213.9 137.0" />
+                  <path class="fp-ridge" d="M 226.0 140.0 C 240.7 127.6 273.7 172.1 265.5 275.4" />
+                  <path class="fp-ridge fp-glow" d="M 147.3 281.8 C 138.7 166.6 180.4 116.4 207.2 127.0 C 239.6 116.4 281.3 166.6 272.0 284.4" />
+                  <path class="fp-ridge" d="M 140.6 290.5 C 131.2 161.1 177.5 105.2 210.0 117.0 C 242.5 105.2 288.8 161.1 278.6 293.4" />
+                  <path class="fp-ridge" d="M 134.0 299.2 C 123.6 155.6 174.5 94.0 213.7 107.0 C 245.5 94.0 296.4 155.6 285.2 302.4" />
+                  <path class="fp-ridge" d="M 127.3 308.0 C 116.0 150.1 171.6 82.8 198.0 97.0" />
+                  <path class="fp-ridge fp-white" d="M 210.0 97.0 C 248.4 82.8 304.0 150.1 291.8 311.4" />
+                  <path class="fp-ridge" d="M 120.7 316.7 C 108.5 144.6 168.7 71.6 211.7 87.0 C 251.3 71.6 311.5 144.6 298.4 320.3" />
+                  <path class="fp-ridge fp-white" d="M 114.0 325.4 C 100.9 139.1 165.8 60.4 214.0 77.0" />
+                  <path class="fp-ridge" d="M 226.0 80.0 C 254.2 60.4 319.1 139.1 304.9 329.3" />
+                  <path class="fp-ridge fp-glow" d="M 107.4 334.2 C 93.4 133.6 162.8 49.2 206.6 67.0 C 257.2 49.2 326.6 133.6 311.5 338.3" />
+                  <path class="fp-ridge" d="M 100.7 342.9 C 85.8 128.1 159.9 38.0 210.0 57.0 C 260.1 38.0 334.2 128.1 318.1 347.3" />
+                  <path class="fp-ridge" d="M 94.1 351.6 C 78.2 122.6 157.0 26.8 197.8 47.0" />
+                  <path class="fp-ridge fp-white" d="M 210.0 47.0 C 263.0 26.8 341.8 122.6 324.7 356.3" />
+                  <path class="fp-ridge" d="M 87.4 360.4 C 70.7 117.1 154.1 15.6 213.6 37.0 C 266.0 15.6 349.3 117.1 331.3 365.3" />
+                  <path class="fp-ridge fp-white" d="M 80.8 369.1 C 63.1 111.6 151.1 4.4 214.0 27.0" />
+                  <path class="fp-ridge" d="M 226.0 30.0 C 268.9 4.4 356.9 111.6 337.8 374.2" />
+                  <path class="fp-ridge" d="M 74.1 377.8 C 55.6 106.1 148.2 -6.8 206.5 17.0 C 271.8 -6.8 364.4 106.1 344.4 383.2" />
+                  <path class="fp-ridge" d="M 148 275 C 160 284 175 292 190 302" />
+                  <path class="fp-ridge" d="M 138 290 C 154 300 170 310 188 324" />
+                  <path class="fp-ridge" d="M 128 305 C 146 316 166 328 186 344" />
+                  <path class="fp-ridge" d="M 118 320 C 140 332 162 346 184 364" />
+                  <path class="fp-ridge" d="M 272 278 C 258 286 244 294 228 304" />
+                  <path class="fp-ridge" d="M 280 294 C 264 304 248 314 230 326" />
+                  <path class="fp-ridge" d="M 288 308 C 270 320 250 332 230 346" />
+                  <path class="fp-ridge" d="M 296 324 C 276 336 254 350 232 366" />
+                  <path class="fp-ridge" d="M 172 368 C 196 378 224 378 248 368" />
+                  <path class="fp-ridge" d="M 160 382 C 195 394 225 394 260 382" />
+                </g>
+
+                <!-- Evidence Node 01 (Upper Left Minutia) -->
+                <g class="evidence-node-group">
+                  <polyline class="evidence-line" points="152,162 108,125 48,125" />
+                  <circle class="evidence-node-ring" cx="152" cy="162" r="7" />
+                  <circle class="evidence-node-dot" cx="152" cy="162" r="2.5" />
+                  <rect class="evidence-tag-bg" x="42" y="112" width="68" height="15" rx="2" />
+                  <text class="evidence-tag-text" x="48" y="123">NODE // 01</text>
+                </g>
+
+                <!-- Evidence Node 02 (Upper Right Bifurcation) -->
+                <g class="evidence-node-group">
+                  <polyline class="evidence-line" points="268,178 316,145 376,145" />
+                  <circle class="evidence-node-ring" cx="268" cy="178" r="7" />
+                  <circle class="evidence-node-dot" cx="268" cy="178" r="2.5" />
+                  <rect class="evidence-tag-bg" x="312" y="132" width="66" height="15" rx="2" />
+                  <text class="evidence-tag-text" x="318" y="143">BIFURC // 02</text>
+                </g>
+
+                <!-- Evidence Node 03 (Lower Left Delta) -->
+                <g class="evidence-node-group">
+                  <polyline class="evidence-line" points="145,275 102,305 44,305" />
+                  <circle class="evidence-node-ring" cx="145" cy="275" r="7" />
+                  <circle class="evidence-node-dot" cx="145" cy="275" r="2.5" />
+                  <rect class="evidence-tag-bg" x="44" y="292" width="62" height="15" rx="2" />
+                  <text class="evidence-tag-text" x="50" y="303">DELTA // 03</text>
+                </g>
+
+                <!-- Evidence Node 04 (Lower Right Match) -->
+                <g class="evidence-node-group">
+                  <polyline class="evidence-line" points="275,290 322,320 376,320" />
+                  <circle class="evidence-node-ring" cx="275" cy="290" r="7" />
+                  <circle class="evidence-node-dot" cx="275" cy="290" r="2.5" />
+                  <rect class="evidence-tag-bg" x="316" y="307" width="62" height="15" rx="2" />
+                  <text class="evidence-tag-text" x="322" y="318">MATCH // 99%</text>
+                </g>
+              </svg>
+            </div>
+
+            <!-- Small Technical Telemetry Panel -->
+            <div class="forensic-tech-card">
+              <div class="tech-card-header">
+                <div class="tech-card-status">
+                  <span class="status-pulse-dot" aria-hidden="true"></span>
+                  <span class="status-title">TRACE STATUS: ACTIVE</span>
+                </div>
+                <span class="tech-card-code">SEC.07 // FORENSIC</span>
+              </div>
+              <div class="tech-card-grid">
+                <div class="tech-metric">
+                  <span class="metric-label">DIGITAL FORENSICS</span>
+                  <span class="metric-value">ANALYSIS RUNNING</span>
+                </div>
+                <div class="tech-metric">
+                  <span class="metric-label">EVIDENCE DETECTED</span>
+                  <span class="metric-value metric-alert">99.4% BIOMETRIC</span>
+                </div>
+                <div class="tech-metric">
+                  <span class="metric-label">SIGNAL ANALYSIS</span>
+                  <span class="metric-value">INTEGRITY VERIFIED</span>
+                </div>
+              </div>
+            </div>
+
+          </aside>
+
+        </div>
+      </div>
+    </main>
+
+    <!-- ---------------------------------------------------------------------
+         MINIMAL SUBTLE FOOTER STRIP
+         --------------------------------------------------------------------- -->
+    <footer class="site-footer-minimal" id="homepage-footer">
+      <div class="container-wide">
+        <div class="footer-inner-minimal">
+          <div>
+            TJS ENGINEERING COLLEGE • DEPARTMENT OF COMPUTER SCIENCE AND ENGINEERING
+          </div>
+          <div class="footer-status-pill">
+            <span class="status-dot" aria-hidden="true"></span>
+            <span>SYSTEM READY // PROTOCOL: TRACE-X</span>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    </div><!-- End #view-homepage -->
+
+    <!-- =========================================================================
+         VIEW 2: CASE SELECTION PROTOCOL (PRESERVED UI & ALL 15 CARDS)
+         ========================================================================= -->
+    <div class="trace-view" id="view-case-selection" style="display: none;">
+      <main class="cases-wrapper" id="cases-content">
+        <div class="container-wide">
+
+          <!-- Subtle Back to Homepage Link -->
+          <div>
+            <a href="index.html" class="back-home-link" id="btn-back-home">
+              <span>←</span> BACK TO HOMEPAGE
+            </a>
+          </div>
+
+          <!-- Section Introduction -->
+          <div class="cases-intro-block">
+            <div class="cases-protocol-tag">CASE SELECTION PROTOCOL</div>
+            <h1 class="cases-title">SELECT YOUR CASE</h1>
+            <p class="cases-subtitle">
+              Choose a cyber crime investigation case to begin your mission.
+            </p>
+          </div>
+
+          <!-- INVESTIGATION CASES RESPONSIVE GRID -->
+          <div class="cases-grid" role="radiogroup" aria-label="Select Investigation Case" id="cases-grid-container">
+
+            <!-- CASE 01 -->
+            <article class="case-card" role="radio" tabindex="0" aria-checked="false" data-case-id="case-01" data-case-name="CASE 01 — STOLEN SOCIAL MEDIA ACCOUNT">
+              <h2 class="case-name">CASE 01 — STOLEN SOCIAL MEDIA ACCOUNT</h2>
+              <p class="case-description">
+                A student's social media account has been taken over.<br>Find how the attacker gained access.
+              </p>
+            </article>
+
+            <!-- CASE 02 -->
+            <article class="case-card" role="radio" tabindex="0" aria-checked="false" data-case-id="case-02" data-case-name="CASE 02 — PHISHING EMAIL ATTACK">
+              <h2 class="case-name">CASE 02 — PHISHING EMAIL ATTACK</h2>
+              <p class="case-description">
+                A student receives a suspicious email asking for login details.<br>Identify the clues that reveal the phishing attempt.
+              </p>
+            </article>
+
+            <!-- CASE 03 -->
+            <article class="case-card" role="radio" tabindex="0" aria-checked="false" data-case-id="case-03" data-case-name="CASE 03 — HACKED COLLEGE WEBSITE">
+              <h2 class="case-name">CASE 03 — HACKED COLLEGE WEBSITE</h2>
+              <p class="case-description">
+                The college website has been changed without permission.<br>Investigate the evidence to understand how access was gained.
+              </p>
+            </article>
+
+            <!-- CASE 04 -->
+            <article class="case-card" role="radio" tabindex="0" aria-checked="false" data-case-id="case-04" data-case-name="CASE 04 — FAKE ONLINE PAYMENT">
+              <h2 class="case-name">CASE 04 — FAKE ONLINE PAYMENT</h2>
+              <p class="case-description">
+                A student loses money after a suspicious online transaction.<br>Trace the evidence and identify the fraud.
+              </p>
+            </article>
+
+            <!-- CASE 05 -->
+            <article class="case-card" role="radio" tabindex="0" aria-checked="false" data-case-id="case-05" data-case-name="CASE 05 — LEAKED STUDENT DATA">
+              <h2 class="case-name">CASE 05 — LEAKED STUDENT DATA</h2>
+              <p class="case-description">
+                Private student information appears on an unauthorised platform.<br>Investigate how the information may have been exposed.
+              </p>
+            </article>
+
+            <!-- CASE 06 -->
+            <article class="case-card" role="radio" tabindex="0" aria-checked="false" data-case-id="case-06" data-case-name="CASE 06 — PASSWORD THEFT">
+              <h2 class="case-name">CASE 06 — PASSWORD THEFT</h2>
+              <p class="case-description">
+                A user's account has been compromised after a password leak.<br>Find the clues that explain how access was obtained.
+              </p>
+            </article>
+
+            <!-- CASE 07 -->
+            <article class="case-card" role="radio" tabindex="0" aria-checked="false" data-case-id="case-07" data-case-name="CASE 07 — FAKE JOB OFFER SCAM">
+              <h2 class="case-name">CASE 07 — FAKE JOB OFFER SCAM</h2>
+              <p class="case-description">
+                A student receives a job offer requesting personal information and an unexpected payment. Identify the signs of fraud.
+              </p>
+            </article>
+
+            <!-- CASE 08 -->
+            <article class="case-card" role="radio" tabindex="0" aria-checked="false" data-case-id="case-08" data-case-name="CASE 08 — ONLINE IDENTITY THEFT">
+              <h2 class="case-name">CASE 08 — ONLINE IDENTITY THEFT</h2>
+              <p class="case-description">
+                Someone is using another person's identity online.<br>Examine the evidence to determine what happened.
+              </p>
+            </article>
+
+            <!-- CASE 09 -->
+            <article class="case-card" role="radio" tabindex="0" aria-checked="false" data-case-id="case-09" data-case-name="CASE 09 — MALWARE INFECTION">
+              <h2 class="case-name">CASE 09 — MALWARE INFECTION</h2>
+              <p class="case-description">
+                A computer behaves strangely after a suspicious file is opened.<br>Investigate how the file may have infected the system.
+              </p>
+            </article>
+
+            <!-- CASE 10 -->
+            <article class="case-card" role="radio" tabindex="0" aria-checked="false" data-case-id="case-10" data-case-name="CASE 10 — SUSPICIOUS ACCOUNT LOGIN">
+              <h2 class="case-name">CASE 10 — SUSPICIOUS ACCOUNT LOGIN</h2>
+              <p class="case-description">
+                An account shows an unexpected login from an unfamiliar device.<br>Examine the available details to identify suspicious activity.
+              </p>
+            </article>
+
+            <!-- CASE 11 -->
+            <article class="case-card" role="radio" tabindex="0" aria-checked="false" data-case-id="case-11" data-case-name="CASE 11 — CYBERBULLYING INVESTIGATION">
+              <h2 class="case-name">CASE 11 — CYBERBULLYING INVESTIGATION</h2>
+              <p class="case-description">
+                A student receives threatening messages through a social platform.<br>Review the available evidence and identify the incident.
+              </p>
+            </article>
+
+            <!-- CASE 12 -->
+            <article class="case-card" role="radio" tabindex="0" aria-checked="false" data-case-id="case-12" data-case-name="CASE 12 — FAKE WEBSITE SCAM">
+              <h2 class="case-name">CASE 12 — FAKE WEBSITE SCAM</h2>
+              <p class="case-description">
+                A website imitates a trusted service to collect user information.<br>Identify the signs that reveal the fake website.
+              </p>
+            </article>
+
+            <!-- CASE 13 -->
+            <article class="case-card" role="radio" tabindex="0" aria-checked="false" data-case-id="case-13" data-case-name="CASE 13 — STOLEN EMAIL ACCOUNT">
+              <h2 class="case-name">CASE 13 — STOLEN EMAIL ACCOUNT</h2>
+              <p class="case-description">
+                A user can no longer access their email account.<br>Investigate the clues surrounding the account takeover.
+              </p>
+            </article>
+
+            <!-- CASE 14 -->
+            <article class="case-card" role="radio" tabindex="0" aria-checked="false" data-case-id="case-14" data-case-name="CASE 14 — UNAUTHORISED DATA ACCESS">
+              <h2 class="case-name">CASE 14 — UNAUTHORISED DATA ACCESS</h2>
+              <p class="case-description">
+                Confidential files have been accessed without permission.<br>Examine the available records to understand what happened.
+              </p>
+            </article>
+
+            <!-- CASE 15 -->
+            <article class="case-card" role="radio" tabindex="0" aria-checked="false" data-case-id="case-15" data-case-name="CASE 15 — ONLINE SHOPPING FRAUD">
+              <h2 class="case-name">CASE 15 — ONLINE SHOPPING FRAUD</h2>
+              <p class="case-description">
+                A customer pays for a product that never arrives.<br>Analyse the transaction details to identify the possible fraud.
+              </p>
+            </article>
+
+          </div>
+
+          <!-- PRIMARY OPEN CASE ACTION BUTTON -->
+          <div class="cases-action-wrap">
+            <button type="button" class="btn-open-case" id="btn-open-case" disabled>
+              <span>[ OPEN CASE ]</span>
+              <span aria-hidden="true">→</span>
+            </button>
+            <div class="cases-selection-hint" id="case-selection-hint">
+              SELECT A CASE TO BEGIN INVESTIGATION
+            </div>
+          </div>
+
+        </div>
+      </main>
+
+      <!-- SUBTLE FOOTER FOR CASES VIEW -->
+      <footer class="site-footer-minimal" id="cases-footer">
+        <div class="container-wide">
+          <div class="footer-inner-minimal">
+            <div>
+              TJS ENGINEERING COLLEGE • DEPARTMENT OF COMPUTER SCIENCE AND ENGINEERING
+            </div>
+            <div class="footer-status-pill">
+              <span class="status-dot" aria-hidden="true"></span>
+              <span>CASE SELECTION PROTOCOL // ACTIVE</span>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div><!-- End #view-case-selection -->
+
+    <!-- =========================================================================
+         VIEW 3: FULLSCREEN INVESTIGATION WORKSTATION
+         Occupies available fullscreen viewport, strict isolation from homepage
+         ========================================================================= -->
+    <div class="trace-view" id="view-investigation" style="display: none;">
+      <div class="investigation-wrapper">
+
+        <!-- WORKSTATION SITE HEADER (DEDICATED INVESTIGATION HUD HEADER) -->
+        <header class="site-header">
+          <div class="container-wide">
+            <div class="header-inner">
+              
+              <!-- LEFT SIDE: BRANDING -->
+              <a href="index.html" class="brand-group" style="text-decoration: none; color: inherit;">
+                <div class="brand-logo-wrap">
+                  <img src="assets/images/fox-logo.png" alt="FOX Technical Event Logo" class="fox-logo-img">
+                </div>
+
+                <div class="brand-text-column">
+                  <div class="brand-title-row">
+                    <span class="brand-title-text">TRACE</span>
+                    <span class="brand-x-badge" aria-label="X">
+                      <span class="brand-x-symbol">×</span>
+                    </span>
+                    <span class="brand-title-text">X</span>
+                  </div>
+
+                  <div class="brand-subtitle">CYBER CRIME INVESTIGATION</div>
+
+                  <div class="brand-college-info">
+                    <div class="brand-college-line">
+                      <span class="brand-bullet">•</span>
+                      <span>TJS ENGINEERING COLLEGE</span>
+                    </div>
+                    <div class="brand-college-line">
+                      <span class="brand-bullet">•</span>
+                      <span>A TECH EVENT</span>
+                      <span class="brand-bullet">•</span>
+                      <span>DEPARTMENT OF COMPUTER SCIENCE AND ENGINEERING</span>
+                    </div>
+                  </div>
+                </div>
+              </a>
+
+              <!-- RIGHT SIDE: HUD QUICK TELEMETRY -->
+              <div class="header-actions">
+                <div class="hud-status-badge" title="Active Security Monitoring">
+                  <span class="hud-pulse-dot" aria-hidden="true"></span>
+                  <span>LIVE INVESTIGATION</span>
+                </div>
+                <button type="button" class="nav-action-btn" id="btn-switch-case" style="font-size: 0.72rem; padding: 0.5rem 1rem; background: transparent; cursor: pointer;">
+                  CASES
+                </button>
+              </div>
+
+            </div>
+          </div>
+        </header>
+
+        <!-- INVESTIGATION HUD / TELEMETRY STATUS BAR -->
+        <div class="investigation-hud-bar" role="region" aria-label="Investigation Status Bar">
+          <div class="container-wide">
+            <div class="hud-container">
+              
+              <!-- Selected Case Indicator -->
+              <div class="hud-case-identity">
+                <span class="hud-case-pill" id="hud-case-tag">CASE ACTIVE</span>
+                <h1 class="hud-case-title" id="hud-case-title">CASE 01 — STOLEN SOCIAL MEDIA ACCOUNT</h1>
+              </div>
+
+              <!-- Live Session & Network Telemetry -->
+              <div class="hud-telemetry">
+                <div class="hud-status-badge">
+                  <span class="hud-pulse-dot" aria-hidden="true"></span>
+                  <span>INVESTIGATION ACTIVE // SECURE SESSION // LIVE</span>
+                </div>
+
+                <div class="hud-conn-badge" id="hud-connection-status">
+                  <span class="conn-dot" aria-hidden="true"></span>
+                  <span id="conn-status-text">CONNECTION: SECURE</span>
+                </div>
+              </div>
+
+              <!-- Round 1 Countdown Timer -->
+              <div class="hud-timer-card" id="hud-timer-card" role="timer" aria-live="polite">
+                <div class="hud-timer-meta">
+                  <span class="hud-timer-round">ROUND 1</span>
+                  <span class="hud-timer-status">TIME REMAINING</span>
+                </div>
+                <div class="hud-timer-digits" id="round1-timer-display">10:00</div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- THREE-PART WORKSTATION MAIN AREA -->
+        <main class="workstation-main" id="investigation-main-content">
+          <div class="container-wide">
+            <div class="workstation-grid">
+
+              <!-- LEFT PANEL: DIGITAL EVIDENCE -->
+              <aside class="evidence-panel" aria-label="Digital Evidence Dossier">
+                <div class="panel-header-row">
+                  <h2 class="panel-heading">
+                    <span class="panel-heading-icon" aria-hidden="true">◈</span>
+                    <span>DIGITAL EVIDENCE</span>
+                  </h2>
+                  <span class="panel-counter-badge" id="evidence-counter-badge">4 ARTIFACTS</span>
+                </div>
+
+                <!-- Case Summary Overview -->
+                <div class="evidence-dossier-overview" id="evidence-summary-container">
+                  <div class="overview-label">CASE SUMMARY BRIEFING</div>
+                  <p class="overview-text" id="evidence-case-summary">
+                    Loading case briefing...
+                  </p>
+                </div>
+
+                <!-- Scrollable Evidence Artifacts -->
+                <div class="evidence-records-scroll" id="evidence-records-list">
+                  <!-- Dynamically populated from TRACE_INVESTIGATION_CASES -->
+                </div>
+              </aside>
+
+              <!-- CENTER PANEL: QUESTION & ANSWER WORKSPACE -->
+              <section class="question-panel" aria-label="Investigation Question Area">
+                
+                <!-- Question Header Row -->
+                <div class="question-counter-indicator" id="question-counter-display">
+                  QUESTION 01 / 15
+                </div>
+                <div class="question-status-indicator" id="question-answered-status">
+                  SELECT ONE ANSWER
+                </div>
+
+                <!-- Slim Progress Bar -->
+                <div class="question-progress-bar" role="progressbar" aria-valuenow="7" aria-valuemin="0" aria-valuemax="100">
+                  <div class="question-progress-fill" id="question-progress-fill" style="width: 6.67%;"></div>
+                </div>
+
+                <!-- ALL QUESTIONS ANSWERED / REVIEW MODE BANNER -->
+                <div class="round-all-answered-banner" id="round-all-answered-banner" style="display: none;">
+                  <div class="banner-text-group">
+                    <span class="banner-title">ALL QUESTIONS ANSWERED</span>
+                    <span class="banner-sub">You may review your answers until the round ends.</span>
+                  </div>
+                  <span class="banner-status-pill">REVIEW MODE ACTIVE</span>
+                </div>
+
+                <!-- Question Statement Box -->
+                <div class="question-statement-box">
+                  <div class="question-label-prefix" id="question-prefix-label">QUESTION 01</div>
+                  <h3 class="question-statement-text" id="question-text">
+                    Loading question data...
+                  </h3>
+                </div>
+
+                <!-- Options Stack (4 Cards) -->
+                <div class="options-stack" id="options-stack" role="radiogroup" aria-label="Question Options">
+                  <!-- Dynamically populated 4 options -->
+                </div>
+
+                <!-- Question Navigation Bar -->
+                <div class="question-navigation-row">
+                  <!-- Previous Button -->
+                  <button type="button" class="btn-nav-prev" id="btn-prev-question" disabled>
+                    <span aria-hidden="true">←</span>
+                    <span>PREVIOUS</span>
+                  </button>
+
+                  <!-- Quick Indicators Strip -->
+                  <div class="question-indicators-strip" id="question-indicators-strip" aria-label="Question Navigator">
+                    <!-- Bullets dynamically generated -->
+                  </div>
+
+                  <!-- Next / Submit Button -->
+                  <div id="next-action-wrapper">
+                    <button type="button" class="btn-nav-next" id="btn-next-question">
+                      <span>NEXT QUESTION</span>
+                      <span aria-hidden="true">→</span>
+                    </button>
+                  </div>
+                </div>
+
+              </section>
+
+            </div>
+          </div>
+        </main>
+
+        <!-- WORKSTATION FOOTER -->
+        <footer class="site-footer-minimal">
+          <div class="container-wide">
+            <div class="footer-inner-minimal">
+              <div>
+                TJS ENGINEERING COLLEGE • DEPARTMENT OF COMPUTER SCIENCE AND ENGINEERING
+              </div>
+              <div class="footer-status-pill">
+                <span class="status-dot" aria-hidden="true"></span>
+                <span>ROUND 1 WORKSTATION // ENCRYPTED SESSION</span>
+              </div>
+            </div>
+          </div>
+        </footer>
+
+      </div><!-- End .investigation-wrapper -->
+
+      <!-- MODALS FOR INVESTIGATION WORKSTATION -->
+      <!-- MODAL 1: TAB / WINDOW SWITCH / FULLSCREEN EXIT VIOLATION OVERLAY -->
+      <div class="violation-overlay" id="violation-overlay" role="alertdialog" aria-modal="true" aria-labelledby="violation-title">
+        <div class="violation-modal-box">
+          <div class="violation-alert-badge" aria-hidden="true">
+            <span>⚠</span>
+            <span>SECURITY PROTOCOL ALERT</span>
+          </div>
+
+          <h2 class="violation-heading" id="violation-title">
+            INVESTIGATION VIOLATION
+          </h2>
+
+          <p class="violation-subtext">
+            SECURITY ANOMALY DETECTED<br>
+            You have exited fullscreen or left the active investigation environment.
+          </p>
+
+          <div class="violation-count-card">
+            <div class="violation-count-digits" id="violation-counter-display">
+              VIOLATION 01 / 03
+            </div>
+            <div class="violation-policy-note" id="violation-warning-note">
+              Warning 1 of 3: Return immediately to maintain event integrity.
+            </div>
+          </div>
+
+          <button type="button" class="btn-violation-return" id="btn-violation-return">
+            [ RETURN TO INVESTIGATION ]
+          </button>
+        </div>
+      </div>
+
+      <!-- MODAL 2: CONFIRMATION BEFORE FINAL SUBMISSION -->
+      <div class="confirm-modal-overlay" id="confirm-submit-modal" role="dialog" aria-modal="true" aria-labelledby="confirm-modal-title">
+        <div class="confirm-modal-box">
+          <h2 class="confirm-title" id="confirm-modal-title">
+            CONFIRM ROUND 1 SUBMISSION
+          </h2>
+
+          <p class="confirm-desc">
+            Are you sure you wish to submit your Round 1 investigation dossier? Once submitted, all answers are permanently locked and cannot be altered.
+          </p>
+
+          <div class="confirm-answered-stat" id="confirm-stat-display">
+            ANSWERED: 15 OF 15 QUESTIONS
+          </div>
+
+          <div class="confirm-actions-row">
+            <button type="button" class="btn-confirm-cancel" id="btn-cancel-submit">
+              [ CANCEL &amp; REVIEW ]
+            </button>
+            <button type="button" class="btn-confirm-proceed" id="btn-proceed-submit">
+              [ CONFIRM FINAL SUBMISSION ]
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- MODAL: ROUND EARLY SUBMISSION WAITING SCREEN -->
+      <div class="round-waiting-screen-overlay" id="round-waiting-screen" role="region" aria-label="Investigation Round Early Submission Waiting Screen" style="display: none;">
+        <div class="waiting-card">
+          <div class="waiting-badge">
+            <span class="waiting-pulse-dot" aria-hidden="true"></span>
+            <span id="waiting-badge-text">ROUND 1 SUBMITTED</span>
+          </div>
+
+          <h2 class="waiting-title" id="waiting-main-heading">
+            ROUND 1 SUBMITTED
+          </h2>
+
+          <div class="waiting-subtext-box">
+            <p class="waiting-msg-primary" id="waiting-subtext-primary">Waiting for the round to end...</p>
+            <p class="waiting-msg-secondary" id="waiting-subtext-secondary">All selected answers have been cryptographically saved and locked. In accordance with official event rules, the next investigation phase unlocks strictly when the countdown reaches 00:00.</p>
+          </div>
+
+          <div class="waiting-timer-panel">
+            <div class="waiting-timer-meta">
+              <span class="waiting-timer-tag">OFFICIAL ROUND COUNTDOWN</span>
+              <span class="waiting-timer-label">TIME REMAINING:</span>
+            </div>
+            <div class="waiting-timer-digits" id="waiting-timer-display">
+              10:00
+            </div>
+          </div>
+
+          <div class="waiting-meta-grid">
+            <div class="waiting-meta-item">
+              <div class="meta-k">CASE INVESTIGATED</div>
+              <div class="meta-v" id="waiting-case-title">CASE 01 — STOLEN SOCIAL MEDIA ACCOUNT</div>
+            </div>
+
+            <div class="waiting-meta-item">
+              <div class="meta-k">TEAM IDENTIFIER</div>
+              <div class="meta-v" id="waiting-team-id">TX-2026-TEAM</div>
+            </div>
+
+            <div class="waiting-meta-item">
+              <div class="meta-k">ANSWERS RECORDED</div>
+              <div class="meta-v" id="waiting-answers-count">15 / 15 QUESTIONS LOCKED</div>
+            </div>
+
+            <div class="waiting-meta-item">
+              <div class="meta-k">NEXT PROTOCOL STATUS</div>
+              <div class="meta-v" id="waiting-next-status">ROUND 2 UNLOCKS AT 00:00</div>
+            </div>
+          </div>
+
+          <div class="waiting-security-note">
+            <span class="waiting-sec-icon" aria-hidden="true">🔒</span>
+            <span>Submissions locked. You may advance immediately without waiting for remaining time.</span>
+          </div>
+
+          <div class="waiting-actions-row" style="margin-top: 1.2rem; display: flex; justify-content: center;">
+            <button type="button" class="btn-enter-round2" id="btn-waiting-advance-now" style="padding: 0.75rem 1.8rem; font-size: 0.85rem; font-weight: 800; cursor: pointer;">
+              <span>[ ADVANCE TO NEXT PHASE IMMEDIATELY ]</span>
+              <span aria-hidden="true">→</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- MODAL 2.5: EVENT STANDBY BROADCAST OVERLAY -->
+      <div class="completion-screen-overlay" id="event-standby-overlay" style="display: none;" role="region" aria-label="Investigation Standby Mode">
+        <div class="completion-card" style="border-color: rgba(229, 9, 36, 0.6); box-shadow: 0 0 50px rgba(229, 9, 36, 0.25);">
+          <div class="completion-badge" style="background: rgba(255, 167, 38, 0.15); border-color: var(--color-amber-bright); color: var(--color-amber-bright);">
+            <span class="status-dot" style="background: var(--color-amber-bright); box-shadow: 0 0 10px var(--color-amber-bright);"></span>
+            <span>COMPETITION STANDBY // SECURE ENVIRONMENT</span>
+          </div>
+
+          <h2 class="completion-title" style="letter-spacing: 0.12em;">
+            AWAITING EVENT BROADCAST
+          </h2>
+
+          <div class="completion-success-tag" style="background: rgba(255, 167, 38, 0.1); border-color: rgba(255, 167, 38, 0.3); color: var(--color-amber-bright);">
+            WORKSTATION PRIMED &amp; SYNCHRONIZED
+          </div>
+
+          <p class="completion-subtitle">
+            The investigation has not officially begun.<br>
+            Please wait for the Department of CSE coordinators to broadcast the start signal.
+          </p>
+
+          <div class="completion-compact-status">
+            <div class="status-row">
+              <span class="status-label">CURRENT STATUS:</span>
+              <span class="status-value status-highlight" style="color: var(--color-amber-bright);" id="standby-status-label">STANDBY // AWAITING START</span>
+            </div>
+            <div class="status-row">
+              <span class="status-label">ROUND 1 DURATION:</span>
+              <span class="status-value">10:00 (15 QUESTIONS)</span>
+            </div>
+          </div>
+
+          <div class="completion-meta-grid">
+            <div class="completion-meta-item">
+              <div class="meta-k">CASE SELECTED</div>
+              <div class="meta-v" id="standby-case-title">CASE 01 — STOLEN SOCIAL MEDIA ACCOUNT</div>
+            </div>
+            <div class="completion-meta-item">
+              <div class="meta-k">TEAM IDENTIFIER</div>
+              <div class="meta-v" id="standby-team-id">TX-2026-TEAM</div>
+            </div>
+            <div class="completion-meta-item">
+              <div class="meta-k">TELEMETRY</div>
+              <div class="meta-v" style="color: #00E676;">SECURE CHANNEL ACTIVE</div>
+            </div>
+            <div class="completion-meta-item">
+              <div class="meta-k">FULLSCREEN MANDATE</div>
+              <div class="meta-v" style="color: var(--color-crimson-bright);">ACTIVE PROTOCOL</div>
+            </div>
+          </div>
+
+          <div style="margin-top: 1.5rem; font-family: var(--font-mono); font-size: 0.78rem; color: rgba(255,255,255,0.5);">
+            Workstation will unlock automatically once Admin begins the competition.
+          </div>
+        </div>
+      </div>
+
+      <!-- MODAL 3: ROUND 1 COMPLETION SCREEN -->
+      <div class="completion-screen-overlay" id="completion-screen" role="region" aria-label="Investigation Round 1 Completion Summary">
+        <div class="completion-card">
+          <div class="completion-badge">
+            <span>✓</span>
+            <span>ROUND 1 COMPLETED</span>
+          </div>
+
+          <h2 class="completion-title">
+            ROUND 1 COMPLETE
+          </h2>
+
+          <div class="completion-success-tag">
+            INVESTIGATION SUCCESSFULLY SUBMITTED
+          </div>
+
+          <p class="completion-subtitle">
+            Your answers have been recorded.<br>
+            Your next investigation phase is ready.
+          </p>
+
+          <div class="completion-compact-status">
+            <div class="status-row">
+              <span class="status-label">QUESTIONS SUBMITTED:</span>
+              <span class="status-value" id="comp-answers-count">15 / 15</span>
+            </div>
+            <div class="status-row">
+              <span class="status-label">INVESTIGATION STATUS:</span>
+              <span class="status-value status-highlight">ROUND 1 COMPLETE</span>
+            </div>
+          </div>
+
+          <div class="completion-meta-grid">
+            <div class="completion-meta-item">
+              <div class="meta-k">CASE INVESTIGATED</div>
+              <div class="meta-v" id="comp-case-title">CASE 01 — STOLEN SOCIAL MEDIA ACCOUNT</div>
+            </div>
+
+            <div class="completion-meta-item">
+              <div class="meta-k">TEAM IDENTIFIER</div>
+              <div class="meta-v" id="comp-team-id">TX-2026-TEAM</div>
+            </div>
+
+            <div class="completion-meta-item">
+              <div class="meta-k">SUBMISSION TIMESTAMP</div>
+              <div class="meta-v" id="comp-timestamp">--:--:-- UTC</div>
+            </div>
+
+            <div class="completion-meta-item">
+              <div class="meta-k">NEXT PROTOCOL</div>
+              <div class="meta-v" style="color: var(--color-crimson-bright);">ROUND 2 READY (15 QUESTIONS)</div>
+            </div>
+          </div>
+
+          <div class="completion-actions">
+            <button type="button" class="btn-enter-round2" id="btn-enter-round2">
+              <span>[ ENTER ROUND 2 ]</span>
+              <span aria-hidden="true">→</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- MODAL 4: EVALUATION PHASE SCREEN -->
+      <div class="evaluation-screen-overlay" id="evaluation-screen" role="region" aria-label="Investigation Final Evaluation Summary">
+        <div class="evaluation-card">
+          <div class="eval-badge">
+            <span>✓</span>
+            <span>ROUND 2 COMPLETE // INVESTIGATION SEALED</span>
+          </div>
+
+          <h2 class="eval-title">
+            INVESTIGATION COMPLETE
+          </h2>
+
+          <div class="eval-phase-tag">
+            EVALUATION PHASE ACTIVE
+          </div>
+
+          <p class="eval-subtitle">
+            All digital evidence dossiers from Round 1 and Round 2 (30 questions total) have been cryptographically sealed and submitted to the evaluation panel.
+          </p>
+
+          <div class="eval-timer-box">
+            <div class="eval-timer-meta">
+              <span class="eval-timer-label">EVALUATION PERIOD</span>
+              <span class="eval-timer-sub">COUNTDOWN</span>
+            </div>
+            <div class="eval-timer-display" id="eval-timer-display">05:00</div>
+          </div>
+
+          <div class="eval-summary-grid">
+            <div class="eval-grid-item">
+              <span class="grid-k">CASE INVESTIGATED</span>
+              <span class="grid-v" id="eval-case-title">CASE 01 — STOLEN SOCIAL MEDIA ACCOUNT</span>
+            </div>
+
+            <div class="eval-grid-item">
+              <span class="grid-k">TEAM IDENTIFIER</span>
+              <span class="grid-v" id="eval-team-id">TX-2026-TEAM</span>
+            </div>
+
+            <div class="eval-grid-item">
+              <span class="grid-k">ROUND 1 DOSSIER</span>
+              <span class="grid-v" id="eval-r1-count">15 / 15 QUESTIONS RECORDED</span>
+            </div>
+
+            <div class="eval-grid-item">
+              <span class="grid-k">ROUND 2 DOSSIER</span>
+              <span class="grid-v" id="eval-r2-count">15 / 15 QUESTIONS RECORDED</span>
+            </div>
+          </div>
+
+          <div class="eval-notice-box">
+            STATUS: LOCKED FOR OFFICIAL CSE DEPARTMENT EVALUATION.<br>
+            Official verification in progress. Scores and rankings will be computed authoritatively by the panel.
+          </div>
+
+          <div class="eval-actions">
+            <a href="index.html" class="btn-eval-home" id="btn-eval-home">
+              <span>[ RETURN TO MISSION HUB ]</span>
+              <span aria-hidden="true">→</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- End #view-investigation -->
+
+    <!-- =========================================================================
+         AUTHENTICATED FULLSCREEN ACTIVATION OVERLAY
+         ========================================================================= -->
+    <div class="fullscreen-modal-overlay" id="fullscreen-activation-modal" role="dialog" aria-modal="true" aria-labelledby="fs-modal-title" style="display: none;">
+      <div class="fullscreen-modal-box">
+        <div class="fs-icon-wrap" aria-hidden="true">⛶</div>
+        <div class="fs-protocol-tag">AUTHENTICATION VERIFIED // ENVIRONMENT SETUP</div>
+        <h2 class="fs-title" id="fs-modal-title">FULLSCREEN ACTIVATION</h2>
+        <p class="fs-description" id="fs-modal-desc">
+          Participant access granted. The TRACE × X cyber crime investigation environment operates in dedicated fullscreen mode. Please activate fullscreen to continue.
+        </p>
+        <div class="fs-modal-actions" style="display: flex; flex-direction: column; gap: 0.75rem;">
+          <button type="button" class="btn-fullscreen-enter" id="btn-enter-fullscreen">
+            <span>[ ENTER FULLSCREEN &amp; OPEN INVESTIGATION ]</span>
+            <span aria-hidden="true">→</span>
+          </button>
+          <button type="button" class="btn-fullscreen-enter" id="btn-enter-fs-investigation" style="display: none;">
+            <span>[ ENTER FULLSCREEN &amp; OPEN INVESTIGATION ]</span>
+            <span aria-hidden="true">→</span>
+          </button>
+          <button type="button" class="btn-fullscreen-cancel" id="btn-enter-fs-home" style="background: transparent; border: 1px solid rgba(255,255,255,0.2); color: rgba(255,255,255,0.7); font-size: 0.75rem; padding: 0.5rem 1rem; cursor: pointer; text-transform: uppercase;">
+            <span>[ VIEW HOMEPAGE IN FULLSCREEN ]</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- =========================================================================
+         FULLSCREEN RETRY MODAL
+         ========================================================================= -->
+    <div class="fullscreen-retry-overlay" id="fullscreen-retry-modal" role="dialog" aria-modal="true" aria-labelledby="fs-retry-title" style="display: none;">
+      <div class="fullscreen-retry-box">
+        <div class="fs-icon-wrap" aria-hidden="true">⛶</div>
+        <div class="fs-protocol-tag">FULLSCREEN PROTOCOL REQUIRED // SECURE ENVIRONMENT</div>
+        <h2 class="fs-title" id="fs-retry-title">FULLSCREEN ACTIVATION REQUIRED</h2>
+        <p class="fs-description">
+          The TRACE × X investigation workstation operates exclusively in dedicated fullscreen mode to maintain technical evaluation integrity. Fullscreen activation could not be confirmed. Click below to grant fullscreen and enter the investigation.
+        </p>
+        <div class="fs-retry-actions">
+          <button type="button" class="btn-fullscreen-enter" id="btn-retry-fullscreen">
+            <span>[ RETRY FULLSCREEN &amp; OPEN CASE ]</span>
+            <span aria-hidden="true">→</span>
+          </button>
+          <button type="button" class="btn-fullscreen-cancel" id="btn-cancel-retry-fs">
+            <span>[ RETURN TO CASE SELECTION ]</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Investigation Dataset -->
+  <script src="assets/js/investigation-data.js"></script>
+
+  <!-- Core Application Script -->
+  <script src="assets/js/app.js"></script>
+</body>
+</html>
