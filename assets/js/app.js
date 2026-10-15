@@ -432,15 +432,23 @@ const TraceApp = (function () {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(teamData)
       })
-      .then(res => res.json().then(data => ({ ok: res.ok, data })))
-      .then(({ ok, data }) => {
+      .then(async res => {
+        let data = {};
+        try {
+          data = await res.json();
+        } catch (jsonErr) {
+          data = { error: `Server communication failure (HTTP ${res.status}).` };
+        }
+        return { ok: res.ok, status: res.status, data };
+      })
+      .then(({ ok, status, data }) => {
         if (!ok || !data.success) {
           if (submitBtn) {
             submitBtn.disabled = false;
             submitBtn.innerHTML = `<span>[ SUBMIT TEAM REGISTRATION ]</span> <span aria-hidden="true">→</span>`;
           }
           if (globalError) {
-            globalError.textContent = data.error || 'Registration failed. Please try again.';
+            globalError.textContent = data.error || `Registration failed (HTTP ${status}). Please try again.`;
             globalError.style.display = 'block';
             globalError.scrollIntoView({ behavior: 'smooth' });
           }
@@ -463,7 +471,7 @@ const TraceApp = (function () {
           console.warn('Session storage write error:', err);
         }
 
-        // Transition to Success Screen
+        // Transition to Success Screen ONLY on confirmed database write
         if (formContainer) formContainer.style.display = 'none';
         if (displayTeamId) displayTeamId.textContent = assignedTeamId;
         if (displayTeamName) displayTeamName.textContent = teamNameVal;
@@ -477,22 +485,15 @@ const TraceApp = (function () {
         }
       })
       .catch(err => {
-        console.warn('Backend registration error, offline fallback:', err);
-        const fallbackId = generateTeamId();
-        teamData.teamId = fallbackId;
-        teamData.registrationNumber = 1;
-        try {
-          sessionStorage.setItem('traceX_activeTeam', JSON.stringify(teamData));
-        } catch (e) {}
-
-        if (formContainer) formContainer.style.display = 'none';
-        if (displayTeamId) displayTeamId.textContent = fallbackId;
-        if (displayTeamName) displayTeamName.textContent = teamNameVal;
-        if (displayRegNum) displayRegNum.textContent = '#1';
-
-        if (successContainer) {
-          successContainer.style.display = 'block';
-          successContainer.scrollIntoView({ behavior: 'smooth' });
+        console.error('Registration network error:', err);
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = `<span>[ SUBMIT TEAM REGISTRATION ]</span> <span aria-hidden="true">→</span>`;
+        }
+        if (globalError) {
+          globalError.textContent = 'Network communication failure. Could not connect to registration server. Please verify your connection and try again.';
+          globalError.style.display = 'block';
+          globalError.scrollIntoView({ behavior: 'smooth' });
         }
       });
     });
@@ -665,49 +666,17 @@ const TraceApp = (function () {
         }
       })
       .catch(err => {
-        console.warn('Backend login network error, falling back to local verification:', err);
-        // Offline resilience fallback
-        let isAuthenticated = false;
-        let authenticatedTeam = null;
-        try {
-          const registeredTeams = JSON.parse(sessionStorage.getItem('traceX_registeredTeams') || '[]');
-          const activeTeam = JSON.parse(sessionStorage.getItem('traceX_activeTeam') || 'null');
-          const allTeams = [...(Array.isArray(registeredTeams) ? registeredTeams : [])];
-          if (activeTeam && !allTeams.some(t => t.teamId === activeTeam.teamId)) allTeams.push(activeTeam);
-          const matched = allTeams.find(t => 
-            t.teamId && t.teamId.toUpperCase() === teamIdVal.toUpperCase() &&
-            (t.pinRaw === pinVal || t.pin === pinVal)
-          );
-          if (matched) {
-            isAuthenticated = true;
-            authenticatedTeam = matched;
-          }
-        } catch (e) {}
-
-        if (!isAuthenticated) {
-          if (submitBtn) {
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = `<span>[ ENTER INVESTIGATION ]</span> <span aria-hidden="true">→</span>`;
-          }
-          if (errorAlert) {
-            errorAlert.style.display = 'block';
-            errorAlert.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-          }
-          return;
+        console.error('Backend login network error:', err);
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = `<span>[ ENTER INVESTIGATION ]</span> <span aria-hidden="true">→</span>`;
         }
-
-        const sessionData = {
-          authenticated: true,
-          teamId: authenticatedTeam.teamId,
-          teamName: authenticatedTeam.teamName,
-          loginTime: new Date().toISOString()
-        };
-        sessionStorage.setItem('traceX_auth_session', JSON.stringify(sessionData));
-        sessionStorage.setItem('traceX_activeTeam', JSON.stringify(authenticatedTeam));
-        sessionStorage.setItem('traceX_intro_completed', 'true');
-        sessionStorage.setItem('traceX_pending_fullscreen', 'true');
-
-        window.location.href = `${config.routes.home}#cases`;
+        if (errorAlert) {
+          const errorDesc = errorAlert.querySelector('.login-error-desc');
+          if (errorDesc) errorDesc.textContent = 'Network communication failure. Could not connect to authentication server.';
+          errorAlert.style.display = 'block';
+          errorAlert.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
       });
     });
 

@@ -1,0 +1,5 @@
+# TRACE × X — Production Dependencies
+# Department of Computer Science & Engineering | T.J.S. Engineering College
+
+# Optional Turso / LibSQL client for persistent serverless cloud SQLite
+libsql-experimental>=0.0.34

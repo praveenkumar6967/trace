@@ -122,7 +122,9 @@
         .then(res => {
           if (res.ok) window.location.href = 'admin.html';
         })
-        .catch(() => clearAuthToken());
+        .catch(() => {
+          clearAuthToken();
+        });
     }
 
     const adminIdInput = document.getElementById('admin-id-input');
@@ -175,28 +177,31 @@
           body: JSON.stringify({ adminId, password })
         });
 
-        const data = await res.json();
-        if (res.ok && data.success) {
+        const data = await res.json().catch(() => ({}));
+
+        if (res.ok && data.success && data.token) {
           setAuthToken(data.token, data.admin);
           window.location.href = 'admin.html';
-        } else {
-          if (errorAlert && errorDesc) {
-            errorDesc.textContent = data.error || 'Authentication rejected. Contact CSE event director.';
-            errorAlert.style.display = 'block';
-          }
-          if (submitBtn) {
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = `<span>[ ACCESS ADMIN PANEL ]</span> <span aria-hidden="true">→</span>`;
-          }
+          return;
         }
-      } catch (err) {
-        if (errorAlert && errorDesc) {
-          errorDesc.textContent = 'Network communication failure. Ensure backend server is running.';
-          errorAlert.style.display = 'block';
-        }
+
+        // Handle authentication failure
         if (submitBtn) {
           submitBtn.disabled = false;
           submitBtn.innerHTML = `<span>[ ACCESS ADMIN PANEL ]</span> <span aria-hidden="true">→</span>`;
+        }
+        if (errorAlert && errorDesc) {
+          errorDesc.textContent = data.error || (res.status === 401 ? 'Invalid administrator credentials. Access restricted to authorized CSE personnel.' : `Authentication failed (HTTP ${res.status}).`);
+          errorAlert.style.display = 'block';
+        }
+      } catch (err) {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = `<span>[ ACCESS ADMIN PANEL ]</span> <span aria-hidden="true">→</span>`;
+        }
+        if (errorAlert && errorDesc) {
+          errorDesc.textContent = 'Network communication failure. Could not connect to authentication server.';
+          errorAlert.style.display = 'block';
         }
       }
     });
@@ -330,18 +335,19 @@
     async function loadOverview() {
       try {
         const res = await apiFetch('/api/admin/overview');
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
 
-        if (regTeamsEl) regTeamsEl.textContent = data.registeredTeams;
-        if (activePartsEl) activePartsEl.textContent = data.activeParticipants;
-        if (compInvsEl) compInvsEl.textContent = data.completedInvestigations;
-        if (activeViosEl) activeViosEl.textContent = data.activeViolations;
+        if (regTeamsEl) regTeamsEl.textContent = data.registeredTeams ?? 0;
+        if (activePartsEl) activePartsEl.textContent = data.activeParticipants ?? 0;
+        if (compInvsEl) compInvsEl.textContent = data.completedInvestigations ?? 0;
+        if (activeViosEl) activeViosEl.textContent = data.activeViolations ?? 0;
 
         const status = data.eventStatus || 'EVENT NOT STARTED';
         if (headerStatusText) headerStatusText.textContent = status;
         if (ecStatusDisplay) ecStatusDisplay.textContent = status;
         if (ecPhaseDisplay) ecPhaseDisplay.textContent = data.currentPhase || 'REGISTRATION & STANDBY';
-        if (ecTeamsDisplay) ecTeamsDisplay.textContent = `${data.registeredTeams} TEAMS REGISTERED`;
+        if (ecTeamsDisplay) ecTeamsDisplay.textContent = `${data.registeredTeams ?? 0} TEAMS REGISTERED`;
 
         // Update button states according to state machine
         if (btnStart && btnPause && btnResume && btnEnd) {
@@ -372,7 +378,11 @@
           }
         }
       } catch (err) {
-        console.error('Error loading overview:', err);
+        console.warn('Overview API failure:', err);
+        if (regTeamsEl && regTeamsEl.textContent === '') regTeamsEl.textContent = '0';
+        if (activePartsEl && activePartsEl.textContent === '') activePartsEl.textContent = '0';
+        if (compInvsEl && compInvsEl.textContent === '') compInvsEl.textContent = '0';
+        if (activeViosEl && activeViosEl.textContent === '') activeViosEl.textContent = '0';
       }
     }
 
@@ -3067,9 +3077,41 @@
     // 1. Load All Cases & Initial Case
     async function loadCasesQuestions() {
       try {
-        const res = await apiFetch('/api/admin/cases');
-        const data = await res.json();
-        allAdminCases = data.cases || [];
+        let casesData = null;
+        try {
+          const res = await apiFetch('/api/admin/cases');
+          if (res.ok) {
+            const data = await res.json();
+            casesData = data.cases;
+          }
+        } catch (apiErr) {}
+
+        if (!casesData || casesData.length === 0) {
+          const staticRes = await fetch('cases_seed.json');
+          if (staticRes.ok) {
+            const seedObj = await staticRes.json();
+            window._traceX_seedObj = seedObj;
+            casesData = Object.keys(seedObj).map((cid, idx) => {
+              const item = seedObj[cid];
+              const r1 = item.questions || [];
+              const r2 = item.round2Questions || [];
+              const ev1 = item.evidence || [];
+              const ev2 = item.round2Evidence || [];
+              return {
+                caseId: cid,
+                name: item.name || cid,
+                orderIdx: idx + 1,
+                status: 'ACTIVE',
+                r1Count: r1.length,
+                r2Count: r2.length,
+                evidenceCount: ev1.length,
+                round2EvidenceCount: ev2.length
+              };
+            });
+          }
+        }
+
+        allAdminCases = casesData || [];
         if (cqCasesCount) cqCasesCount.textContent = allAdminCases.length;
 
         // Ensure active case exists in list
@@ -3083,7 +3125,7 @@
           await loadCaseDetail(currentCaseId);
         }
       } catch (e) {
-        showToast('ERROR', 'Failed to load investigation cases from server.', 'error');
+        showToast('ERROR', 'Failed to load investigation cases.', 'error');
       }
     }
 
@@ -3142,8 +3184,39 @@
     // 3. Load Detail of a Specific Case
     async function loadCaseDetail(caseId) {
       try {
-        const res = await apiFetch(`/api/admin/cases/detail?id=${encodeURIComponent(caseId)}`);
-        const data = await res.json();
+        let data = null;
+        try {
+          const res = await apiFetch(`/api/admin/cases/detail?id=${encodeURIComponent(caseId)}`);
+          if (res.ok) {
+            data = await res.json();
+          }
+        } catch (apiErr) {}
+
+        if (!data) {
+          if (!window._traceX_seedObj) {
+            const staticRes = await fetch('cases_seed.json');
+            if (staticRes.ok) window._traceX_seedObj = await staticRes.json();
+          }
+          if (window._traceX_seedObj && window._traceX_seedObj[caseId]) {
+            const raw = window._traceX_seedObj[caseId];
+            data = {
+              case: {
+                caseId: caseId,
+                name: raw.name || caseId,
+                orderIdx: parseInt(caseId.replace(/\D/g, '') || '1', 10),
+                status: 'ACTIVE',
+                summary: raw.summary || '',
+                evidence: raw.evidence || [],
+                round2Evidence: raw.round2Evidence || []
+              },
+              round1Questions: raw.questions || [],
+              round2Questions: raw.round2Questions || [],
+              isLocked: false
+            };
+          }
+        }
+
+        if (!data) throw new Error('Case not found');
         activeCaseDetail = data;
 
         // Event Lock Alert

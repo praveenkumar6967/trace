@@ -19,15 +19,52 @@ from urllib.parse import urlparse, parse_qs
 from http.server import SimpleHTTPRequestHandler, HTTPServer
 
 PORT = 3000
-DB_FILE = os.environ.get('TRACEX_DB_PATH', os.environ.get('SQLITE_DB_PATH', os.path.join(os.path.dirname(__file__), 'tracex.db')))
-BACKUP_DIR = os.environ.get('TRACEX_BACKUP_DIR', os.path.join(os.path.dirname(__file__), 'backups'))
-os.makedirs(BACKUP_DIR, exist_ok=True)
+ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+IS_VERCEL = bool(os.environ.get('VERCEL') or os.environ.get('VERCEL_ENV') or os.environ.get('AWS_LAMBDA_FUNCTION_NAME'))
+
+if IS_VERCEL:
+    DB_FILE = os.environ.get('TRACEX_DB_PATH', '/tmp/tracex.db')
+    BACKUP_DIR = os.environ.get('TRACEX_BACKUP_DIR', '/tmp/backups')
+    bundled_db = os.path.join(ROOT_DIR, 'tracex.db')
+    if not os.path.exists(DB_FILE) and os.path.exists(bundled_db):
+        try:
+            shutil.copyfile(bundled_db, DB_FILE)
+        except Exception as e:
+            print(f"[TRACE × X] Warning: could not copy bundled db to /tmp: {e}")
+else:
+    DB_FILE = os.environ.get('TRACEX_DB_PATH', os.environ.get('SQLITE_DB_PATH', os.path.join(ROOT_DIR, 'tracex.db')))
+    BACKUP_DIR = os.environ.get('TRACEX_BACKUP_DIR', os.path.join(ROOT_DIR, 'backups'))
+
+try:
+    os.makedirs(BACKUP_DIR, exist_ok=True)
+except Exception:
+    pass
 
 # -----------------------------------------------------------------------------
 # Database Setup & Schema
 # -----------------------------------------------------------------------------
 def get_db():
-    conn = sqlite3.connect(DB_FILE, timeout=15.0)
+    # 1. Check for Turso / LibSQL Cloud Database configuration
+    turso_url = os.environ.get('TURSO_DATABASE_URL') or os.environ.get('LIBSQL_URL')
+    turso_token = os.environ.get('TURSO_AUTH_TOKEN') or os.environ.get('LIBSQL_AUTH_TOKEN')
+    if turso_url and turso_token:
+        try:
+            import libsql_experimental as libsql
+            conn = libsql.connect(turso_url, auth_token=turso_token)
+            conn.row_factory = sqlite3.Row
+            return conn
+        except Exception as e:
+            print(f"[TRACE × X] Turso connection note: {e}. Falling back to SQLite.")
+
+    # 2. Local / Serverless SQLite
+    active_db = os.environ.get('TRACEX_DB_PATH', os.environ.get('SQLITE_DB_PATH', DB_FILE))
+    parent = os.path.dirname(active_db)
+    if parent:
+        try:
+            os.makedirs(parent, exist_ok=True)
+        except Exception:
+            pass
+    conn = sqlite3.connect(active_db, timeout=15.0)
     conn.row_factory = sqlite3.Row
     try:
         conn.execute("PRAGMA journal_mode = WAL")
@@ -640,6 +677,10 @@ def init_database():
             registration_number INTEGER UNIQUE
         )
     ''')
+    c.execute("PRAGMA table_info(teams)")
+    existing_team_cols = {row['name'] for row in c.fetchall()}
+    if 'registration_number' not in existing_team_cols:
+        c.execute("ALTER TABLE teams ADD COLUMN registration_number INTEGER")
     c.execute("CREATE UNIQUE INDEX IF NOT EXISTS idx_teams_reg_num ON teams(registration_number)")
 
     # 4. Live Participant Sessions
@@ -833,7 +874,8 @@ def init_database():
     # Seed Default Administrator if not present
     c.execute('SELECT admin_id FROM admins WHERE admin_id = ?', ('admin_cse',))
     if not c.fetchone():
-        h, s = hash_password('traceX@2026')
+        admin_default_pwd = os.environ.get('TRACEX_ADMIN_PASSWORD', 'traceX@2026')
+        h, s = hash_password(admin_default_pwd)
         c.execute('''
             INSERT INTO admins (admin_id, password_hash, salt, name, role, created_at)
             VALUES (?, ?, ?, ?, ?, ?)
@@ -1252,8 +1294,34 @@ class TraceXRequestHandler(SimpleHTTPRequestHandler):
         self.send_response(200)
         self.send_header('Access-Control-Allow-Origin', '*')
         self.send_header('Access-Control-Allow-Headers', 'Content-Type, Authorization')
-        self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+        self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE')
         self.end_headers()
+
+    def resolve_api_path(self):
+        url = urlparse(self.path)
+        path = url.path.rstrip('/')
+        if not path:
+            path = '/'
+        query = parse_qs(url.query)
+
+        # 1. Direct /api/ route
+        if path.startswith('/api/') and not path.startswith('/api/index'):
+            return path, query
+
+        # 2. Check query parameter passed from Vercel rewrite (__path=...)
+        if '__path' in query and query['__path']:
+            sub = query['__path'][0].lstrip('/').rstrip('/')
+            return f'/api/{sub}', query
+
+        # 3. Check Vercel / proxy routing headers
+        for hdr in ('x-vercel-matched-path', 'x-matched-path', 'x-now-route-matches', 'x-forwarded-uri', 'x-original-uri', 'x-envoy-original-path'):
+            hdr_val = self.headers.get(hdr)
+            if hdr_val:
+                hdr_path = urlparse(hdr_val).path.rstrip('/')
+                if hdr_path.startswith('/api/') and not hdr_path.startswith('/api/index'):
+                    return hdr_path, query
+
+        return path, query
 
     def get_token_admin(self):
         auth_header = self.headers.get('Authorization', '')
@@ -1306,10 +1374,15 @@ class TraceXRequestHandler(SimpleHTTPRequestHandler):
         return None
 
     def read_json_body(self):
-        length = int(self.headers.get('Content-Length', 0))
-        if length > 0:
-            raw = self.rfile.read(length).decode('utf-8')
-            return json.loads(raw)
+        try:
+            length = int(self.headers.get('Content-Length', 0))
+            if length > 0:
+                raw = self.rfile.read(length).decode('utf-8')
+                return json.loads(raw) if raw else {}
+        except Exception:
+            pass
+        return {}
+
     def end_headers(self):
         self.send_header('Cache-Control', 'no-cache, no-store, must-revalidate')
         self.send_header('Pragma', 'no-cache')
@@ -1320,9 +1393,7 @@ class TraceXRequestHandler(SimpleHTTPRequestHandler):
     # GET Handlers
     # -------------------------------------------------------------------------
     def do_GET(self):
-        url = urlparse(self.path)
-        path = url.path
-        query = parse_qs(url.query)
+        path, query = self.resolve_api_path()
 
         if not path.startswith('/api/'):
             return super().do_GET()
@@ -1353,13 +1424,15 @@ class TraceXRequestHandler(SimpleHTTPRequestHandler):
 
         # 2a2. Public Registration Count
         if path == '/api/teams/count':
-            c.execute('SELECT COUNT(*) as count FROM teams')
-            cnt = c.fetchone()['count']
+            c.execute('SELECT COUNT(*) as count, COALESCE(MAX(registration_number), 0) + 1 as next_num FROM teams')
+            row = c.fetchone()
+            cnt = row['count']
+            next_num = row['next_num']
             conn.close()
             return self.send_json(200, {
                 'count': cnt,
                 'registeredTeams': cnt,
-                'nextRegistrationNumber': cnt + 1
+                'nextRegistrationNumber': next_num
             })
 
         # 2b. Public Participant-Facing Cases List (STRICT PRIVACY: ONLY Case Name & Short Description)
@@ -2662,8 +2735,7 @@ class TraceXRequestHandler(SimpleHTTPRequestHandler):
     # POST Handlers
     # -------------------------------------------------------------------------
     def do_POST(self):
-        url = urlparse(self.path)
-        path = url.path
+        path, query = self.resolve_api_path()
         body = self.read_json_body()
 
         conn = get_db()
@@ -2720,7 +2792,13 @@ class TraceXRequestHandler(SimpleHTTPRequestHandler):
                 conn.close()
                 return self.send_json(400, {'error': 'Team ID and Security PIN are required.'})
 
-            c.execute('SELECT * FROM teams WHERE UPPER(team_id) = UPPER(?) OR CAST(registration_number AS TEXT) = ?', (team_id, team_id))
+            clean_num = team_id.lstrip('#').strip()
+            c.execute('''
+                SELECT * FROM teams 
+                WHERE UPPER(team_id) = UPPER(?) 
+                   OR CAST(registration_number AS TEXT) = ? 
+                   OR CAST(registration_number AS TEXT) = ?
+            ''', (team_id, team_id, clean_num))
             team = c.fetchone()
             if not team or not verify_password(pin, team['pin_hash'], team['pin_salt']):
                 conn.close()
@@ -2847,23 +2925,56 @@ class TraceXRequestHandler(SimpleHTTPRequestHandler):
             dept = (body.get('department') or '').strip()
             size = body.get('teamSize', 1)
             members = body.get('members', [])
-            pin = body.get('pinRaw', '0000')
+            pin = str(body.get('pinRaw') or body.get('pin') or '').strip()
 
             if not team_name:
                 conn.close()
-                return self.send_json(400, {'error': 'Missing team details: teamName is required.'})
+                return self.send_json(400, {'error': 'Team Name is required.'})
+            if not college:
+                conn.close()
+                return self.send_json(400, {'error': 'College Name is required.'})
+            if not dept:
+                conn.close()
+                return self.send_json(400, {'error': 'Department is required.'})
+            try:
+                size = int(size)
+                if size < 1 or size > 4:
+                    conn.close()
+                    return self.send_json(400, {'error': 'Team size must be between 1 and 4 members.'})
+            except (ValueError, TypeError):
+                conn.close()
+                return self.send_json(400, {'error': 'Invalid team size specified.'})
+
+            clean_members = []
+            for m in (members if isinstance(members, list) else []):
+                if isinstance(m, dict):
+                    name_val = m.get('name') or m.get('fullName') or str(m)
+                    clean_members.append(str(name_val).strip())
+                elif m is not None:
+                    clean_members.append(str(m).strip())
+
+            if not clean_members:
+                conn.close()
+                return self.send_json(400, {'error': 'Please provide details for at least one team member.'})
+
+            if any(not m for m in clean_members):
+                conn.close()
+                return self.send_json(400, {'error': 'All team member names must be non-empty.'})
+
+            if not pin or len(pin) < 4:
+                conn.close()
+                return self.send_json(400, {'error': 'Security PIN must be at least 4 digits.'})
 
             try:
                 # Immediate exclusive transaction lock to safely handle simultaneous registrations
                 c.execute("BEGIN IMMEDIATE")
 
                 # Prevent duplicate team registrations from the same institution
-                if college:
-                    c.execute('SELECT team_id FROM teams WHERE UPPER(team_name) = UPPER(?) AND UPPER(college_name) = UPPER(?)', (team_name, college))
-                    if c.fetchone():
-                        conn.rollback()
-                        conn.close()
-                        return self.send_json(400, {'error': f"Duplicate registration: Team '{team_name}' from '{college}' is already registered."})
+                c.execute('SELECT team_id FROM teams WHERE UPPER(team_name) = UPPER(?) AND UPPER(college_name) = UPPER(?)', (team_name, college))
+                if c.fetchone():
+                    conn.rollback()
+                    conn.close()
+                    return self.send_json(400, {'error': f"Duplicate registration: Team '{team_name}' from '{college}' is already registered."})
 
                 # Authoritative sequential registration numbering (1, 2, 3...)
                 c.execute('SELECT COALESCE(MAX(registration_number), 0) + 1 FROM teams')
@@ -2877,20 +2988,26 @@ class TraceXRequestHandler(SimpleHTTPRequestHandler):
                 if c.fetchone():
                     conn.rollback()
                     conn.close()
-                    return self.send_json(400, {'error': 'Team ID already exists. Please regenerate or retry.'})
+                    return self.send_json(400, {'error': f"Team ID '{team_id}' already exists. Please choose a different ID or retry."})
 
-                ph, ps = hash_password(str(pin))
+                ph, ps = hash_password(pin)
                 now_iso = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
 
                 c.execute('''
                     INSERT INTO teams (team_id, team_name, college_name, department, team_size, members_json, pin_masked, pin_hash, pin_salt, registered_at, status, registration_number)
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                ''', (team_id, team_name, college, dept, size, json.dumps(members), '••••••', ph, ps, now_iso, 'Registered', reg_num))
+                ''', (team_id, team_name, college, dept, size, json.dumps(clean_members), '••••••', ph, ps, now_iso, 'Registered', reg_num))
 
                 c.execute('''
                     INSERT OR REPLACE INTO sessions (team_id, case_id, case_name, current_round, current_question, time_remaining, connection_status, session_status, updated_at)
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ''', (team_id, None, 'PENDING SELECTION', 1, 1, '10:00', 'STANDBY', 'NOT STARTED', time.time()))
+
+                # Record audit trail entry
+                c.execute('''
+                    INSERT INTO audit_logs (admin_id, action, details, prev_value, new_value, timestamp)
+                    VALUES (?, ?, ?, ?, ?, ?)
+                ''', ('SYSTEM', 'TEAM_REGISTRATION', f"New team registered: {team_name} ({team_id}) - {college}", None, 'Registered', now_iso))
 
                 c.execute('SELECT COUNT(*) as cnt FROM teams')
                 total_count = c.fetchone()['cnt']
@@ -2906,11 +3023,11 @@ class TraceXRequestHandler(SimpleHTTPRequestHandler):
             except sqlite3.IntegrityError as ie:
                 conn.rollback()
                 conn.close()
-                return self.send_json(400, {'error': f'Registration integrity error: {str(ie)}'})
+                return self.send_json(400, {'error': 'Registration integrity constraint error. Please check your submission.'})
             except Exception as e:
                 conn.rollback()
                 conn.close()
-                return self.send_json(500, {'error': f'Registration failed: {str(e)}'})
+                return self.send_json(500, {'error': 'Registration failed due to a server error. Please retry.'})
 
         # 2c. Security Violation Logging (Deduplicated Proctoring Pipeline)
         if path == '/api/violations/log':

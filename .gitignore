@@ -3,11 +3,23 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-# Backups and temporary files
+# Backups, temporary and WAL files
 *.bak
+*.tmp
+*.db-shm
+*.db-wal
 backups/*.db
 !backups/.gitkeep
+
+# Environment and secrets
+.env*
 
 # OS generated files
 Thumbs.db
 .DS_Store
+
+# Temporary scratch scripts and test artifacts
+scratch/
+tests/test_backups/
+tests/*.db
+tests/test_audit_isolated.db
