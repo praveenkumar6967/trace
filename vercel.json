@@ -2,6 +2,11 @@
   "version": 2,
   "cleanUrls": true,
   "trailingSlash": false,
+  "functions": {
+    "api/index.py": {
+      "includeFiles": "../server.py,../tracex.db,../cases_seed.json,../requirements.txt"
+    }
+  },
   "rewrites": [
     {
       "source": "/api/(.*)",
