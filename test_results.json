@@ -33,7 +33,7 @@
     },
     "TEST B.5 - Admin Login & Session Generation": {
       "passed": true,
-      "msg": "Admin login succeeded with 8-hour token: 06876848afeb..."
+      "msg": "Admin login succeeded with 8-hour token: 4ab9f3351b54..."
     },
     "TEST C.1 - Seamless Single-Document View Architecture": {
       "passed": true,
@@ -81,11 +81,11 @@
     },
     "TEST F.3 - Synchronized Official Round 1 Countdown": {
       "passed": true,
-      "msg": "Remaining seconds: 597s (EndTime: 1791974367977)"
+      "msg": "Remaining seconds: 595s (EndTime: 1792002607880)"
     },
     "TEST F.4 - Early Submission Locks Answers & Retains Timer": {
       "passed": true,
-      "msg": "Early submission saved; remaining wait time: 595s"
+      "msg": "Early submission saved; remaining wait time: 593s"
     },
     "TEST G.1 - First Violation Recorded": {
       "passed": true,
@@ -137,7 +137,7 @@
     },
     "TEST I.4 - Database Backup Generation": {
       "passed": true,
-      "msg": "Database backup created: tracex_backup_20261014_102957.db"
+      "msg": "Database backup created: tracex_backup_20261014_182038.db"
     }
   }
 }

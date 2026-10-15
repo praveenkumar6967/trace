@@ -19,8 +19,8 @@ from urllib.parse import urlparse, parse_qs
 from http.server import SimpleHTTPRequestHandler, HTTPServer
 
 PORT = 3000
-DB_FILE = os.path.join(os.path.dirname(__file__), 'tracex.db')
-BACKUP_DIR = os.path.join(os.path.dirname(__file__), 'backups')
+DB_FILE = os.environ.get('TRACEX_DB_PATH', os.environ.get('SQLITE_DB_PATH', os.path.join(os.path.dirname(__file__), 'tracex.db')))
+BACKUP_DIR = os.environ.get('TRACEX_BACKUP_DIR', os.path.join(os.path.dirname(__file__), 'backups'))
 os.makedirs(BACKUP_DIR, exist_ok=True)
 
 # -----------------------------------------------------------------------------
@@ -276,6 +276,327 @@ def evaluate_team_submission(conn, team_id):
     }
 
 
+def get_team_progress(conn, team_id):
+    """
+    Computes and returns the authoritative logical state and progression telemetry
+    for a specific team. Ensures complete isolation across teams.
+    Logical States:
+      - DEACTIVATED
+      - TERMINATED
+      - CASE_NOT_SELECTED
+      - CASE_SELECTED
+      - ROUND_1_IN_PROGRESS
+      - ROUND_1_COMPLETED
+      - ROUND_2_IN_PROGRESS
+      - ROUND_2_COMPLETED
+      - EVALUATION_PENDING
+      - EVALUATION_COMPLETED
+    """
+    conn.row_factory = sqlite3.Row
+    c = conn.cursor()
+    c.execute('SELECT * FROM teams WHERE UPPER(team_id) = UPPER(?)', (team_id,))
+    team = c.fetchone()
+    if not team:
+        return None
+
+    canonical_team_id = team['team_id']
+    team_status = team['status']
+
+    if team_status in ('Deactivated', 'DEACTIVATED'):
+        return {
+            'teamId': canonical_team_id,
+            'teamName': team['team_name'],
+            'status': team_status,
+            'logicalState': 'DEACTIVATED',
+            'isDeactivated': True
+        }
+
+    if team_status == 'Terminated':
+        return {
+            'teamId': canonical_team_id,
+            'teamName': team['team_name'],
+            'status': team_status,
+            'logicalState': 'TERMINATED',
+            'isTerminated': True
+        }
+
+    c.execute('SELECT * FROM sessions WHERE UPPER(team_id) = UPPER(?)', (canonical_team_id,))
+    sess = c.fetchone()
+    case_id = sess['case_id'] if sess else None
+    case_name = sess['case_name'] if sess else None
+    curr_round = sess['current_round'] if sess else 1
+    sess_status = sess['session_status'] if sess else 'NOT STARTED'
+
+    c.execute('SELECT * FROM submissions WHERE UPPER(team_id) = UPPER(?)', (canonical_team_id,))
+    sub = c.fetchone()
+
+    has_r1_answers = bool(sub and sub['round1_answers_json'] and sub['round1_answers_json'] != '{}')
+    has_r2_answers = bool(sub and sub['round2_answers_json'] and sub['round2_answers_json'] != '{}')
+    eval_status = sub['evaluation_status'] if sub else 'PENDING'
+
+    now_ms = int(time.time() * 1000)
+
+    # Check timers
+    r1_timer_id = f"{canonical_team_id}_{case_id}_1" if case_id else None
+    r2_timer_id = f"{canonical_team_id}_{case_id}_2" if case_id else None
+    eval_timer_id = f"{canonical_team_id}_{case_id}_eval" if case_id else None
+
+    r1_timer = None
+    r2_timer = None
+    eval_timer = None
+
+    if r1_timer_id:
+        c.execute('SELECT * FROM round_timers WHERE id = ?', (r1_timer_id,))
+        r1_timer = c.fetchone()
+    if r2_timer_id:
+        c.execute('SELECT * FROM round_timers WHERE id = ?', (r2_timer_id,))
+        r2_timer = c.fetchone()
+    if eval_timer_id:
+        c.execute('SELECT * FROM round_timers WHERE id = ?', (eval_timer_id,))
+        eval_timer = c.fetchone()
+
+    # R1 telemetry
+    r1_started = bool(r1_timer)
+    r1_submitted_early = bool(r1_timer and r1_timer['is_submitted_early'])
+    r1_rem = max(0, int((r1_timer['end_time_ms'] - now_ms) / 1000)) if r1_timer else 600
+    r1_completed = has_r1_answers or r1_submitted_early or (r1_timer and r1_rem <= 0) or (sess_status in ('ROUND 1 COMPLETED', 'SUBMITTED', 'COMPLETED'))
+
+    # R2 telemetry
+    r2_started = bool(r2_timer) or curr_round == 2 or (sess_status in ('ROUND_2_IN_PROGRESS', 'ROUND 2 IN PROGRESS'))
+    r2_submitted_early = bool(r2_timer and r2_timer['is_submitted_early'])
+    r2_rem = max(0, int((r2_timer['end_time_ms'] - now_ms) / 1000)) if r2_timer else 600
+    r2_completed = has_r2_answers or r2_submitted_early or (r2_timer and r2_rem <= 0) or (sess_status in ('COMPLETED', 'EVALUATED'))
+
+    # Evaluation telemetry
+    eval_started = curr_round >= 3 or sess_status in ('EVALUATION', 'COMPLETED', 'EVALUATED') or (r1_completed and r2_completed)
+    eval_completed = eval_status == 'EVALUATED' or (eval_timer and (now_ms >= eval_timer['end_time_ms']))
+
+    # Determine explicit logical state
+    if not case_id or case_id == 'PENDING SELECTION':
+        logical_state = 'CASE_NOT_SELECTED'
+    elif eval_completed:
+        logical_state = 'EVALUATION_COMPLETED'
+    elif eval_started or (r1_completed and r2_completed):
+        logical_state = 'EVALUATION_PENDING'
+    elif r2_started and not r2_completed:
+        logical_state = 'ROUND_2_IN_PROGRESS'
+    elif r1_completed and not r2_started:
+        logical_state = 'ROUND_1_COMPLETED'
+    elif r1_started and not r1_completed:
+        logical_state = 'ROUND_1_IN_PROGRESS'
+    else:
+        logical_state = 'CASE_SELECTED'
+
+    return {
+        'teamId': canonical_team_id,
+        'teamName': team['team_name'],
+        'collegeName': team['college_name'],
+        'department': team['department'],
+        'status': team_status,
+        'logicalState': logical_state,
+        'caseId': case_id,
+        'caseName': case_name,
+        'currentRound': curr_round,
+        'sessionStatus': sess_status,
+        'hasParticipation': bool(case_id or r1_started or has_r1_answers or (sub and (sub['total_score'] or 0) > 0)),
+        'round1': {
+            'started': r1_started,
+            'completed': r1_completed,
+            'submittedEarly': r1_submitted_early,
+            'remainingSeconds': r1_rem,
+            'score': sub['score_r1'] if sub else 0
+        },
+        'round2': {
+            'started': r2_started,
+            'completed': r2_completed,
+            'submittedEarly': r2_submitted_early,
+            'remainingSeconds': r2_rem,
+            'score': sub['score_r2'] if sub else 0
+        },
+        'evaluation': {
+            'started': eval_started,
+            'completed': eval_completed,
+            'status': eval_status,
+            'totalScore': sub['total_score'] if sub else 0,
+            'qualificationStatus': sub['qualification_status'] if sub else 'RESULTS UNDER REVIEW'
+        }
+    }
+
+
+def execute_complete_event_reset(conn, admin_id, phrase, backup_confirmed):
+    """
+    Executes an atomic, secure Complete Event Reset:
+    1. Validates the confirmation phrase 'RESET TRACEX EVENT' and verified backup acknowledgment.
+    2. Performs an automated online SQLite backup snapshot and verifies its file integrity and table records.
+    3. Purges all previous participant data (teams, sessions, submissions, timers, violations, reports).
+    4. Resets the global event state to 'EVENT NOT STARTED' and phase to 'STANDBY'.
+    5. Preserves administrator credentials, the 15 investigation cases, the question bank, and audit logs.
+    """
+    if phrase != 'RESET TRACEX EVENT':
+        return 400, {
+            'error': "Confirmation phrase mismatch. You must enter exact confirmation phrase 'RESET TRACEX EVENT' to proceed."
+        }
+
+    if not backup_confirmed:
+        return 400, {
+            'error': "You must review the affected data categories and confirm that a verified database backup exists."
+        }
+
+    # 1. Automatic Pre-Reset Database Backup & Integrity Verification
+    now_iso = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
+    timestamp_str = time.strftime('%Y%m%d_%H%M%S', time.gmtime())
+    backup_id = f"BKP-RESET-{secrets.token_hex(4).upper()}"
+    filename = f"tracex_backup_pre_reset_{timestamp_str}.db"
+    file_path = os.path.join(BACKUP_DIR, filename)
+
+    try:
+        os.makedirs(BACKUP_DIR, exist_ok=True)
+        # Perform consistent snapshot using SQLite Online Backup API directly from active connection
+        dest_conn = sqlite3.connect(file_path)
+        conn.backup(dest_conn)
+        dest_conn.close()
+
+        # Verify backup file existence and size
+        if not os.path.exists(file_path):
+            raise Exception("Backup file not found after creation.")
+        file_size = os.path.getsize(file_path)
+        if file_size <= 0:
+            raise Exception("Backup file is empty (0 bytes).")
+
+        # Verify backup database integrity and critical tables
+        verify_conn = sqlite3.connect(file_path)
+        vc = verify_conn.cursor()
+        vc.execute("SELECT COUNT(*) FROM cases")
+        cases_count = vc.fetchone()[0]
+        vc.execute("SELECT COUNT(*) FROM questions")
+        questions_count = vc.fetchone()[0]
+        vc.execute("SELECT COUNT(*) FROM admins")
+        admins_count = vc.fetchone()[0]
+        verify_conn.close()
+
+        if cases_count != 15 or questions_count < 15 or admins_count < 1:
+            raise Exception(f"Backup verification failed: incomplete records (cases={cases_count}, questions={questions_count}, admins={admins_count}).")
+
+        # Register backup record in backups table
+        c = conn.cursor()
+        c.execute('''
+            INSERT INTO backups (backup_id, filename, file_path, file_size, created_by, created_at, status, details)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        ''', (backup_id, filename, file_path, file_size, admin_id, now_iso, 'COMPLETED', f"Verified pre-reset snapshot created prior to complete event wipe by {admin_id}"))
+
+    except Exception as bkp_err:
+        return 500, {
+            'error': f"CRITICAL: Complete event reset aborted. Could not create verified database backup: {str(bkp_err)}"
+        }
+
+    # 2. Database Atomic Purge within Transaction
+    try:
+        conn.row_factory = sqlite3.Row
+        c = conn.cursor()
+        c.execute("PRAGMA foreign_keys = ON")
+
+        # Count previous records for audit trail
+        c.execute("SELECT COUNT(*) FROM teams")
+        teams_cleared = c.fetchone()[0]
+        c.execute("SELECT COUNT(*) FROM submissions")
+        subs_cleared = c.fetchone()[0]
+        c.execute("SELECT COUNT(*) FROM sessions")
+        sess_cleared = c.fetchone()[0]
+        c.execute("SELECT COUNT(*) FROM violations")
+        viol_cleared = c.fetchone()[0]
+        c.execute("SELECT COUNT(*) FROM round_timers")
+        timers_cleared = c.fetchone()[0]
+
+        # Purge participant & event data tables in foreign-key safe order
+        c.execute("DELETE FROM team_sessions")
+        c.execute("DELETE FROM round_timers")
+        c.execute("DELETE FROM score_audit_logs")
+        c.execute("DELETE FROM violations")
+        c.execute("DELETE FROM submissions")
+        c.execute("DELETE FROM sessions")
+        c.execute("DELETE FROM teams")
+        c.execute("DELETE FROM event_report_versions")
+        c.execute("DELETE FROM event_reports")
+        try:
+            c.execute("DELETE FROM sqlite_sequence WHERE name IN ('violations', 'score_audit_logs', 'event_reports', 'event_report_versions', 'teams')")
+        except:
+            pass
+
+        # Reset Event State to EVENT NOT STARTED & STANDBY
+        c.execute("INSERT OR REPLACE INTO event_state (key, value) VALUES ('status', 'EVENT NOT STARTED')")
+        c.execute("INSERT OR REPLACE INTO event_state (key, value) VALUES ('phase', 'STANDBY')")
+        c.execute("INSERT OR REPLACE INTO event_state (key, value) VALUES ('round', '1')")
+        c.execute("INSERT OR REPLACE INTO event_state (key, value) VALUES ('round1_start_time', '')")
+        c.execute("INSERT OR REPLACE INTO event_state (key, value) VALUES ('round1_end_time', '')")
+        c.execute("INSERT OR REPLACE INTO event_state (key, value) VALUES ('round2_start_time', '')")
+        c.execute("INSERT OR REPLACE INTO event_state (key, value) VALUES ('round2_end_time', '')")
+        c.execute("INSERT OR REPLACE INTO event_state (key, value) VALUES ('eval_start_time', '')")
+        c.execute("INSERT OR REPLACE INTO event_state (key, value) VALUES ('eval_end_time', '')")
+        c.execute("INSERT OR REPLACE INTO event_state (key, value) VALUES ('results_published', '0')")
+        c.execute("INSERT OR REPLACE INTO event_state (key, value) VALUES ('results_finalized', '0')")
+        c.execute("INSERT OR REPLACE INTO event_state (key, value) VALUES ('official_winner_team_id', '')")
+        c.execute("INSERT OR REPLACE INTO event_state (key, value) VALUES ('official_winner_reason', '')")
+        c.execute("INSERT OR REPLACE INTO event_state (key, value) VALUES ('official_winner_admin_id', '')")
+        c.execute("INSERT OR REPLACE INTO event_state (key, value) VALUES ('official_winner_at', '')")
+        c.execute("INSERT OR REPLACE INTO event_state (key, value) VALUES ('published_by', '')")
+        c.execute("INSERT OR REPLACE INTO event_state (key, value) VALUES ('published_at', '')")
+        c.execute("INSERT OR REPLACE INTO event_state (key, value) VALUES ('finalized_by', '')")
+        c.execute("INSERT OR REPLACE INTO event_state (key, value) VALUES ('finalized_at', '')")
+
+        # Reset resultsPublished in settings JSON while preserving general settings
+        c.execute("SELECT value FROM event_state WHERE key = 'settings'")
+        sett_row = c.fetchone()
+        settings = json.loads(sett_row[0]) if sett_row else {}
+        settings['resultsPublished'] = False
+        c.execute("INSERT OR REPLACE INTO event_state (key, value) VALUES ('settings', ?)", (json.dumps(settings),))
+
+        # Flag that initial demo seeding has already occurred so restart does not re-seed demo teams
+        c.execute("INSERT OR REPLACE INTO event_state (key, value) VALUES ('initial_teams_seeded', '1')")
+
+        # 3. Record Complete Reset in Audit Logs
+        c.execute('''
+            INSERT INTO audit_logs (admin_id, action, details, prev_value, new_value, timestamp)
+            VALUES (?, ?, ?, ?, ?, ?)
+        ''', (admin_id, 'COMPLETE_EVENT_RESET',
+              f"COMPLETE EVENT RESET executed by {admin_id}. Verified backup: {filename} ({file_size} bytes). Cleared: {teams_cleared} teams, {subs_cleared} submissions, {sess_cleared} sessions, {viol_cleared} violations, {timers_cleared} timers. State set to EVENT NOT STARTED / STANDBY.",
+              'PREVIOUS_EVENT_DATA', 'EVENT NOT STARTED', now_iso))
+
+        conn.commit()
+
+        return 200, {
+            'success': True,
+            'message': 'Complete event reset executed successfully. Previous event data cleared, verified backup stored, and system restored to STANDBY.',
+            'status': 'EVENT NOT STARTED',
+            'eventStatus': 'EVENT NOT STARTED',
+            'phase': 'STANDBY',
+            'databaseTarget': DB_FILE,
+            'environment': os.environ.get('VERCEL_ENV', os.environ.get('ENV', 'local')),
+            'backup': {
+                'backupId': backup_id,
+                'filename': filename,
+                'fileSize': file_size,
+                'createdAt': now_iso
+            },
+            'cleared': {
+                'teams': teams_cleared,
+                'submissions': subs_cleared,
+                'sessions': sess_cleared,
+                'violations': viol_cleared,
+                'timers': timers_cleared
+            },
+            'preserved': {
+                'cases': 15,
+                'questions': 450,
+                'adminPreserved': True
+            }
+        }
+    except Exception as reset_err:
+        conn.rollback()
+        return 500, {
+            'error': f"Transaction failed during complete event reset: {str(reset_err)}"
+        }
+
+
 def init_database():
     conn = get_db()
     c = conn.cursor()
@@ -315,9 +636,11 @@ def init_database():
             pin_hash TEXT NOT NULL,
             pin_salt TEXT NOT NULL,
             registered_at TEXT NOT NULL,
-            status TEXT NOT NULL
+            status TEXT NOT NULL,
+            registration_number INTEGER UNIQUE
         )
     ''')
+    c.execute("CREATE UNIQUE INDEX IF NOT EXISTS idx_teams_reg_num ON teams(registration_number)")
 
     # 4. Live Participant Sessions
     c.execute('''
@@ -534,10 +857,12 @@ def init_database():
     for k, v in default_state.items():
         c.execute('INSERT OR IGNORE INTO event_state (key, value) VALUES (?, ?)', (k, v))
 
-    # Seed Initial Registered Teams if empty
+    # Seed Initial Registered Teams if empty and never previously seeded/reset
+    c.execute("SELECT value FROM event_state WHERE key = 'initial_teams_seeded'")
+    seeded_row = c.fetchone()
     c.execute('SELECT COUNT(*) as cnt FROM teams')
     row = c.fetchone()
-    if row and row['cnt'] == 0:
+    if (not seeded_row or seeded_row['value'] != '1') and row and row['cnt'] == 0:
         demo_teams = [
             {
                 'team_id': 'TX-2026-9042',
@@ -671,6 +996,7 @@ def init_database():
             INSERT INTO violations (team_id, violation_type, timestamp, violation_count, action_taken)
             VALUES (?, ?, ?, ?, ?)
         ''', ('TX-2026-6194', 'FULLSCREEN EXIT', now_iso, 3, 'Terminated: Exceeded Max Allowed Violations'))
+        c.execute("INSERT OR REPLACE INTO event_state (key, value) VALUES ('initial_teams_seeded', '1')")
     # -------------------------------------------------------------------------
     # Idempotent Schema Migrations & Participant Session Table
     # -------------------------------------------------------------------------
@@ -694,6 +1020,13 @@ def init_database():
         c.execute("ALTER TABLE submissions ADD COLUMN score_modified_by TEXT")
     if 'is_score_adjusted' not in existing_sub_cols:
         c.execute("ALTER TABLE submissions ADD COLUMN is_score_adjusted INTEGER DEFAULT 0")
+
+    # Authoritative Team Registration Number Sequence
+    c.execute("PRAGMA table_info(teams)")
+    existing_team_cols = {row['name'] for row in c.fetchall()}
+    if 'registration_number' not in existing_team_cols:
+        c.execute("ALTER TABLE teams ADD COLUMN registration_number INTEGER")
+    c.execute("CREATE UNIQUE INDEX IF NOT EXISTS idx_teams_reg_num ON teams(registration_number)")
 
     # SURREAL: Final Score Management Audit Trail Table
     c.execute('''
@@ -1007,11 +1340,26 @@ class TraceXRequestHandler(SimpleHTTPRequestHandler):
             c.execute('SELECT key, value FROM event_state')
             rows = c.fetchall()
             st = {r['key']: r['value'] for r in rows}
+            c.execute('SELECT COUNT(*) as cnt FROM teams')
+            reg_count = c.fetchone()['cnt']
             conn.close()
             return self.send_json(200, {
                 'status': st.get('status', 'EVENT NOT STARTED'),
                 'phase': st.get('phase', 'STANDBY'),
-                'round': st.get('round', '1')
+                'round': st.get('round', '1'),
+                'registeredTeams': reg_count,
+                'registrationCount': reg_count
+            })
+
+        # 2a2. Public Registration Count
+        if path == '/api/teams/count':
+            c.execute('SELECT COUNT(*) as count FROM teams')
+            cnt = c.fetchone()['count']
+            conn.close()
+            return self.send_json(200, {
+                'count': cnt,
+                'registeredTeams': cnt,
+                'nextRegistrationNumber': cnt + 1
             })
 
         # 2b. Public Participant-Facing Cases List (STRICT PRIVACY: ONLY Case Name & Short Description)
@@ -1025,6 +1373,22 @@ class TraceXRequestHandler(SimpleHTTPRequestHandler):
         if path == '/api/cases/questions':
             cid = query.get('case_id', [''])[0]
             rnd = int(query.get('round', ['1'])[0])
+            team_id = query.get('team_id', [''])[0].strip()
+
+            if team_id:
+                c.execute('SELECT case_id, status FROM teams t LEFT JOIN sessions s ON UPPER(t.team_id) = UPPER(s.team_id) WHERE UPPER(t.team_id) = UPPER(?)', (team_id,))
+                s_row = c.fetchone()
+                if s_row:
+                    if s_row['status'] in ('Deactivated', 'DEACTIVATED'):
+                        conn.close()
+                        return self.send_json(403, {'error': 'Team account is deactivated. Access denied.'})
+                    if s_row['status'] == 'Terminated':
+                        conn.close()
+                        return self.send_json(403, {'error': 'Team account is terminated. Access denied.'})
+                    if s_row['case_id'] and s_row['case_id'] != cid:
+                        conn.close()
+                        return self.send_json(403, {'error': f"Case access denied. Your assigned case is {s_row['case_id']}."})
+
             c.execute('''
                 SELECT id, case_id, round, order_num, question_text, option_a, option_b, option_c, option_d, evidence_ref
                 FROM questions
@@ -1045,11 +1409,38 @@ class TraceXRequestHandler(SimpleHTTPRequestHandler):
             conn.close()
             return self.send_json(200, {'questions': qs})
 
-        # 2d. Authoritative Investigation Round Timer
+        # 2c2. Team-Specific Progress & Authoritative State
+        if path == '/api/teams/progress':
+            team_id = query.get('team_id', [''])[0].strip()
+            if not team_id:
+                token_team = self.get_token_team()
+                if token_team:
+                    team_id = token_team
+
+            if not team_id:
+                conn.close()
+                return self.send_json(400, {'error': 'Team ID is required.'})
+
+            prog = get_team_progress(conn, team_id)
+            if not prog:
+                conn.close()
+                return self.send_json(404, {'error': f"Team '{team_id}' not found."})
+
+            if prog.get('isDeactivated'):
+                conn.close()
+                return self.send_json(403, {'error': 'This team account has been deactivated.', 'isDeactivated': True})
+            if prog.get('isTerminated'):
+                conn.close()
+                return self.send_json(403, {'error': 'This team account has been terminated.', 'isTerminated': True})
+
+            conn.close()
+            return self.send_json(200, {'success': True, 'progress': prog})
+
+        # 2d. Authoritative Investigation Round Timer (Independent Per-Team Timers)
         if path == '/api/round/timer':
-            team_id = query.get('team_id', ['TX-2026-TEAM'])[0]
-            case_id = query.get('case_id', ['case-01'])[0]
-            rnd_param = str(query.get('round', ['1'])[0]).lower()
+            team_id = query.get('team_id', ['TX-2026-TEAM'])[0].strip()
+            case_id = query.get('case_id', ['case-01'])[0].strip()
+            rnd_param = str(query.get('round', ['1'])[0]).lower().strip()
             if rnd_param in ('eval', '3', 'evaluation'):
                 rnd = 'eval'
             else:
@@ -1060,65 +1451,55 @@ class TraceXRequestHandler(SimpleHTTPRequestHandler):
 
             now_ms = int(time.time() * 1000)
 
-            c.execute("SELECT key, value FROM event_state WHERE key IN ('status', 'phase', 'round', 'round1_start_time', 'round1_end_time', 'round2_start_time', 'round2_end_time', 'eval_start_time', 'eval_end_time')")
-            ev_rows = {r['key']: r['value'] for r in c.fetchall()}
+            # Check team status
+            c.execute('SELECT status FROM teams WHERE UPPER(team_id) = UPPER(?)', (team_id,))
+            t_row = c.fetchone()
+            if not t_row:
+                conn.close()
+                return self.send_json(404, {'error': f"Team '{team_id}' not found."})
+            if t_row['status'] in ('Deactivated', 'DEACTIVATED'):
+                conn.close()
+                return self.send_json(403, {'error': 'Team account is deactivated. Access denied.'})
+            if t_row['status'] == 'Terminated':
+                conn.close()
+                return self.send_json(403, {'error': 'Team account is terminated. Access denied.'})
 
-            ev_status = ev_rows.get('status', 'EVENT NOT STARTED')
+            c.execute("SELECT key, value FROM event_state WHERE key IN ('status', 'phase', 'round', 'settings')")
+            ev_rows = {r['key']: r['value'] for r in c.fetchall()}
+            ev_status = ev_rows.get('status', 'EVENT ACTIVE')
+
+            # Parse configurable durations from settings
+            try:
+                sett = json.loads(ev_rows.get('settings', '{}'))
+            except:
+                sett = {}
+
+            if rnd == 'eval':
+                dur_sec = int(sett.get('evalDuration', 5)) * 60
+            elif rnd == 2:
+                dur_sec = int(sett.get('round2Duration', 10)) * 60
+            else:
+                dur_sec = int(sett.get('round1Duration', 10)) * 60
+
+            if dur_sec <= 0:
+                dur_sec = 300 if rnd == 'eval' else 600
 
             timer_id = f"{team_id}_{case_id}_{rnd}"
             c.execute('SELECT * FROM round_timers WHERE id = ?', (timer_id,))
             timer_row = c.fetchone()
-            is_sub = timer_row['is_submitted_early'] if timer_row else 0
-
-            # If event has NOT started: participants hold in synchronized STANDBY state!
-            if ev_status in ('EVENT NOT STARTED', 'STANDBY', 'NOT STARTED') or not ev_rows.get('round1_start_time'):
-                conn.close()
-                return self.send_json(200, {
-                    'serverTime': now_ms,
-                    'eventStatus': 'EVENT NOT STARTED',
-                    'isStarted': False,
-                    'phase': 'STANDBY',
-                    'round': rnd if rnd == 'eval' else 1,
-                    'duration': 300 if rnd == 'eval' else 600,
-                    'remainingSeconds': 300 if rnd == 'eval' else 600,
-                    'isExpired': False,
-                    'isSubmittedEarly': False,
-                    'message': 'STANDBY // WAITING FOR EVENT START'
-                })
-
-            # Authoritative synchronized schedule
-            dur_sec = 300 if rnd == 'eval' else 600
-            if rnd == 'eval':
-                event_wide_start = ev_rows.get('eval_start_time')
-                event_wide_end = ev_rows.get('eval_end_time')
-            else:
-                event_wide_start = ev_rows.get(f'round{rnd}_start_time')
-                event_wide_end = ev_rows.get(f'round{rnd}_end_time')
 
             if timer_row:
                 st_ms = timer_row['start_time_ms']
                 end_ms = timer_row['end_time_ms']
                 dur_sec = timer_row['duration_sec'] or dur_sec
                 rem_sec = max(0, min(dur_sec, int((end_ms - now_ms) / 1000)))
+                is_sub = timer_row['is_submitted_early']
             else:
-                if event_wide_start and event_wide_end:
-                    ew_start_ms = int(event_wide_start)
-                    ew_end_ms = int(event_wide_end)
-                    # If this round is requested early before the event-wide start time, start a fresh timer for the team
-                    if now_ms < ew_start_ms:
-                        st_ms = now_ms
-                        end_ms = now_ms + (dur_sec * 1000)
-                        rem_sec = dur_sec
-                    else:
-                        st_ms = ew_start_ms
-                        end_ms = ew_end_ms
-                        rem_sec = max(0, min(dur_sec, int((end_ms - now_ms) / 1000)))
-                else:
-                    st_ms = now_ms
-                    end_ms = now_ms + (dur_sec * 1000)
-                    rem_sec = dur_sec
-
-                # Record initial per-team timer in DB so refreshes preserve it
+                # Fresh, independent round timer for THIS specific team
+                st_ms = now_ms
+                end_ms = now_ms + (dur_sec * 1000)
+                rem_sec = dur_sec
+                is_sub = 0
                 c.execute('''
                     INSERT INTO round_timers (id, team_id, case_id, round, start_time_ms, end_time_ms, duration_sec, is_submitted_early, submitted_at_ms)
                     VALUES (?, ?, ?, ?, ?, ?, ?, 0, 0)
@@ -1126,11 +1507,20 @@ class TraceXRequestHandler(SimpleHTTPRequestHandler):
 
             mins = rem_sec // 60
             secs = rem_sec % 60
+            active_round_num = 3 if rnd == 'eval' else rnd
+            
             c.execute('''
                 UPDATE sessions
-                SET current_round = ?, time_remaining = ?, session_status = CASE WHEN session_status = 'SUBMITTED' THEN 'SUBMITTED' ELSE 'ACTIVE' END, updated_at = ?
-                WHERE team_id = ?
-            ''', (3 if rnd == 'eval' else rnd, f"{mins:02d}:{secs:02d}", time.time(), team_id))
+                SET case_id = COALESCE(case_id, ?),
+                    current_round = ?, 
+                    time_remaining = ?, 
+                    session_status = CASE 
+                        WHEN session_status IN ('SUBMITTED', 'ROUND 1 COMPLETED', 'COMPLETED', 'DEACTIVATED', 'TERMINATED') THEN session_status 
+                        ELSE ? 
+                    END, 
+                    updated_at = ?
+                WHERE UPPER(team_id) = UPPER(?)
+            ''', (case_id, active_round_num, f"{mins:02d}:{secs:02d}", 'EVALUATION' if rnd == 'eval' else f'ROUND_{rnd}_IN_PROGRESS', time.time(), team_id))
             conn.commit()
 
             conn.close()
@@ -1146,8 +1536,7 @@ class TraceXRequestHandler(SimpleHTTPRequestHandler):
                 'durationSeconds': dur_sec,
                 'remainingSeconds': rem_sec,
                 'isExpired': rem_sec <= 0,
-                'isSubmittedEarly': bool(is_sub),
-                'eventWide': True
+                'isSubmittedEarly': bool(is_sub)
             })
 
         # 2e. Public Participant Result Status (Strict Privacy Guard)
@@ -1220,9 +1609,23 @@ class TraceXRequestHandler(SimpleHTTPRequestHandler):
 
         # 4. Team Management List
         if path == '/api/admin/teams':
-            c.execute('SELECT team_id, team_name, college_name, department, team_size, members_json, pin_masked, registered_at, status FROM teams ORDER BY registered_at DESC')
+            c.execute('''
+                SELECT t.team_id, t.team_name, t.college_name, t.department, t.team_size, t.members_json, t.registered_at, t.status, t.registration_number,
+                       s.case_id, s.case_name, s.current_round, s.session_status,
+                       sub.total_score, sub.evaluation_status, sub.round1_answers_json, sub.round2_answers_json
+                FROM teams t
+                LEFT JOIN sessions s ON UPPER(t.team_id) = UPPER(s.team_id)
+                LEFT JOIN submissions sub ON UPPER(t.team_id) = UPPER(sub.team_id)
+                ORDER BY t.registered_at DESC
+            ''')
             teams = []
             for r in c.fetchall():
+                has_part = bool(
+                    (r['case_id'] and r['session_status'] not in ('NOT STARTED', 'PENDING SELECTION')) or 
+                    (r['round1_answers_json'] and r['round1_answers_json'] != '{}') or 
+                    (r['round2_answers_json'] and r['round2_answers_json'] != '{}') or 
+                    ((r['total_score'] or 0) > 0)
+                )
                 teams.append({
                     'teamId': r['team_id'],
                     'teamName': r['team_name'],
@@ -1230,9 +1633,15 @@ class TraceXRequestHandler(SimpleHTTPRequestHandler):
                     'department': r['department'],
                     'teamSize': r['team_size'],
                     'members': json.loads(r['members_json']),
-                    'pinMasked': r['pin_masked'],
                     'registeredAt': r['registered_at'],
-                    'status': r['status']
+                    'status': r['status'],
+                    'registrationNumber': r['registration_number'],
+                    'selectedCaseId': r['case_id'] or None,
+                    'selectedCaseName': r['case_name'] or 'Pending Selection',
+                    'currentRound': r['current_round'] or 1,
+                    'sessionStatus': r['session_status'] or 'NOT STARTED',
+                    'score': r['total_score'] if (r['total_score'] is not None and r['evaluation_status'] == 'EVALUATED') else None,
+                    'hasParticipation': has_part
                 })
             conn.close()
             return self.send_json(200, {'teams': teams})
@@ -2311,11 +2720,18 @@ class TraceXRequestHandler(SimpleHTTPRequestHandler):
                 conn.close()
                 return self.send_json(400, {'error': 'Team ID and Security PIN are required.'})
 
-            c.execute('SELECT * FROM teams WHERE UPPER(team_id) = UPPER(?)', (team_id,))
+            c.execute('SELECT * FROM teams WHERE UPPER(team_id) = UPPER(?) OR CAST(registration_number AS TEXT) = ?', (team_id, team_id))
             team = c.fetchone()
             if not team or not verify_password(pin, team['pin_hash'], team['pin_salt']):
                 conn.close()
                 return self.send_json(401, {'error': 'Invalid Team ID or Security PIN. Access denied.'})
+
+            if team['status'] in ('Deactivated', 'DEACTIVATED'):
+                conn.close()
+                return self.send_json(403, {'error': 'This team account has been deactivated by event administration. Access denied.'})
+            if team['status'] == 'Terminated':
+                conn.close()
+                return self.send_json(403, {'error': 'This team account has been terminated/disqualified. Access denied.'})
 
             # Update session connection status
             c.execute("UPDATE sessions SET connection_status = 'SECURE', updated_at = ? WHERE UPPER(team_id) = UPPER(?)", (time.time(), team['team_id']))
@@ -2328,6 +2744,8 @@ class TraceXRequestHandler(SimpleHTTPRequestHandler):
                       (token, team['team_id'], now, expires))
             conn.commit()
 
+            prog = get_team_progress(conn, team['team_id'])
+
             team_obj = {
                 'teamId': team['team_id'],
                 'teamName': team['team_name'],
@@ -2337,44 +2755,162 @@ class TraceXRequestHandler(SimpleHTTPRequestHandler):
                 'status': team['status']
             }
             conn.close()
-            return self.send_json(200, {'success': True, 'token': token, 'team': team_obj})
+            return self.send_json(200, {'success': True, 'token': token, 'team': team_obj, 'progress': prog})
+
+        # 2a2. Participant Case Selection Endpoint (Server-Persisted Case Assignment)
+        if path == '/api/teams/select-case':
+            team_id = (body.get('teamId') or '').strip()
+            case_id = (body.get('caseId') or '').strip()
+
+            if not team_id or not case_id:
+                conn.close()
+                return self.send_json(400, {'error': 'Team ID and Case ID are required.'})
+
+            c.execute('SELECT * FROM teams WHERE UPPER(team_id) = UPPER(?)', (team_id,))
+            team = c.fetchone()
+            if not team:
+                conn.close()
+                return self.send_json(404, {'error': f"Team '{team_id}' not found."})
+
+            canonical_id = team['team_id']
+
+            if team['status'] in ('Deactivated', 'DEACTIVATED'):
+                conn.close()
+                return self.send_json(403, {'error': 'This team account has been deactivated. Access denied.'})
+            if team['status'] == 'Terminated':
+                conn.close()
+                return self.send_json(403, {'error': 'This team account has been terminated. Access denied.'})
+
+            c.execute('SELECT * FROM cases WHERE case_id = ? AND status = "ACTIVE"', (case_id,))
+            case_row = c.fetchone()
+            if not case_row:
+                conn.close()
+                return self.send_json(404, {'error': f"Investigation case '{case_id}' does not exist or is inactive."})
+
+            # Guard: Prevent switching cases if the team has already started investigating a DIFFERENT case
+            c.execute('SELECT * FROM submissions WHERE UPPER(team_id) = UPPER(?)', (canonical_id,))
+            existing_sub = c.fetchone()
+            if existing_sub and existing_sub['case_id'] and existing_sub['case_id'] != case_id:
+                if (existing_sub['round1_answers_json'] and existing_sub['round1_answers_json'] != '{}') or \
+                   (existing_sub['round2_answers_json'] and existing_sub['round2_answers_json'] != '{}') or \
+                   (existing_sub['total_score'] and existing_sub['total_score'] > 0):
+                    conn.close()
+                    return self.send_json(400, {'error': 'Cannot change case selection after round investigation has commenced.'})
+
+            c.execute('SELECT * FROM round_timers WHERE UPPER(team_id) = UPPER(?) AND case_id != ?', (canonical_id, case_id))
+            if c.fetchone():
+                conn.close()
+                return self.send_json(400, {'error': 'Cannot change case selection after timer has commenced for another case.'})
+
+            now_sec = time.time()
+            c.execute('''
+                INSERT INTO sessions (team_id, case_id, case_name, current_round, current_question, time_remaining, connection_status, session_status, updated_at)
+                VALUES (?, ?, ?, 1, 1, '10:00', 'SECURE', 'CASE_SELECTED', ?)
+                ON CONFLICT(team_id) DO UPDATE SET
+                    case_id = excluded.case_id,
+                    case_name = excluded.case_name,
+                    session_status = CASE WHEN sessions.session_status IN ('NOT STARTED', 'PENDING SELECTION') THEN 'CASE_SELECTED' ELSE sessions.session_status END,
+                    updated_at = excluded.updated_at
+            ''', (canonical_id, case_id, case_row['name'], now_sec))
+
+            # Synchronize submissions dossier
+            now_iso = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
+            c.execute('SELECT team_id FROM submissions WHERE UPPER(team_id) = UPPER(?)', (canonical_id,))
+            if not c.fetchone():
+                c.execute('''
+                    INSERT INTO submissions (team_id, case_id, qualification_status, submitted_at)
+                    VALUES (?, ?, 'RESULTS UNDER REVIEW', ?)
+                ''', (canonical_id, case_id, now_iso))
+            else:
+                c.execute('''
+                    UPDATE submissions 
+                    SET case_id = ? 
+                    WHERE UPPER(team_id) = UPPER(?) AND (round1_answers_json IS NULL OR round1_answers_json = '{}')
+                ''', (case_id, canonical_id))
+
+            conn.commit()
+            prog = get_team_progress(conn, canonical_id)
+            conn.close()
+            return self.send_json(200, {
+                'success': True,
+                'teamId': canonical_id,
+                'caseId': case_id,
+                'caseName': case_row['name'],
+                'progress': prog
+            })
 
         # 2b. Participant Team Registration Sync
         if path == '/api/teams/register':
-            team_id = body.get('teamId')
-            team_name = body.get('teamName')
-            college = body.get('collegeName')
-            dept = body.get('department')
+            team_id = (body.get('teamId') or '').strip()
+            team_name = (body.get('teamName') or '').strip()
+            college = (body.get('collegeName') or '').strip()
+            dept = (body.get('department') or '').strip()
             size = body.get('teamSize', 1)
             members = body.get('members', [])
             pin = body.get('pinRaw', '0000')
 
-            if not team_id or not team_name:
+            if not team_name:
                 conn.close()
-                return self.send_json(400, {'error': 'Missing team details.'})
+                return self.send_json(400, {'error': 'Missing team details: teamName is required.'})
 
-            # Check if team_id already exists to prevent duplicates
-            c.execute('SELECT team_id FROM teams WHERE UPPER(team_id) = UPPER(?)', (team_id,))
-            if c.fetchone():
+            try:
+                # Immediate exclusive transaction lock to safely handle simultaneous registrations
+                c.execute("BEGIN IMMEDIATE")
+
+                # Prevent duplicate team registrations from the same institution
+                if college:
+                    c.execute('SELECT team_id FROM teams WHERE UPPER(team_name) = UPPER(?) AND UPPER(college_name) = UPPER(?)', (team_name, college))
+                    if c.fetchone():
+                        conn.rollback()
+                        conn.close()
+                        return self.send_json(400, {'error': f"Duplicate registration: Team '{team_name}' from '{college}' is already registered."})
+
+                # Authoritative sequential registration numbering (1, 2, 3...)
+                c.execute('SELECT COALESCE(MAX(registration_number), 0) + 1 FROM teams')
+                reg_num = c.fetchone()[0]
+
+                if not team_id:
+                    team_id = f"TX-2026-{reg_num:04d}"
+
+                # Check if team_id already exists to prevent duplicate IDs
+                c.execute('SELECT team_id FROM teams WHERE UPPER(team_id) = UPPER(?)', (team_id,))
+                if c.fetchone():
+                    conn.rollback()
+                    conn.close()
+                    return self.send_json(400, {'error': 'Team ID already exists. Please regenerate or retry.'})
+
+                ph, ps = hash_password(str(pin))
+                now_iso = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
+
+                c.execute('''
+                    INSERT INTO teams (team_id, team_name, college_name, department, team_size, members_json, pin_masked, pin_hash, pin_salt, registered_at, status, registration_number)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ''', (team_id, team_name, college, dept, size, json.dumps(members), '••••••', ph, ps, now_iso, 'Registered', reg_num))
+
+                c.execute('''
+                    INSERT OR REPLACE INTO sessions (team_id, case_id, case_name, current_round, current_question, time_remaining, connection_status, session_status, updated_at)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ''', (team_id, None, 'PENDING SELECTION', 1, 1, '10:00', 'STANDBY', 'NOT STARTED', time.time()))
+
+                c.execute('SELECT COUNT(*) as cnt FROM teams')
+                total_count = c.fetchone()['cnt']
+
+                conn.commit()
                 conn.close()
-                return self.send_json(400, {'error': 'Team ID already exists. Please regenerate or retry.'})
-
-            ph, ps = hash_password(str(pin))
-            now_iso = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
-
-            c.execute('''
-                INSERT INTO teams (team_id, team_name, college_name, department, team_size, members_json, pin_masked, pin_hash, pin_salt, registered_at, status)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            ''', (team_id, team_name, college, dept, size, json.dumps(members), '••••••', ph, ps, now_iso, 'Registered'))
-
-            c.execute('''
-                INSERT OR REPLACE INTO sessions (team_id, case_id, case_name, current_round, current_question, time_remaining, connection_status, session_status, updated_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-            ''', (team_id, None, 'PENDING SELECTION', 1, 1, '10:00', 'STANDBY', 'NOT STARTED', time.time()))
-
-            conn.commit()
-            conn.close()
-            return self.send_json(200, {'success': True, 'teamId': team_id})
+                return self.send_json(200, {
+                    'success': True,
+                    'teamId': team_id,
+                    'registrationNumber': reg_num,
+                    'registrationCount': total_count
+                })
+            except sqlite3.IntegrityError as ie:
+                conn.rollback()
+                conn.close()
+                return self.send_json(400, {'error': f'Registration integrity error: {str(ie)}'})
+            except Exception as e:
+                conn.rollback()
+                conn.close()
+                return self.send_json(500, {'error': f'Registration failed: {str(e)}'})
 
         # 2c. Security Violation Logging (Deduplicated Proctoring Pipeline)
         if path == '/api/violations/log':
@@ -2415,14 +2951,23 @@ class TraceXRequestHandler(SimpleHTTPRequestHandler):
 
         # 2d. Early Submission of Investigation Round
         if path == '/api/round/submit-early':
-            team_id = body.get('teamId', 'TX-2026-TEAM')
-            case_id = body.get('caseId', 'case-01')
+            team_id = (body.get('teamId') or 'TX-2026-TEAM').strip()
+            case_id = (body.get('caseId') or 'case-01').strip()
             try:
                 rnd = int(body.get('round', 1))
             except (ValueError, TypeError):
                 rnd = 1
             answers = body.get('answers', {})
             now_ms = int(time.time() * 1000)
+
+            c.execute('SELECT status FROM teams WHERE UPPER(team_id) = UPPER(?)', (team_id,))
+            t_row = c.fetchone()
+            if not t_row:
+                conn.close()
+                return self.send_json(404, {'error': f"Team '{team_id}' not found."})
+            if t_row['status'] in ('Deactivated', 'DEACTIVATED', 'Terminated'):
+                conn.close()
+                return self.send_json(403, {'error': 'Team account is deactivated or terminated. Submissions barred.'})
 
             timer_id = f"{team_id}_{case_id}_{rnd}"
             c.execute('''
@@ -2462,14 +3007,23 @@ class TraceXRequestHandler(SimpleHTTPRequestHandler):
 
         # 2e. Auto-Submission on Official Timer Expiry
         if path == '/api/round/auto-submit':
-            team_id = body.get('teamId', 'TX-2026-TEAM')
-            case_id = body.get('caseId', 'case-01')
+            team_id = (body.get('teamId') or 'TX-2026-TEAM').strip()
+            case_id = (body.get('caseId') or 'case-01').strip()
             try:
                 rnd = int(body.get('round', 1))
             except (ValueError, TypeError):
                 rnd = 1
             answers = body.get('answers', {})
             now_ms = int(time.time() * 1000)
+
+            c.execute('SELECT status FROM teams WHERE UPPER(team_id) = UPPER(?)', (team_id,))
+            t_row = c.fetchone()
+            if not t_row:
+                conn.close()
+                return self.send_json(404, {'error': f"Team '{team_id}' not found."})
+            if t_row['status'] in ('Deactivated', 'DEACTIVATED', 'Terminated'):
+                conn.close()
+                return self.send_json(403, {'error': 'Team account is deactivated or terminated. Submissions barred.'})
 
             timer_id = f"{team_id}_{case_id}_{rnd}"
             c.execute('''
@@ -2530,6 +3084,96 @@ class TraceXRequestHandler(SimpleHTTPRequestHandler):
             conn.close()
             return self.send_json(200, {'success': True})
 
+        # 3b. Admin Team Management: Deletion / Deactivation
+        if path == '/api/admin/teams/delete':
+            team_id = (body.get('teamId') or '').strip()
+            reason = (body.get('reason') or 'Administrative team removal').strip()
+            permanent = bool(body.get('permanent', False))
+
+            if not team_id:
+                conn.close()
+                return self.send_json(400, {'error': 'Team ID is required.'})
+
+            c.execute('SELECT * FROM teams WHERE UPPER(team_id) = UPPER(?)', (team_id,))
+            team = c.fetchone()
+            if not team:
+                conn.close()
+                return self.send_json(404, {'error': f"Team '{team_id}' not found in registry."})
+
+            canonical_id = team['team_id']
+            team_name = team['team_name']
+
+            # Inspect database records to check participation history
+            c.execute('SELECT * FROM submissions WHERE UPPER(team_id) = UPPER(?)', (canonical_id,))
+            sub = c.fetchone()
+            has_sub_data = bool(sub and (
+                (sub['round1_answers_json'] and sub['round1_answers_json'] != '{}') or 
+                (sub['round2_answers_json'] and sub['round2_answers_json'] != '{}') or 
+                (sub['total_score'] and sub['total_score'] > 0) or 
+                sub['evaluation_status'] == 'EVALUATED'
+            ))
+
+            c.execute('SELECT COUNT(*) as cnt FROM round_timers WHERE UPPER(team_id) = UPPER(?)', (canonical_id,))
+            r_timers_cnt = c.fetchone()['cnt']
+
+            c.execute('SELECT case_id, session_status FROM sessions WHERE UPPER(team_id) = UPPER(?)', (canonical_id,))
+            s_row = c.fetchone()
+            has_case_progress = bool(s_row and s_row['case_id'] and s_row['session_status'] not in ('NOT STARTED', 'PENDING SELECTION'))
+
+            has_participation = has_sub_data or (r_timers_cnt > 0) or has_case_progress
+            now_iso = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
+
+            # Policy: If team has participation and NOT forced permanent, soft-deactivate!
+            if has_participation and not permanent:
+                c.execute("UPDATE teams SET status = 'Deactivated' WHERE UPPER(team_id) = UPPER(?)", (canonical_id,))
+                c.execute("UPDATE sessions SET connection_status = 'DEACTIVATED', session_status = 'DEACTIVATED', updated_at = ? WHERE UPPER(team_id) = UPPER(?)", (time.time(), canonical_id))
+                c.execute("DELETE FROM team_sessions WHERE UPPER(team_id) = UPPER(?)", (canonical_id,))
+
+                c.execute('''
+                    INSERT INTO audit_logs (admin_id, action, details, prev_value, new_value, timestamp)
+                    VALUES (?, ?, ?, ?, ?, ?)
+                ''', (admin_id, 'TEAM_DEACTIVATED', f"Team {canonical_id} ({team_name}) deactivated. Historical scores and evaluation preserved. Reason: {reason}", team['status'], 'Deactivated', now_iso))
+
+                conn.commit()
+                conn.close()
+                return self.send_json(200, {
+                    'success': True,
+                    'action': 'DEACTIVATED',
+                    'message': f"Team {canonical_id} ({team_name}) has participation records and has been deactivated. Login is barred and historical competition data preserved.",
+                    'teamId': canonical_id
+                })
+            else:
+                # Permanent deletion for registration-only teams OR explicit permanent deletion
+                c.execute("DELETE FROM team_sessions WHERE UPPER(team_id) = UPPER(?)", (canonical_id,))
+                c.execute("DELETE FROM round_timers WHERE UPPER(team_id) = UPPER(?)", (canonical_id,))
+                c.execute("DELETE FROM sessions WHERE UPPER(team_id) = UPPER(?)", (canonical_id,))
+                c.execute("DELETE FROM submissions WHERE UPPER(team_id) = UPPER(?)", (canonical_id,))
+                c.execute("DELETE FROM violations WHERE UPPER(team_id) = UPPER(?)", (canonical_id,))
+                c.execute("DELETE FROM score_audit_logs WHERE UPPER(team_id) = UPPER(?)", (canonical_id,))
+                c.execute("DELETE FROM teams WHERE UPPER(team_id) = UPPER(?)", (canonical_id,))
+
+                c.execute('''
+                    INSERT INTO audit_logs (admin_id, action, details, prev_value, new_value, timestamp)
+                    VALUES (?, ?, ?, ?, ?, ?)
+                ''', (admin_id, 'TEAM_DELETED_PERMANENT', f"Team {canonical_id} ({team_name}) permanently removed from registry. Reason: {reason}", team['status'], 'DELETED', now_iso))
+
+                conn.commit()
+                conn.close()
+                return self.send_json(200, {
+                    'success': True,
+                    'action': 'DELETED',
+                    'message': f"Team {canonical_id} ({team_name}) was permanently removed from the system.",
+                    'teamId': canonical_id
+                })
+
+        # 3c. Complete Event Reset Endpoint (Protected, Verified Backup, Atomic Purge)
+        if path == '/api/admin/event-reset':
+            phrase = (body.get('phrase') or '').strip()
+            backup_confirmed = bool(body.get('backupConfirmed', False))
+            code, res_obj = execute_complete_event_reset(conn, admin_id, phrase, backup_confirmed)
+            conn.close()
+            return self.send_json(code, res_obj)
+
         # 4. Event Control State Machine
         if path == '/api/admin/event-control':
             action = body.get('action') # 'start', 'pause', 'resume', 'end', 'publish_results'
@@ -2570,6 +3214,20 @@ class TraceXRequestHandler(SimpleHTTPRequestHandler):
                 conn.close()
                 return self.send_json(400, {'error': f"Invalid state transition: Cannot {action} while {cur_status}."})
 
+            # For complete event reset, enforce confirmation phrase and verified backup check
+            if action in ('reset', 'rearm'):
+                phrase = (body.get('phrase') or '').strip()
+                backup_confirmed = bool(body.get('backupConfirmed', False))
+                if phrase == 'RESET TRACEX EVENT' and backup_confirmed:
+                    code, res_obj = execute_complete_event_reset(conn, admin_id, phrase, backup_confirmed)
+                    conn.close()
+                    return self.send_json(code, res_obj)
+                else:
+                    conn.close()
+                    return self.send_json(400, {
+                        'error': "Complete event reset requires entering the confirmation phrase 'RESET TRACEX EVENT' and confirming a verified backup exists."
+                    })
+
             c.execute("UPDATE event_state SET value = ? WHERE key = 'status'", (new_status,))
             c.execute("UPDATE event_state SET value = ? WHERE key = 'phase'", (new_phase,))
 
@@ -2589,17 +3247,6 @@ class TraceXRequestHandler(SimpleHTTPRequestHandler):
 
                 # Update live sessions
                 c.execute("UPDATE sessions SET current_round = 1, session_status = 'ACTIVE', time_remaining = '10:00', updated_at = ?", (time.time(),))
-
-            elif action in ('reset', 'rearm'):
-                c.execute("INSERT OR REPLACE INTO event_state (key, value) VALUES ('round', '1')")
-                c.execute("INSERT OR REPLACE INTO event_state (key, value) VALUES ('round1_start_time', '')")
-                c.execute("INSERT OR REPLACE INTO event_state (key, value) VALUES ('round1_end_time', '')")
-                c.execute("INSERT OR REPLACE INTO event_state (key, value) VALUES ('round2_start_time', '')")
-                c.execute("INSERT OR REPLACE INTO event_state (key, value) VALUES ('round2_end_time', '')")
-                c.execute("INSERT OR REPLACE INTO event_state (key, value) VALUES ('eval_start_time', '')")
-                c.execute("INSERT OR REPLACE INTO event_state (key, value) VALUES ('eval_end_time', '')")
-                c.execute("UPDATE sessions SET current_round = 1, session_status = 'STANDBY', time_remaining = '10:00', updated_at = ?", (time.time(),))
-                c.execute("DELETE FROM round_timers")
 
             now_iso = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
             c.execute('''

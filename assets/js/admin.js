@@ -426,11 +426,131 @@
       });
     }
 
+    // -------------------------------------------------------------------------
+    // Complete Event Reset Modal Workflow
+    // -------------------------------------------------------------------------
+    const completeResetModal = document.getElementById('complete-event-reset-modal');
+    const resetBackupConfirm = document.getElementById('reset-event-backup-confirm');
+    const resetPhraseInput = document.getElementById('reset-event-phrase-input');
+    const btnCancelCompleteReset = document.getElementById('btn-cancel-complete-reset');
+    const btnConfirmCompleteReset = document.getElementById('btn-confirm-complete-reset');
+    const resetFeedback = document.getElementById('reset-event-feedback');
+
+    function checkResetUnlock() {
+      if (!btnConfirmCompleteReset) return;
+      const phraseMatches = resetPhraseInput && resetPhraseInput.value.trim() === 'RESET TRACEX EVENT';
+      const backupChecked = resetBackupConfirm && resetBackupConfirm.checked;
+
+      if (phraseMatches && backupChecked) {
+        btnConfirmCompleteReset.disabled = false;
+        btnConfirmCompleteReset.style.opacity = '1';
+        btnConfirmCompleteReset.style.cursor = 'pointer';
+        btnConfirmCompleteReset.style.background = '#D32F2F';
+      } else {
+        btnConfirmCompleteReset.disabled = true;
+        btnConfirmCompleteReset.style.opacity = '0.4';
+        btnConfirmCompleteReset.style.cursor = 'not-allowed';
+        btnConfirmCompleteReset.style.background = '#B71C1C';
+      }
+    }
+
+    if (resetPhraseInput) {
+      resetPhraseInput.addEventListener('input', checkResetUnlock);
+    }
+    if (resetBackupConfirm) {
+      resetBackupConfirm.addEventListener('change', checkResetUnlock);
+    }
+
     if (btnReset) {
       btnReset.addEventListener('click', () => {
-        openConfirmModal('RESET EVENT TO STANDBY', 'Are you sure you want to RESET TRACE × X to Standby? All round countdowns will be cleared and workstations will return to Standby awaiting the start broadcast.', () => {
-          executeEventControl('reset');
-        });
+        if (!completeResetModal) return;
+        if (resetPhraseInput) resetPhraseInput.value = '';
+        if (resetBackupConfirm) resetBackupConfirm.checked = false;
+        if (resetFeedback) {
+          resetFeedback.style.display = 'none';
+          resetFeedback.textContent = '';
+        }
+        checkResetUnlock();
+        completeResetModal.style.display = 'flex';
+        setTimeout(() => {
+          if (resetPhraseInput) resetPhraseInput.focus();
+        }, 100);
+      });
+    }
+
+    if (btnCancelCompleteReset) {
+      btnCancelCompleteReset.addEventListener('click', () => {
+        if (completeResetModal) completeResetModal.style.display = 'none';
+      });
+    }
+
+    if (btnConfirmCompleteReset) {
+      btnConfirmCompleteReset.addEventListener('click', async () => {
+        const phrase = resetPhraseInput ? resetPhraseInput.value.trim() : '';
+        const backupOk = resetBackupConfirm ? resetBackupConfirm.checked : false;
+
+        if (phrase !== 'RESET TRACEX EVENT' || !backupOk) {
+          return;
+        }
+
+        btnConfirmCompleteReset.disabled = true;
+        btnConfirmCompleteReset.style.opacity = '0.4';
+        btnConfirmCompleteReset.style.cursor = 'not-allowed';
+
+        if (resetFeedback) {
+          resetFeedback.style.display = 'block';
+          resetFeedback.style.background = 'rgba(255, 36, 56, 0.1)';
+          resetFeedback.style.border = '1px solid rgba(255, 36, 56, 0.3)';
+          resetFeedback.style.color = '#FFFFFF';
+          resetFeedback.textContent = 'Executing complete event reset and verified pre-reset backup... Please wait.';
+        }
+
+        try {
+          const res = await apiFetch('/api/admin/event-reset', {
+            method: 'POST',
+            body: {
+              phrase: phrase,
+              backupConfirmed: true
+            }
+          });
+          const data = await res.json();
+
+          if (res.ok && data.success) {
+            if (completeResetModal) completeResetModal.style.display = 'none';
+            showToast(
+              'COMPLETE EVENT RESET',
+              'All participant data cleared. Verified pre-reset backup stored. Event restored to STANDBY.',
+              'success'
+            );
+            // Reload all dashboard panels
+            loadOverview();
+            loadTeams();
+            loadSessions();
+            loadEvaluations();
+            loadBackupsList();
+            loadAuditLogs();
+            loadFinalReport();
+            if (typeof loadSurreal === 'function') loadSurreal();
+          } else {
+            if (resetFeedback) {
+              resetFeedback.style.display = 'block';
+              resetFeedback.style.background = 'rgba(255, 36, 56, 0.2)';
+              resetFeedback.style.border = '1px solid #FF2438';
+              resetFeedback.style.color = '#FF2438';
+              resetFeedback.textContent = data.error || 'Complete event reset failed.';
+            }
+            checkResetUnlock();
+          }
+        } catch (err) {
+          if (resetFeedback) {
+            resetFeedback.style.display = 'block';
+            resetFeedback.style.background = 'rgba(255, 36, 56, 0.2)';
+            resetFeedback.style.border = '1px solid #FF2438';
+            resetFeedback.style.color = '#FF2438';
+            resetFeedback.textContent = 'Server communication error during complete event reset.';
+          }
+          checkResetUnlock();
+        }
       });
     }
 
@@ -467,8 +587,24 @@
         const matchesQ = !q || 
           t.teamId.toLowerCase().includes(q) ||
           t.teamName.toLowerCase().includes(q) ||
-          t.collegeName.toLowerCase().includes(q);
-        const matchesStatus = (statusFilt === 'ALL') || (t.status === statusFilt);
+          (t.collegeName && t.collegeName.toLowerCase().includes(q)) ||
+          (t.selectedCaseName && t.selectedCaseName.toLowerCase().includes(q));
+
+        let matchesStatus = true;
+        if (statusFilt === 'ACTIVE') {
+          matchesStatus = t.status === 'Investigating' || t.status === 'Logged in' || (t.sessionStatus && t.sessionStatus.includes('IN_PROGRESS'));
+        } else if (statusFilt === 'NOT_STARTED') {
+          matchesStatus = !t.hasParticipation && t.status === 'Registered';
+        } else if (statusFilt === 'SUBMITTED') {
+          matchesStatus = t.status === 'Submitted' || (t.sessionStatus && (t.sessionStatus.includes('COMPLETED') || t.sessionStatus.includes('SUBMITTED')));
+        } else if (statusFilt === 'DEACTIVATED') {
+          matchesStatus = t.status === 'Deactivated' || t.status === 'DEACTIVATED';
+        } else if (statusFilt === 'TERMINATED') {
+          matchesStatus = t.status === 'Terminated' || t.status === 'DISQUALIFIED';
+        } else if (statusFilt !== 'ALL') {
+          matchesStatus = t.status === statusFilt;
+        }
+
         return matchesQ && matchesStatus;
       });
 
@@ -485,22 +621,35 @@
         if (t.status === 'Investigating' || t.status === 'Logged in') statusBadgeClass = 'badge-active';
         if (t.status === 'Submitted') statusBadgeClass = 'badge-submitted';
         if (t.status === 'Terminated') statusBadgeClass = 'badge-terminated';
+        if (t.status === 'Deactivated' || t.status === 'DEACTIVATED') statusBadgeClass = 'badge-terminated';
+
+        const regDate = t.registeredAt ? t.registeredAt.replace('T', ' ').substring(0, 16) : '--';
+        const caseDisplay = t.selectedCaseName || 'Pending Selection';
+        const progressDisplay = t.sessionStatus || 'STANDBY';
+        const scoreDisplay = (t.score !== null && t.score !== undefined) ? `${t.score} / 30` : '--';
+
+        const regNumBadge = t.registrationNumber ? `<span style="display: inline-block; font-size: 0.72rem; color: #00F0FF; margin-right: 0.35rem; font-weight: 800;">#${t.registrationNumber}</span>` : '';
 
         tr.innerHTML = `
-          <td style="font-family: var(--font-mono); font-weight: 700; color: #FFFFFF;">${escapeHtml(t.teamId)}</td>
+          <td style="font-family: var(--font-mono); font-weight: 700; color: #FFFFFF;">${regNumBadge}${escapeHtml(t.teamId)}</td>
           <td><strong>${escapeHtml(t.teamName)}</strong></td>
-          <td>${escapeHtml(t.collegeName)}</td>
-          <td>${escapeHtml(t.department)}</td>
-          <td>${t.teamSize} Member(s)</td>
-          <td style="font-family: var(--font-mono); letter-spacing: 0.15em; color: var(--color-text-muted);">${escapeHtml(t.pinMasked)}</td>
+          <td style="font-family: var(--font-mono); font-size: 0.76rem; color: var(--color-text-secondary);">${escapeHtml(regDate)}</td>
+          <td style="font-size: 0.8rem; color: var(--color-amber-bright); font-weight: 500;">${escapeHtml(caseDisplay)}</td>
+          <td style="font-family: var(--font-mono); font-size: 0.74rem;">${escapeHtml(progressDisplay)}</td>
+          <td style="font-family: var(--font-mono); font-weight: 700; color: #00E676;">${scoreDisplay}</td>
           <td><span class="status-pill ${statusBadgeClass}">${escapeHtml(t.status)}</span></td>
-          <td style="text-align: right;">
+          <td style="text-align: right; white-space: nowrap;">
             <button type="button" class="btn-table-action btn-view-team" data-id="${t.teamId}">[ VIEW DETAILS ]</button>
+            <button type="button" class="btn-table-action btn-delete-team" data-id="${t.teamId}" style="color: #FF2438; border-color: rgba(255, 36, 56, 0.4); margin-left: 0.4rem;">[ DELETE TEAM ]</button>
           </td>
         `;
 
         tr.querySelector('.btn-view-team').addEventListener('click', () => {
           openTeamDetailsModal(t);
+        });
+
+        tr.querySelector('.btn-delete-team').addEventListener('click', () => {
+          openDeleteTeamModal(t);
         });
 
         teamsTableBody.appendChild(tr);
@@ -511,8 +660,8 @@
       if (!teamDetailsModal) return;
       document.getElementById('tm-id').textContent = t.teamId;
       document.getElementById('tm-name').textContent = t.teamName;
-      document.getElementById('tm-college').textContent = t.collegeName;
-      document.getElementById('tm-dept').textContent = t.department;
+      document.getElementById('tm-college').textContent = t.collegeName || '--';
+      document.getElementById('tm-dept').textContent = t.department || '--';
       document.getElementById('tm-size').textContent = `${t.teamSize} Member(s)`;
       document.getElementById('tm-status').textContent = t.status;
 
@@ -525,6 +674,128 @@
       });
 
       teamDetailsModal.style.display = 'flex';
+    }
+
+    // -------------------------------------------------------------------------
+    // Team Deletion / Deactivation Modal Workflow
+    // -------------------------------------------------------------------------
+    const teamDeleteModal = document.getElementById('team-delete-confirm-modal');
+    const btnCancelTeamDelete = document.getElementById('btn-cancel-team-delete');
+    const btnConfirmTeamDelete = document.getElementById('btn-confirm-team-delete');
+    let teamPendingDeletion = null;
+
+    function openDeleteTeamModal(t) {
+      if (!teamDeleteModal) return;
+      teamPendingDeletion = t;
+
+      document.getElementById('del-team-id').textContent = t.teamId;
+      document.getElementById('del-team-name').textContent = t.teamName;
+      document.getElementById('del-team-case').textContent = t.selectedCaseName || 'None Selected';
+      document.getElementById('del-team-participation').textContent = t.hasParticipation 
+        ? 'ACTIVE PARTICIPATION RECORDS PRESENT' 
+        : 'REGISTRATION ONLY (NO SUBMISSIONS)';
+
+      const noticeEl = document.getElementById('del-team-notice');
+      const permWrap = document.getElementById('del-team-perm-wrap');
+      const permCheck = document.getElementById('del-team-force-perm');
+      const reasonInput = document.getElementById('del-team-reason');
+      const feedbackEl = document.getElementById('del-team-feedback');
+
+      if (reasonInput) reasonInput.value = '';
+      if (permCheck) permCheck.checked = false;
+      if (feedbackEl) {
+        feedbackEl.style.display = 'none';
+        feedbackEl.textContent = '';
+      }
+
+      if (t.hasParticipation) {
+        if (noticeEl) {
+          noticeEl.innerHTML = `<strong>RETENTION POLICY ENFORCED:</strong> This team has active investigation activity, timers, or answer submissions. Confirming removal will <strong>DEACTIVATE</strong> the team account, instantly barring further participant login while safely preserving all historical scores and evaluation records in the CSE audit logs.`;
+        }
+        if (permWrap) permWrap.style.display = 'block';
+      } else {
+        if (noticeEl) {
+          noticeEl.innerHTML = `<strong>CLEAN REGISTRATION REMOVAL:</strong> This team has not commenced investigation and has zero answer submissions. Confirming removal will <strong>permanently delete</strong> this team registration from the database.`;
+        }
+        if (permWrap) permWrap.style.display = 'none';
+      }
+
+      if (btnConfirmTeamDelete) {
+        btnConfirmTeamDelete.disabled = false;
+        btnConfirmTeamDelete.textContent = '[ CONFIRM REMOVAL ]';
+      }
+
+      teamDeleteModal.style.display = 'flex';
+    }
+
+    function closeDeleteTeamModal() {
+      if (teamDeleteModal) teamDeleteModal.style.display = 'none';
+      teamPendingDeletion = null;
+    }
+
+    if (btnCancelTeamDelete) {
+      btnCancelTeamDelete.addEventListener('click', closeDeleteTeamModal);
+    }
+
+    if (btnConfirmTeamDelete) {
+      btnConfirmTeamDelete.addEventListener('click', async () => {
+        if (!teamPendingDeletion) return;
+        const teamId = teamPendingDeletion.teamId;
+        const reasonInput = document.getElementById('del-team-reason');
+        const permCheck = document.getElementById('del-team-force-perm');
+        const feedbackEl = document.getElementById('del-team-feedback');
+
+        const reason = (reasonInput?.value || '').trim() || 'Administrative deletion action';
+        const isPermanent = Boolean(permCheck?.checked);
+
+        btnConfirmTeamDelete.disabled = true;
+        btnConfirmTeamDelete.textContent = '[ PROCESSING... ]';
+
+        try {
+          const res = await apiFetch('/api/admin/teams/delete', {
+            method: 'POST',
+            body: JSON.stringify({ teamId, reason, permanent: isPermanent })
+          });
+          const data = await res.json();
+
+          if (res.ok && data.success) {
+            if (feedbackEl) {
+              feedbackEl.style.display = 'block';
+              feedbackEl.style.background = 'rgba(0, 230, 118, 0.15)';
+              feedbackEl.style.border = '1px solid #00E676';
+              feedbackEl.style.color = '#00E676';
+              feedbackEl.textContent = `SUCCESS: ${data.message}`;
+            }
+
+            // Refresh teams table and overview stats
+            setTimeout(async () => {
+              closeDeleteTeamModal();
+              await loadTeams();
+              if (typeof loadOverview === 'function') loadOverview();
+            }, 1000);
+          } else {
+            if (feedbackEl) {
+              feedbackEl.style.display = 'block';
+              feedbackEl.style.background = 'rgba(255, 36, 56, 0.15)';
+              feedbackEl.style.border = '1px solid #FF2438';
+              feedbackEl.style.color = '#FF2438';
+              feedbackEl.textContent = data.error || 'Failed to remove team.';
+            }
+            btnConfirmTeamDelete.disabled = false;
+            btnConfirmTeamDelete.textContent = '[ CONFIRM REMOVAL ]';
+          }
+        } catch (err) {
+          if (feedbackEl) {
+            feedbackEl.style.display = 'block';
+            feedbackEl.style.background = 'rgba(255, 36, 56, 0.15)';
+            feedbackEl.style.border = '1px solid #FF2438';
+            feedbackEl.style.color = '#FF2438';
+            feedbackEl.textContent = 'Network communication failure during team removal.';
+          }
+          btnConfirmTeamDelete.disabled = false;
+          btnConfirmTeamDelete.textContent = '[ CONFIRM REMOVAL ]';
+        }
+      });
     }
 
     if (btnCloseTeamModal) {

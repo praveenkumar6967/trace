@@ -56,6 +56,21 @@ const TraceApp = (function () {
   }
 
   /**
+   * Helper to resolve active team ID for strict session data isolation
+   */
+  function getActiveTeamId() {
+    try {
+      const auth = JSON.parse(sessionStorage.getItem('traceX_auth_session') || '{}');
+      if (auth && auth.teamId) return String(auth.teamId).trim().toUpperCase();
+    } catch (e) {}
+    try {
+      const act = JSON.parse(sessionStorage.getItem('traceX_activeTeam') || '{}');
+      if (act && act.teamId) return String(act.teamId).trim().toUpperCase();
+    } catch (e) {}
+    return 'TX-2026-TEAM';
+  }
+
+  /**
    * Client-Side View Navigation Manager
    * Handles seamless transitions between Homepage, Case Selection, and Fullscreen Investigation
    * without document reloads, preserving fullscreen state, active sessions, and timers.
@@ -187,6 +202,7 @@ const TraceApp = (function () {
     const successContainer = document.getElementById('registration-success-container');
     const displayTeamId = document.getElementById('display-team-id');
     const displayTeamName = document.getElementById('display-team-name');
+    const displayRegNum = document.getElementById('display-reg-num');
     const copyBtn = document.getElementById('btn-copy-team-id');
     const globalError = document.getElementById('form-global-error');
 
@@ -398,12 +414,8 @@ const TraceApp = (function () {
         submitBtn.innerHTML = `<span>[ GENERATING SYSTEM CREDENTIALS... ]</span>`;
       }
 
-      // Generate System Team ID
-      const generatedId = generateTeamId();
-
-      // Collect team record for database registration
+      // Collect team record for database registration (teamId assigned authoritatively by backend sequence)
       const teamData = {
-        teamId: generatedId,
         teamName: teamNameVal,
         collegeName: collegeNameVal,
         department: deptVal,
@@ -435,6 +447,10 @@ const TraceApp = (function () {
           return;
         }
 
+        const assignedTeamId = data.teamId || 'TX-2026-0001';
+        teamData.teamId = assignedTeamId;
+        teamData.registrationNumber = data.registrationNumber || 1;
+
         // Store in sessionStorage on confirmed database registration
         try {
           let registry = [];
@@ -449,8 +465,11 @@ const TraceApp = (function () {
 
         // Transition to Success Screen
         if (formContainer) formContainer.style.display = 'none';
-        if (displayTeamId) displayTeamId.textContent = generatedId;
+        if (displayTeamId) displayTeamId.textContent = assignedTeamId;
         if (displayTeamName) displayTeamName.textContent = teamNameVal;
+        if (displayRegNum && data && data.registrationNumber) {
+          displayRegNum.textContent = `#${data.registrationNumber}`;
+        }
 
         if (successContainer) {
           successContainer.style.display = 'block';
@@ -459,14 +478,17 @@ const TraceApp = (function () {
       })
       .catch(err => {
         console.warn('Backend registration error, offline fallback:', err);
-        // Fallback for isolated offline demo
+        const fallbackId = generateTeamId();
+        teamData.teamId = fallbackId;
+        teamData.registrationNumber = 1;
         try {
           sessionStorage.setItem('traceX_activeTeam', JSON.stringify(teamData));
         } catch (e) {}
 
         if (formContainer) formContainer.style.display = 'none';
-        if (displayTeamId) displayTeamId.textContent = generatedId;
+        if (displayTeamId) displayTeamId.textContent = fallbackId;
         if (displayTeamName) displayTeamName.textContent = teamNameVal;
+        if (displayRegNum) displayRegNum.textContent = '#1';
 
         if (successContainer) {
           successContainer.style.display = 'block';
@@ -602,6 +624,7 @@ const TraceApp = (function () {
         }
 
         const authenticatedTeam = data.team;
+        const progress = data.progress;
 
         // Store active authenticated session
         const sessionData = {
@@ -610,15 +633,36 @@ const TraceApp = (function () {
           teamName: authenticatedTeam.teamName,
           collegeName: authenticatedTeam.collegeName,
           department: authenticatedTeam.department,
+          token: data.token || '',
           loginTime: new Date().toISOString()
         };
         sessionStorage.setItem('traceX_auth_session', JSON.stringify(sessionData));
         sessionStorage.setItem('traceX_activeTeam', JSON.stringify(authenticatedTeam));
+        sessionStorage.setItem(`traceX_${authenticatedTeam.teamId}_auth_session`, JSON.stringify(sessionData));
         sessionStorage.setItem('traceX_intro_completed', 'true');
         sessionStorage.setItem('traceX_pending_fullscreen', 'true');
 
-        // Navigate directly to unified investigation container (#cases) where fullscreen modal activates persistently
-        window.location.href = `${config.routes.home}#cases`;
+        // Clean up legacy unscoped keys to prevent any cross-team bleed
+        sessionStorage.removeItem('traceX_selectedCase');
+
+        // Route to the appropriate screen according to team's explicit server-persisted state
+        const state = progress ? progress.logicalState : 'CASE_NOT_SELECTED';
+        const assignedCase = (progress && progress.caseId) ? progress.caseId : null;
+
+        if (state === 'ROUND_1_IN_PROGRESS' && assignedCase) {
+          window.location.href = `${config.routes.home}#investigation?case=${encodeURIComponent(assignedCase)}&round=1`;
+        } else if (state === 'ROUND_1_COMPLETED' && assignedCase) {
+          window.location.href = `${config.routes.home}#investigation?case=${encodeURIComponent(assignedCase)}&round=1&completed=1`;
+        } else if (state === 'ROUND_2_IN_PROGRESS' && assignedCase) {
+          window.location.href = `${config.routes.home}#investigation?case=${encodeURIComponent(assignedCase)}&round=2`;
+        } else if ((state === 'ROUND_2_COMPLETED' || state === 'EVALUATION_PENDING') && assignedCase) {
+          window.location.href = `evaluation.html?case=${encodeURIComponent(assignedCase)}`;
+        } else if (state === 'EVALUATION_COMPLETED' && assignedCase) {
+          window.location.href = `results.html?case=${encodeURIComponent(assignedCase)}`;
+        } else {
+          // New team or CASE_NOT_SELECTED -> View available 15 cases
+          window.location.href = `${config.routes.home}#cases`;
+        }
       })
       .catch(err => {
         console.warn('Backend login network error, falling back to local verification:', err);
@@ -744,24 +788,76 @@ const TraceApp = (function () {
 
     const caseCards = grid.querySelectorAll('.case-card');
     let selectedCaseData = null;
+    const activeTeamId = getActiveTeamId();
 
-    // Restore any previously selected case from sessionStorage
-    try {
-      const storedCase = JSON.parse(sessionStorage.getItem('traceX_selectedCase') || 'null');
-      if (storedCase && storedCase.caseId) {
-        selectedCaseData = storedCase;
-        const matchingCard = grid.querySelector(`[data-case-id="${storedCase.caseId}"]`);
-        if (matchingCard) {
-          matchingCard.classList.add('selected');
-          matchingCard.setAttribute('aria-checked', 'true');
-          openBtn.disabled = false;
-          if (hintText) {
-            hintText.textContent = `SELECTED: ${storedCase.caseName} // CLICK OPEN CASE TO PROCEED`;
-            hintText.style.color = 'var(--color-amber-bright)';
+    // Check server-persisted case for this specific authenticated team
+    async function syncTeamCaseSelection() {
+      try {
+        const res = await fetch(`/api/teams/progress?team_id=${encodeURIComponent(activeTeamId)}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.progress && data.progress.caseId) {
+            const serverCaseId = data.progress.caseId;
+            const matchingCard = grid.querySelector(`[data-case-id="${serverCaseId}"]`);
+            if (matchingCard) {
+              caseCards.forEach(c => {
+                c.classList.remove('selected');
+                c.setAttribute('aria-checked', 'false');
+              });
+              matchingCard.classList.add('selected');
+              matchingCard.setAttribute('aria-checked', 'true');
+              selectedCaseData = {
+                caseId: serverCaseId,
+                caseName: data.progress.caseName || matchingCard.getAttribute('data-case-name')
+              };
+              openBtn.disabled = false;
+              if (hintText) {
+                hintText.textContent = `ASSIGNED: ${selectedCaseData.caseName} // CLICK OPEN CASE TO PROCEED`;
+                hintText.style.color = 'var(--color-amber-bright)';
+              }
+              sessionStorage.setItem(`traceX_${activeTeamId}_selectedCase`, JSON.stringify(selectedCaseData));
+              return;
+            }
           }
         }
-      }
-    } catch (e) {}
+      } catch (err) {}
+
+      // Fallback to team-scoped sessionStorage
+      try {
+        const storedCase = JSON.parse(sessionStorage.getItem(`traceX_${activeTeamId}_selectedCase`) || 'null');
+        if (storedCase && storedCase.caseId) {
+          selectedCaseData = storedCase;
+          const matchingCard = grid.querySelector(`[data-case-id="${storedCase.caseId}"]`);
+          if (matchingCard) {
+            caseCards.forEach(c => {
+              c.classList.remove('selected');
+              c.setAttribute('aria-checked', 'false');
+            });
+            matchingCard.classList.add('selected');
+            matchingCard.setAttribute('aria-checked', 'true');
+            openBtn.disabled = false;
+            if (hintText) {
+              hintText.textContent = `SELECTED: ${storedCase.caseName} // CLICK OPEN CASE TO PROCEED`;
+              hintText.style.color = 'var(--color-amber-bright)';
+            }
+          }
+        } else {
+          // New team with no case: ensure clean slate
+          caseCards.forEach(c => {
+            c.classList.remove('selected');
+            c.setAttribute('aria-checked', 'false');
+          });
+          selectedCaseData = null;
+          openBtn.disabled = true;
+          if (hintText) {
+            hintText.textContent = 'SELECT AN INVESTIGATION DOSSIER TO COMMENCE FORENSIC TRIAGE';
+            hintText.style.color = '';
+          }
+        }
+      } catch (e) {}
+    }
+
+    syncTeamCaseSelection();
 
     caseCards.forEach(card => {
       function selectCard() {
@@ -785,9 +881,9 @@ const TraceApp = (function () {
           selectedAt: new Date().toISOString()
         };
 
-        // Preserve selected case in sessionStorage
+        // Preserve selected case scoped by team ID
         try {
-          sessionStorage.setItem('traceX_selectedCase', JSON.stringify(selectedCaseData));
+          sessionStorage.setItem(`traceX_${activeTeamId}_selectedCase`, JSON.stringify(selectedCaseData));
         } catch (err) {
           console.warn('Session storage write error:', err);
         }
@@ -816,12 +912,40 @@ const TraceApp = (function () {
     // Handle Open Case click
     if (!openBtn.dataset.listenerAttached) {
       openBtn.dataset.listenerAttached = 'true';
-      openBtn.addEventListener('click', function () {
+      openBtn.addEventListener('click', async function () {
         if (!selectedCaseData) return;
 
-        // Preserve selected case in sessionStorage
+        // Persist selected case on the server before entering investigation
         try {
-          sessionStorage.setItem('traceX_selectedCase', JSON.stringify(selectedCaseData));
+          openBtn.disabled = true;
+          openBtn.innerHTML = `<span>[ INITIALIZING DOSSIER... ]</span>`;
+
+          const res = await fetch('/api/teams/select-case', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              teamId: activeTeamId,
+              caseId: selectedCaseData.caseId
+            })
+          });
+          const sData = await res.json();
+          if (!res.ok || !sData.success) {
+            console.warn('Server case assignment warning:', sData.error);
+            if (hintText) {
+              hintText.textContent = sData.error || 'Failed to assign case.';
+              hintText.style.color = 'var(--color-crimson-bright)';
+            }
+          }
+        } catch (err) {
+          console.warn('Network error assigning case to server:', err);
+        } finally {
+          openBtn.disabled = false;
+          openBtn.innerHTML = `<span>[ OPEN CASE ]</span> <span aria-hidden="true">→</span>`;
+        }
+
+        // Preserve selected case in team-scoped sessionStorage
+        try {
+          sessionStorage.setItem(`traceX_${activeTeamId}_selectedCase`, JSON.stringify(selectedCaseData));
         } catch (err) {
           console.warn('Session storage write error:', err);
         }
@@ -1062,6 +1186,9 @@ const TraceApp = (function () {
     const evidenceList = document.getElementById('evidence-records-list');
     if (!timerDisplay || !evidenceList) return; // Not on the investigation workstation page
 
+    // Retrieve Team Credentials First
+    const teamId = getActiveTeamId();
+
     // 1. Resolve Active Case Data
     let caseId = targetCaseId || '';
     const hashQuery = window.location.hash.includes('?') ? window.location.hash.split('?')[1] : '';
@@ -1076,9 +1203,14 @@ const TraceApp = (function () {
       caseId = queryCaseId;
     } else {
       try {
-        const storedCase = JSON.parse(sessionStorage.getItem('traceX_selectedCase') || 'null');
-        if (storedCase && storedCase.caseId && window.TRACE_INVESTIGATION_CASES[storedCase.caseId]) {
-          caseId = storedCase.caseId;
+        const teamStoredCase = JSON.parse(sessionStorage.getItem(`traceX_${teamId}_selectedCase`) || 'null');
+        if (teamStoredCase && teamStoredCase.caseId && window.TRACE_INVESTIGATION_CASES[teamStoredCase.caseId]) {
+          caseId = teamStoredCase.caseId;
+        } else {
+          const storedCase = JSON.parse(sessionStorage.getItem('traceX_selectedCase') || 'null');
+          if (storedCase && storedCase.caseId && window.TRACE_INVESTIGATION_CASES[storedCase.caseId]) {
+            caseId = storedCase.caseId;
+          }
         }
       } catch (e) {
         console.warn('Case session read error:', e);
@@ -1095,15 +1227,15 @@ const TraceApp = (function () {
       return;
     }
 
-    // 2. Storage Keys & Session State
-    const violationsStorageKey = `traceX_violations_${activeCase.id}`;
-    const r1SubmittedKey = `traceX_round1_submitted_${activeCase.id}`;
-    const r1SubmittedEarlyKey = `traceX_round1_submittedEarly_${activeCase.id}`;
-    const r2SubmittedKey = `traceX_round2_submitted_${activeCase.id}`;
-    const r2SubmittedEarlyKey = `traceX_round2_submittedEarly_${activeCase.id}`;
-    const r2StartedKey = `traceX_round2_started_${activeCase.id}`;
-    const activeRoundKey = `traceX_active_round_${activeCase.id}`;
-    const evalTimerKey = `traceX_eval_timer_${activeCase.id}`;
+    // 2. Storage Keys & Session State (Strictly scoped to authenticated teamId)
+    const violationsStorageKey = `traceX_${teamId}_violations_${activeCase.id}`;
+    const r1SubmittedKey = `traceX_${teamId}_round1_submitted_${activeCase.id}`;
+    const r1SubmittedEarlyKey = `traceX_${teamId}_round1_submittedEarly_${activeCase.id}`;
+    const r2SubmittedKey = `traceX_${teamId}_round2_submitted_${activeCase.id}`;
+    const r2SubmittedEarlyKey = `traceX_${teamId}_round2_submittedEarly_${activeCase.id}`;
+    const r2StartedKey = `traceX_${teamId}_round2_started_${activeCase.id}`;
+    const activeRoundKey = `traceX_${teamId}_active_round_${activeCase.id}`;
+    const evalTimerKey = `traceX_${teamId}_eval_timer_${activeCase.id}`;
 
     // Determine Active Round (Strict Guard: Round 2 ONLY allowed if Round 1 is officially completed)
     let isR1Submitted = sessionStorage.getItem(r1SubmittedKey) === 'true';
@@ -1118,15 +1250,6 @@ const TraceApp = (function () {
       sessionStorage.removeItem(r2StartedKey);
       sessionStorage.setItem(activeRoundKey, '1');
     }
-
-    // Retrieve Team Credentials
-    let teamId = 'TX-2026-TEAM';
-    try {
-      const authSession = JSON.parse(sessionStorage.getItem('traceX_auth_session') || 'null');
-      if (authSession && authSession.teamId) {
-        teamId = authSession.teamId;
-      }
-    } catch (e) {}
 
     // DOM Elements - General
     const hudCaseTitle = document.getElementById('hud-case-title');
@@ -1295,7 +1418,7 @@ const TraceApp = (function () {
 
       let r1Answers = {};
       try {
-        r1Answers = JSON.parse(sessionStorage.getItem(`traceX_round1_answers_${activeCase.id}`) || '{}');
+        r1Answers = JSON.parse(sessionStorage.getItem(`traceX_${teamId}_round1_answers_${activeCase.id}`) || sessionStorage.getItem(`traceX_round1_answers_${activeCase.id}`) || '{}');
       } catch (e) {}
 
       let answeredCount = Object.keys(r1Answers).length;
@@ -1354,17 +1477,17 @@ const TraceApp = (function () {
         hudCaseTitle.textContent = activeCase.name.toUpperCase();
       }
 
-      // Configure Active Datasets
+      // Configure Active Datasets (Scoped strictly to teamId)
       if (currentRound === 1) {
         activeQuestions = activeCase.questions || [];
         activeEvidence = activeCase.evidence || [];
-        answersStorageKey = `traceX_round1_answers_${activeCase.id}`;
-        timerStorageKey = `traceX_round1_timer_${activeCase.id}`;
+        answersStorageKey = `traceX_${teamId}_round1_answers_${activeCase.id}`;
+        timerStorageKey = `traceX_${teamId}_round1_timer_${activeCase.id}`;
       } else {
         activeQuestions = activeCase.round2Questions || activeCase.questions || [];
         activeEvidence = activeCase.round2Evidence || activeCase.evidence || [];
-        answersStorageKey = `traceX_round2_answers_${activeCase.id}`;
-        timerStorageKey = `traceX_round2_timer_${activeCase.id}`;
+        answersStorageKey = `traceX_${teamId}_round2_answers_${activeCase.id}`;
+        timerStorageKey = `traceX_${teamId}_round2_timer_${activeCase.id}`;
       }
 
       // Load Answers
@@ -1440,6 +1563,8 @@ const TraceApp = (function () {
             sessionStorage.removeItem(r2StartedKey);
             sessionStorage.removeItem(activeRoundKey);
             sessionStorage.removeItem(timerStorageKey);
+            sessionStorage.removeItem(`traceX_${teamId}_round1_timer_${activeCase.id}`);
+            sessionStorage.removeItem(`traceX_${teamId}_round2_timer_${activeCase.id}`);
             sessionStorage.removeItem(`traceX_round1_timer_${activeCase.id}`);
             sessionStorage.removeItem(`traceX_round2_timer_${activeCase.id}`);
 
@@ -1954,6 +2079,44 @@ const TraceApp = (function () {
       return;
     }
 
+    // Authoritative Server State Sync: Ensure team only accesses permitted round and case
+    fetch(`/api/teams/progress?team_id=${encodeURIComponent(teamId)}`)
+      .then(res => res.ok ? res.json() : null)
+      .then(prog => {
+        if (!prog) return;
+        if (prog.logicalState === 'CASE_NOT_SELECTED') {
+          console.warn('[TRACE × X] Team has not selected a case yet. Redirecting to case selection.');
+          NavigationManager.switchView('cases');
+          return;
+        }
+        if (prog.caseId && (!targetCaseId || targetCaseId !== prog.caseId)) {
+          if (activeCase.id !== prog.caseId) {
+            console.warn(`[TRACE × X] Switching to team assigned case: ${prog.caseId}`);
+            NavigationManager.switchView('investigation', prog.caseId);
+            return;
+          }
+        }
+        if (prog.round1 && prog.round1.completed) {
+          sessionStorage.setItem(r1SubmittedKey, 'true');
+          if (prog.round2 && prog.round2.completed) {
+            sessionStorage.setItem(r2SubmittedKey, 'true');
+            window.location.href = `evaluation.html?case=${encodeURIComponent(activeCase.id)}`;
+            return;
+          }
+          if (currentRound === 1 && !isR2Started) {
+            showRound1CompletionScreen();
+          }
+        } else {
+          // Round 1 not completed on server - clear any fraudulent or stale client round 2 progression
+          sessionStorage.removeItem(r1SubmittedKey);
+          sessionStorage.removeItem(r2StartedKey);
+          if (currentRound === 2) {
+            setupRound(1);
+          }
+        }
+      })
+      .catch(() => {});
+
     // Setup active round through server-synchronized state
     setupRound(currentRound);
 
@@ -2315,11 +2478,19 @@ const TraceApp = (function () {
     const urlParams = new URLSearchParams(window.location.search);
     let caseId = urlParams.get('case');
 
+    // Participant Session
+    const teamId = getActiveTeamId();
+
     if (!caseId || !casesRepo[caseId]) {
       try {
-        const storedCase = JSON.parse(sessionStorage.getItem('traceX_selectedCase') || 'null');
-        if (storedCase && storedCase.caseId && casesRepo[storedCase.caseId]) {
-          caseId = storedCase.caseId;
+        const teamCase = JSON.parse(sessionStorage.getItem(`traceX_${teamId}_selectedCase`) || 'null');
+        if (teamCase && teamCase.caseId && casesRepo[teamCase.caseId]) {
+          caseId = teamCase.caseId;
+        } else {
+          const storedCase = JSON.parse(sessionStorage.getItem('traceX_selectedCase') || 'null');
+          if (storedCase && storedCase.caseId && casesRepo[storedCase.caseId]) {
+            caseId = storedCase.caseId;
+          }
         }
       } catch (e) {}
     }
@@ -2331,27 +2502,32 @@ const TraceApp = (function () {
     const activeCase = casesRepo[caseId] || { name: 'CASE 01 — STOLEN SOCIAL MEDIA ACCOUNT' };
 
     // Guard: Verify Round 2 is officially completed before allowing entry to Evaluation
-    const isR2Submitted = sessionStorage.getItem(`traceX_round2_submitted_${caseId}`) === 'true';
+    const isR2Submitted = sessionStorage.getItem(`traceX_${teamId}_round2_submitted_${caseId}`) === 'true' || sessionStorage.getItem(`traceX_round2_submitted_${caseId}`) === 'true';
     let r2Timer = null;
     try {
-      r2Timer = JSON.parse(sessionStorage.getItem(`traceX_round2_timer_${caseId}`) || 'null');
+      r2Timer = JSON.parse(sessionStorage.getItem(`traceX_${teamId}_round2_timer_${caseId}`) || sessionStorage.getItem(`traceX_round2_timer_${caseId}`) || 'null');
     } catch (e) {}
     const isR2TimerDone = r2Timer && r2Timer.endTime && (Date.now() >= r2Timer.endTime);
+
+    // Verify against authoritative server team progression
+    fetch(`/api/teams/progress?team_id=${encodeURIComponent(teamId)}`)
+      .then(res => res.ok ? res.json() : null)
+      .then(prog => {
+        if (!prog) return;
+        if (prog.logicalState === 'CASE_NOT_SELECTED') {
+          window.location.replace('index.html#cases');
+        } else if (prog.round2 && !prog.round2.completed) {
+          console.warn('Round 2 is not completed on server. Redirecting back to investigation.');
+          window.location.replace(`index.html#investigation?case=${encodeURIComponent(prog.caseId || caseId)}&round=2`);
+        }
+      })
+      .catch(() => {});
 
     if (!isR2Submitted && !isR2TimerDone) {
       console.warn('Round 2 is not completed yet. Redirecting back to investigation.');
       window.location.replace(`index.html#investigation?case=${encodeURIComponent(caseId)}&round=2`);
       return;
     }
-
-    // Participant Session
-    let teamId = 'TX-2026-TEAM';
-    try {
-      const auth = JSON.parse(sessionStorage.getItem('traceX_auth_session') || 'null');
-      if (auth && auth.teamId) {
-        teamId = auth.teamId;
-      }
-    } catch (e) {}
 
     // Populate Safe Telemetry (Strict Score Privacy — NO marks, points, scores, or keys exposed)
     const caseNameEl = document.getElementById('eval-case-name');
@@ -2364,8 +2540,8 @@ const TraceApp = (function () {
     let r1Answers = {};
     let r2Answers = {};
     try {
-      r1Answers = JSON.parse(sessionStorage.getItem(`traceX_round1_answers_${caseId}`) || '{}');
-      r2Answers = JSON.parse(sessionStorage.getItem(`traceX_round2_answers_${caseId}`) || '{}');
+      r1Answers = JSON.parse(sessionStorage.getItem(`traceX_${teamId}_round1_answers_${caseId}`) || sessionStorage.getItem(`traceX_round1_answers_${caseId}`) || '{}');
+      r2Answers = JSON.parse(sessionStorage.getItem(`traceX_${teamId}_round2_answers_${caseId}`) || sessionStorage.getItem(`traceX_round2_answers_${caseId}`) || '{}');
     } catch (e) {}
 
     const totalAnswered = Object.keys(r1Answers).length + Object.keys(r2Answers).length;
@@ -2377,7 +2553,7 @@ const TraceApp = (function () {
     // 5-Minute Evaluation Timer Countdown (300 Seconds)
     // -------------------------------------------------------------------------
     const EVAL_DURATION_SECONDS = 5 * 60; // Exactly 300 seconds (05:00)
-    const evalTimerKey = `traceX_eval_timer_${caseId}`;
+    const evalTimerKey = `traceX_${teamId}_eval_timer_${caseId}`;
     const evalTimerPanel = document.getElementById('eval-timer-panel');
 
     let evalTimerState = null;
@@ -2694,13 +2870,19 @@ const TraceApp = (function () {
 
     const casesRepo = window.TRACE_INVESTIGATION_CASES || {};
     const urlParams = new URLSearchParams(window.location.search);
-    let caseId = urlParams.get('case');
+    const teamId = getActiveTeamId();
+    let caseId = urlParams.get('case') || urlParams.get('caseId') || '';
 
     if (!caseId || !casesRepo[caseId]) {
       try {
-        const storedCase = JSON.parse(sessionStorage.getItem('traceX_selectedCase') || 'null');
-        if (storedCase && storedCase.caseId && casesRepo[storedCase.caseId]) {
-          caseId = storedCase.caseId;
+        const teamCase = JSON.parse(sessionStorage.getItem(`traceX_${teamId}_selectedCase`) || 'null');
+        if (teamCase && teamCase.caseId && casesRepo[teamCase.caseId]) {
+          caseId = teamCase.caseId;
+        } else {
+          const storedCase = JSON.parse(sessionStorage.getItem('traceX_selectedCase') || 'null');
+          if (storedCase && storedCase.caseId && casesRepo[storedCase.caseId]) {
+            caseId = storedCase.caseId;
+          }
         }
       } catch (e) {}
     }
@@ -2711,14 +2893,6 @@ const TraceApp = (function () {
 
     const activeCase = casesRepo[caseId] || { name: 'CASE 01 — STOLEN SOCIAL MEDIA ACCOUNT' };
     resCaseName.textContent = activeCase.name.toUpperCase();
-
-    let teamId = 'TX-2026-TEAM';
-    try {
-      const auth = JSON.parse(sessionStorage.getItem('traceX_auth_session') || 'null');
-      if (auth && auth.teamId) {
-        teamId = auth.teamId;
-      }
-    } catch (e) {}
 
     const resTeamId = document.getElementById('results-team-id');
     if (resTeamId) resTeamId.textContent = teamId;

@@ -281,12 +281,12 @@
             <div class="filter-select-wrap">
               <label for="team-status-filter" class="filter-label">STATUS:</label>
               <select id="team-status-filter" class="admin-filter-dropdown">
-                <option value="ALL">ALL STATUSES</option>
-                <option value="Registered">Registered</option>
-                <option value="Logged in">Logged in</option>
-                <option value="Investigating">Investigating</option>
-                <option value="Submitted">Submitted</option>
-                <option value="Terminated">Terminated</option>
+                <option value="ALL">ALL TEAMS</option>
+                <option value="ACTIVE">ACTIVE / INVESTIGATING</option>
+                <option value="NOT_STARTED">NOT STARTED (REGISTRATION ONLY)</option>
+                <option value="SUBMITTED">SUBMITTED</option>
+                <option value="DEACTIVATED">DEACTIVATED / DELETED</option>
+                <option value="TERMINATED">DISQUALIFIED / TERMINATED</option>
               </select>
             </div>
           </div>
@@ -298,10 +298,10 @@
                 <tr>
                   <th>TEAM ID</th>
                   <th>TEAM NAME</th>
-                  <th>COLLEGE NAME</th>
-                  <th>DEPARTMENT</th>
-                  <th>TEAM SIZE</th>
-                  <th>SECURITY PIN</th>
+                  <th>REGISTRATION DATE</th>
+                  <th>SELECTED CASE</th>
+                  <th>ROUND / PROGRESS</th>
+                  <th>SCORE</th>
                   <th>CURRENT STATUS</th>
                   <th style="text-align: right;">ACTIONS</th>
                 </tr>
@@ -2063,6 +2063,131 @@
 
       <div class="modal-actions-row" style="margin-top: 1.8rem;">
         <button type="button" class="btn-modal-cancel" id="btn-close-team-modal" style="width: 100%;">[ CLOSE ]</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL 2B: TEAM DELETION & DEACTIVATION CONFIRMATION MODAL
+       ========================================================================= -->
+  <div class="admin-modal-overlay" id="team-delete-confirm-modal" role="dialog" aria-modal="true" aria-labelledby="del-team-modal-heading" style="display: none;">
+    <div class="admin-modal-box" style="max-width: 600px; text-align: left;">
+      <div class="modal-badge-warn" id="del-team-modal-badge" style="background: rgba(255, 36, 56, 0.15); border: 1px solid #FF2438; color: #FF2438;">
+        ⚠ MANDATORY PROTOCOL // TEAM REMOVAL
+      </div>
+      <h3 class="modal-heading" id="del-team-modal-heading" style="color: #FF2438; margin-top: 0.6rem;">CONFIRM TEAM REMOVAL</h3>
+      
+      <div style="background: rgba(0,0,0,0.55); border: 1px solid rgba(255,255,255,0.12); border-radius: 4px; padding: 0.9rem 1.1rem; margin: 1rem 0;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; font-family: var(--font-mono); font-size: 0.78rem;">
+          <div><span style="color: var(--color-text-muted);">TEAM ID:</span> <strong id="del-team-id" style="color: #FFFFFF;">--</strong></div>
+          <div><span style="color: var(--color-text-muted);">TEAM NAME:</span> <strong id="del-team-name" style="color: #FFFFFF;">--</strong></div>
+          <div><span style="color: var(--color-text-muted);">SELECTED CASE:</span> <span id="del-team-case" style="color: var(--color-amber-bright);">--</span></div>
+          <div><span style="color: var(--color-text-muted);">PARTICIPATION:</span> <span id="del-team-participation" style="color: #FFFFFF;">--</span></div>
+        </div>
+      </div>
+
+      <div id="del-team-notice" style="font-size: 0.84rem; line-height: 1.55; color: #E0E0E0; margin-bottom: 1.1rem; background: rgba(255,255,255,0.03); padding: 0.8rem; border-left: 3px solid #FF2438;">
+        <!-- Dynamically injected retention notice -->
+      </div>
+
+      <div style="margin-bottom: 1.1rem;">
+        <label for="del-team-reason" style="display: block; font-family: var(--font-mono); font-size: 0.72rem; color: var(--color-text-muted); margin-bottom: 0.4rem;">
+          REASON FOR REMOVAL (RECORDED IN AUDIT LOG):
+        </label>
+        <input type="text" id="del-team-reason" class="form-input admin-text-input" placeholder="e.g. Duplicate registration, disqualification, faculty testing..." style="width: 100%; box-sizing: border-box;">
+      </div>
+
+      <div id="del-team-perm-wrap" style="display: none; margin-bottom: 1.1rem; padding: 0.7rem; background: rgba(255, 36, 56, 0.08); border: 1px solid rgba(255, 36, 56, 0.25); border-radius: 4px;">
+        <label style="display: flex; align-items: center; gap: 0.6rem; font-size: 0.8rem; color: #FF7070; cursor: pointer; user-select: none;">
+          <input type="checkbox" id="del-team-force-perm" style="cursor: pointer;">
+          <span>Force permanent deletion (removes registration, session records, and scores completely)</span>
+        </label>
+      </div>
+
+      <div id="del-team-feedback" style="display: none; padding: 0.6rem 0.8rem; margin-bottom: 1rem; border-radius: 4px; font-family: var(--font-mono); font-size: 0.78rem;"></div>
+
+      <div class="modal-actions-row">
+        <button type="button" class="btn-modal-cancel" id="btn-cancel-team-delete">[ CANCEL ]</button>
+        <button type="button" class="btn-modal-proceed" id="btn-confirm-team-delete" style="background: #D32F2F; border-color: #FF2438; color: #FFFFFF;">
+          [ CONFIRM REMOVAL ]
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL 2C: COMPLETE EVENT RESET CONFIRMATION MODAL
+       ========================================================================= -->
+  <div class="admin-modal-overlay" id="complete-event-reset-modal" role="dialog" aria-modal="true" aria-labelledby="reset-modal-heading" style="display: none;">
+    <div class="admin-modal-box" style="max-width: 650px; text-align: left; border-color: #FF2438; box-shadow: 0 0 50px rgba(255, 36, 56, 0.45);">
+      <div class="modal-badge-warn" style="background: rgba(255, 36, 56, 0.2); border: 1px solid #FF2438; color: #FF2438;">
+        ⚠ CRITICAL PROTOCOL // COMPLETE EVENT RESET
+      </div>
+      <h3 class="modal-heading" id="reset-modal-heading" style="color: #FF2438; margin-top: 0.6rem; font-size: 1.25rem;">COMPLETE EVENT RESET</h3>
+      
+      <p class="modal-desc" style="color: #E0E0E0; font-size: 0.86rem; line-height: 1.5; margin: 0.8rem 0 1rem 0;">
+        This operation will clear participant registrations and event-related progress, scores, and results. The website configuration, administrator accounts, investigation cases, and question bank will remain.
+      </p>
+
+      <!-- Review of Affected Data Categories -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin-bottom: 1.2rem;">
+        <div style="background: rgba(255, 36, 56, 0.08); border: 1px solid rgba(255, 36, 56, 0.35); border-radius: 4px; padding: 0.8rem;">
+          <div style="font-family: var(--font-mono); font-size: 0.72rem; color: #FF7070; font-weight: 700; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.3rem;">
+            <span>✕</span> DATA TO BE CLEARED:
+          </div>
+          <ul style="margin: 0; padding-left: 1.1rem; color: #C5C5D0; font-size: 0.76rem; line-height: 1.55;">
+            <li>Registered participant teams</li>
+            <li>Team login credentials &amp; sessions</li>
+            <li>Case selections &amp; live sessions</li>
+            <li>Round 1 &amp; Round 2 answers</li>
+            <li>Scores &amp; SURREAL adjustments</li>
+            <li>Round countdowns &amp; timers</li>
+            <li>Proctoring violations</li>
+            <li>Event final reports &amp; results</li>
+          </ul>
+        </div>
+
+        <div style="background: rgba(0, 230, 118, 0.06); border: 1px solid rgba(0, 230, 118, 0.3); border-radius: 4px; padding: 0.8rem;">
+          <div style="font-family: var(--font-mono); font-size: 0.72rem; color: #00E676; font-weight: 700; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.3rem;">
+            <span>✓</span> DATA PRESERVED (SAFE):
+          </div>
+          <ul style="margin: 0; padding-left: 1.1rem; color: #C5C5D0; font-size: 0.76rem; line-height: 1.55;">
+            <li>Administrator accounts &amp; credentials</li>
+            <li>All 15 Investigation Cases</li>
+            <li>Question bank (450 questions &amp; keys)</li>
+            <li>Website &amp; database schema</li>
+            <li>Core configuration &amp; environment</li>
+            <li>Protected audit logs</li>
+            <li>Verified pre-reset backup snapshot</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Backup Confirmation Checkbox -->
+      <div style="margin-bottom: 1rem; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 4px; padding: 0.75rem 0.9rem;">
+        <label style="display: flex; align-items: flex-start; gap: 0.65rem; cursor: pointer; user-select: none;">
+          <input type="checkbox" id="reset-event-backup-confirm" style="margin-top: 0.2rem; cursor: pointer; accent-color: #FF2438;">
+          <span style="font-size: 0.82rem; color: #FFFFFF; line-height: 1.45;">
+            <strong>I confirm that a verified backup exists</strong> (the system will also automatically take and verify an SQLite snapshot before wiping).
+          </span>
+        </label>
+      </div>
+
+      <!-- Confirmation Phrase Input -->
+      <div style="margin-bottom: 1.1rem;">
+        <label for="reset-event-phrase-input" style="display: block; font-family: var(--font-mono); font-size: 0.74rem; color: var(--color-text-muted); margin-bottom: 0.4rem;">
+          ENTER THE EXACT CONFIRMATION PHRASE: <span style="color: #FF2438; font-weight: 700; letter-spacing: 1px; user-select: all;">RESET TRACEX EVENT</span>
+        </label>
+        <input type="text" id="reset-event-phrase-input" class="form-input admin-text-input" placeholder="Type 'RESET TRACEX EVENT' exactly" autocomplete="off" style="width: 100%; box-sizing: border-box; font-family: var(--font-mono); font-weight: 700; letter-spacing: 1px; color: #FFFFFF; background: rgba(0,0,0,0.7); border: 1px solid rgba(255, 36, 56, 0.4);">
+      </div>
+
+      <div id="reset-event-feedback" style="display: none; padding: 0.65rem 0.85rem; margin-bottom: 1rem; border-radius: 4px; font-family: var(--font-mono); font-size: 0.78rem;"></div>
+
+      <div class="modal-actions-row">
+        <button type="button" class="btn-modal-cancel" id="btn-cancel-complete-reset">[ CANCEL ]</button>
+        <button type="button" class="btn-modal-proceed" id="btn-confirm-complete-reset" disabled style="background: #B71C1C; border-color: #FF2438; color: #FFFFFF; opacity: 0.4; cursor: not-allowed;">
+          [ CONFIRM COMPLETE RESET ]
+        </button>
       </div>
     </div>
   </div>
