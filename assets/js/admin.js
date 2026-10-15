@@ -326,7 +326,6 @@
     const ecPhaseDisplay = document.getElementById('ec-phase-display');
     const ecTeamsDisplay = document.getElementById('ec-teams-count-display');
 
-    const btnStart = document.getElementById('btn-ec-start');
     const btnPause = document.getElementById('btn-ec-pause');
     const btnResume = document.getElementById('btn-ec-resume');
     const btnEnd = document.getElementById('btn-ec-end');
@@ -350,27 +349,18 @@
         if (ecTeamsDisplay) ecTeamsDisplay.textContent = `${data.registeredTeams ?? 0} TEAMS REGISTERED`;
 
         // Update button states according to state machine
-        if (btnStart && btnPause && btnResume && btnEnd) {
-          if (status === 'EVENT NOT STARTED') {
-            btnStart.disabled = false;
-            btnPause.disabled = true;
+        if (btnPause && btnResume && btnEnd) {
+          if (status === 'EVENT NOT STARTED' || status === 'EVENT ACTIVE') {
+            btnPause.disabled = (status !== 'EVENT ACTIVE');
             btnResume.disabled = true;
-            btnEnd.disabled = true;
-            if (headerStatusDot) headerStatusDot.style.background = '#858585';
-          } else if (status === 'EVENT ACTIVE') {
-            btnStart.disabled = true;
-            btnPause.disabled = false;
-            btnResume.disabled = true;
-            btnEnd.disabled = false;
-            if (headerStatusDot) headerStatusDot.style.background = '#00E676';
+            btnEnd.disabled = (status !== 'EVENT ACTIVE');
+            if (headerStatusDot) headerStatusDot.style.background = (status === 'EVENT ACTIVE') ? '#00E676' : '#858585';
           } else if (status === 'EVENT PAUSED') {
-            btnStart.disabled = true;
             btnPause.disabled = true;
             btnResume.disabled = false;
             btnEnd.disabled = false;
             if (headerStatusDot) headerStatusDot.style.background = '#FF2438';
           } else if (status === 'EVENT COMPLETED') {
-            btnStart.disabled = true;
             btnPause.disabled = true;
             btnResume.disabled = true;
             btnEnd.disabled = true;
@@ -404,13 +394,6 @@
       }
     }
 
-    if (btnStart) {
-      btnStart.addEventListener('click', () => {
-        openConfirmModal('START INVESTIGATION EVENT', 'Are you sure you want to officially START TRACE × X? This unlocks workstations for active participants.', () => {
-          executeEventControl('start');
-        });
-      });
-    }
 
     if (btnPause) {
       btnPause.addEventListener('click', () => {

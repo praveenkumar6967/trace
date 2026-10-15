@@ -1539,7 +1539,7 @@ class TraceXRequestHandler(SimpleHTTPRequestHandler):
 
             c.execute("SELECT key, value FROM event_state WHERE key IN ('status', 'phase', 'round', 'settings')")
             ev_rows = {r['key']: r['value'] for r in c.fetchall()}
-            ev_status = ev_rows.get('status', 'EVENT ACTIVE')
+            ev_status = 'EVENT ACTIVE'
 
             # Parse configurable durations from settings
             try:

@@ -1522,54 +1522,8 @@ const TraceApp = (function () {
         const res = await fetch(`/api/round/timer?round=${currentRound}&team_id=${encodeURIComponent(teamId)}&case_id=${encodeURIComponent(activeCase.id)}`);
         if (res.ok) {
           const sData = await res.json();
-          if (sData.isStarted === false || sData.status === 'STANDBY' || sData.eventStatus === 'EVENT NOT STARTED') {
-            isEventStandby = true;
-            // Clear any stale local submission / expiry flags for all rounds
-            sessionStorage.removeItem(r1SubmittedKey);
-            sessionStorage.removeItem(r1SubmittedEarlyKey);
-            sessionStorage.removeItem(r2SubmittedKey);
-            sessionStorage.removeItem(r2SubmittedEarlyKey);
-            sessionStorage.removeItem(r2StartedKey);
-            sessionStorage.removeItem(activeRoundKey);
-            sessionStorage.removeItem(timerStorageKey);
-            sessionStorage.removeItem(`traceX_${teamId}_round1_timer_${activeCase.id}`);
-            sessionStorage.removeItem(`traceX_${teamId}_round2_timer_${activeCase.id}`);
-            sessionStorage.removeItem(`traceX_round1_timer_${activeCase.id}`);
-            sessionStorage.removeItem(`traceX_round2_timer_${activeCase.id}`);
-
-            isR1Submitted = false;
-            isR2Submitted = false;
-            isR2Started = false;
-            currentRound = 1;
-
-            if (completionScreen) completionScreen.style.display = 'none';
-            if (waitingScreen) waitingScreen.style.display = 'none';
-
-            // Show Event Standby Overlay
-            const standbyOverlay = document.getElementById('event-standby-overlay');
-            if (standbyOverlay) {
-              const sbCase = document.getElementById('standby-case-title');
-              const sbTeam = document.getElementById('standby-team-id');
-              if (sbCase) sbCase.textContent = activeCase.name.toUpperCase();
-              if (sbTeam) sbTeam.textContent = teamId;
-              standbyOverlay.style.display = 'flex';
-            }
-
-            if (timerDisplay) timerDisplay.textContent = '10:00';
-            if (hudCaseTag) hudCaseTag.textContent = `${activeCase.id.toUpperCase()} // STANDBY - AWAITING ADMIN START`;
-
-            if (!standbyPollInterval) {
-              standbyPollInterval = setInterval(async () => {
-                const s = await syncTimerWithServer();
-                if (s && s.serverSynced && !isEventStandby) {
-                  clearInterval(standbyPollInterval);
-                  standbyPollInterval = null;
-                  if (hudCaseTag) hudCaseTag.textContent = `${activeCase.id.toUpperCase()} // ROUND ${currentRound}`;
-                }
-              }, 2000);
-            }
-            return { isStarted: false, duration: 600, serverSynced: true };
-          } else {
+          // Event is always active — no standby blocking needed
+          {
             isEventStandby = false;
             const standbyOverlay = document.getElementById('event-standby-overlay');
             if (standbyOverlay) standbyOverlay.style.display = 'none';
